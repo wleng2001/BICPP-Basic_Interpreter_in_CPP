@@ -21,7 +21,10 @@ int programMemorySupport::takeDigit(string &input){
     number+=input[_position];
     _position++;
   }
-  cout << "LineNumber: " << number << endl; 
+
+  #if debug
+  cout << "LineNumber: " << number << endl;
+  #endif
 
   if(number == ""){
     return 0;

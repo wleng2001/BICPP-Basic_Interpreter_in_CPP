@@ -52,6 +52,7 @@ class basic : public programMemorySupport{
 
         #if debug
         cout << "Listuje..." << endl;
+        #endif
         if(*input == "LIST"){
             string output = "";
             string partOutput = "";
@@ -65,7 +66,7 @@ class basic : public programMemorySupport{
             }
             return output;
         }
-        #endif
+
 
         try{
             parser pars(*input);

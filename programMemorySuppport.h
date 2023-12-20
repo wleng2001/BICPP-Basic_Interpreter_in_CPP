@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <map>
 
-#define debug true
+//#define debug false
 
 using namespace std;
 
