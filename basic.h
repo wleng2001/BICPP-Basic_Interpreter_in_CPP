@@ -16,16 +16,23 @@ using namespace std;
 class basic : public programMemorySupport{
     private:
 
+    bool error = 0;
     bool (*interruptFunc)();
     bool _interruptExist=0;
+    void (*printFunc)(string text);
+    string (*inputFunc)();
     Memory _variableMemory;
-
     string *text;
-    text_analyzer txt_an;
     variables var;
-    
+    text_analyzer txt_an;
 
     public:
+
+    basic(void (*printFunction)(string text), string (*inputFunction)()){
+        printFunc = printFunction;
+        txt_an.addPrintFuntion(printFunc);
+        inputFunc = inputFunction;
+    }
 
     bool addInterruptFunc(bool (*func)()){
         interruptFunc = func;
@@ -33,6 +40,8 @@ class basic : public programMemorySupport{
     }
 
     string run(string *input){
+        txt_an.error = &error;
+        error = 0;
         if(*input==""){
             return "";
         }
@@ -42,7 +51,7 @@ class basic : public programMemorySupport{
             }
         }
         txt_an.reform_input(*input);
-
+        if(error) return "";
         #if debug
         cout << *input << endl;
         #endif

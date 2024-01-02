@@ -24,6 +24,16 @@ In execution before command must be line number.
 ##### `10 PRINT "HI"`
 
 #### Variables
-Integer in the basic interpreter be in range from -32767 to 32767.
-If you want to write integer in hexadecimal code you must write at the end *H*. For example: *A1H* is *161* in decimal code.
-String is text, which must be enclosed in a pair of *"* and it's doesn't changed by interpreter to capital letter and more than one space aren't deleted.
+Integer variable in the basic interpreter is marked by *%* on the end of name. For example:
+##### `INTVAR%`
+If you want to write integer in hexadecimal code you must write at the end of constant letter *H*. For example: *A1H* is *161* in decimal code.
+String is text, which must be enclosed in a pair of *"* and it's doesn't changed by interpreter to capital letter and more than one space aren't deleted. If you want create string variable, name of it must marked by *$* on the end. For example:
+##### `STRVAR$`
+If you want add *"* in the text you must write *"* before *"*. For example:
+##### `" If you want print ""Hello World"" on terminal you must use the command: ""PRINT ""Hello World"""`
+Float number (named in basic numeric) isn't marked by special char at end of variable name.
+Array can be int, string and numeric and at end of name, but before bracker, you must give the same marked. For example:
+##### `STRARRAY$(4)`
+It's array, which store five strings. If you want create 2 dimensional array you can do it at the way:
+##### `STRARRAY$(4,2)`
+The array consist of 5 columns and 3 rows.

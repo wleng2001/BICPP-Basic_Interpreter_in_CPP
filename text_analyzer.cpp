@@ -4,6 +4,14 @@ char text_analyzer::mathematic_char[] = {
   '+', '-', '%', '*', '/', '<', '>', '='
 };
 
+char text_analyzer::special_char[] = {
+  '%', '$'
+};
+
+void text_analyzer::addPrintFuntion(void (*printFunction)(string text)){
+  text_analyzer::_printFunc = printFunction;
+}
+
 void text_analyzer::delete_useless_spaces(string &data) { //uses all option of the class
   data=text_analyzer::trim(data);
   text_analyzer::delete_spaces(data);
@@ -13,15 +21,32 @@ void text_analyzer::delete_useless_spaces(string &data) { //uses all option of t
   bool start_comment=false;
   uint8_t i = 0;
   string temporary_data = "";
+  bool quotation_in_text = false;
   while (i < data.length()) {
-    if (data[i] == '"') {
+    for(auto j = 0; j < sizeof(text_analyzer::special_char) / sizeof(text_analyzer::special_char[0]); j++){
+      if(special_char[j]==data[i]){
+        if((data[i+1]==' ' || data[i+1]=='(' || i==data.length()-1) && (isalpha(data[i-1])||isdigit(data[i-1]))){
+          continue;
+        }else{
+          _printFunc("ERROR! Invalid syntax (char: "+to_string(i)+"): "+data+'\n');
+          *error = true;
+          return;
+        }
+      }
+    }
+    if(data[i] == '"' && (!data[i+1] == '"' != !data[i+1] == '"')){
+      quotation_in_text = true;
+    }else{
+      quotation_in_text = false;
+    }
+    if (data[i] == '"' && quotation_in_text == false) {
       start_quote = !start_quote;
     }
     if(data[i] == 0x09){
       data[i] = ' ';
     }
     if(data[i] == ';' && (data[i-1] == '\n' || i==0)){
-      start_comment= !start_comment;
+      start_comment= true;
     }
     if(toupper(data[i-1])=='M' && toupper(data[i-2])=='E' && toupper(data[i-3])=='R'){
       start_comment = true;

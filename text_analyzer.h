@@ -18,11 +18,18 @@ class text_analyzer{
   private:
 
   int _position = 0;
+  void (*_printFunc)(string text);
 
   public:
 
+    bool *error;
+
+    void addPrintFuntion(void (*printFunction)(string text));
+
     static char mathematic_char[];
     int *p_mathematic_char;
+
+    static char special_char[];
     
     string rewrite_in_range(uint8_t start, uint8_t end, string data) {
       string new_data = "";

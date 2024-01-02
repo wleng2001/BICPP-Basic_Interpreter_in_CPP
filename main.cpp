@@ -14,7 +14,17 @@ using namespace std;
 
 string text = "jakis tekst \n i inny tekst teraz \n teraz jeszcze inny \n";
 
-basic bas;
+void printFunction(string text){
+    cout << text;
+}
+
+string inputFunction(){
+    string text;
+    getline(cin, text);
+    return text;
+}
+
+basic bas(printFunction, inputFunction);
 
 bool interrupt(){
     char var;
