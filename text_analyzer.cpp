@@ -1,7 +1,7 @@
 #include "text_analyzer.h"
 
 char text_analyzer::mathematic_char[] = {
-  '+', '-', '%', '*', '/', '<', '>', '='
+  '+', '-', '*','^', '/', '<', '>', '=','(',')'
 };
 
 char text_analyzer::special_char[] = {

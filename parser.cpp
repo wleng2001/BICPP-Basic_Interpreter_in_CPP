@@ -49,7 +49,7 @@ expressions* parser::parseMult(){
         e = parseTerm();
         char c = lookAhead();
 
-        while(c == '*' || c == '/' || c == '%'){
+        while(c == '*' || c == '/' || c == '^'){
             _position++;
             e = new binaryOperator(c, e, parseTerm());
             c = lookAhead();

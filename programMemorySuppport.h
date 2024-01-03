@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <map>
 
-//#define debug false
+//#define debug true
 
 using namespace std;
 
@@ -13,7 +13,7 @@ typedef std::map < int, string > programMemory;
 class programMemorySupport{
     int _position=0;
     bool checkMathematicSymbol(char input);
-    int takeDigit(string &input);
+    int takeDigits(string &input);
     void skipWhiteSpace(string &input);
     unsigned int quantityOfSpecificChar(string &input, char c);
     static char mathematic_char[];

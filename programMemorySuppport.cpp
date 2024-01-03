@@ -15,7 +15,7 @@ bool programMemorySupport::checkMathematicSymbol(char input){
     return false;
 }
 
-int programMemorySupport::takeDigit(string &input){
+int programMemorySupport::takeDigits(string &input){
   string number = "";
   while(isdigit(input[_position])){
     number+=input[_position];
@@ -69,7 +69,7 @@ bool programMemorySupport::isToExecute(string &input){
         #endif
 
         skipWhiteSpace(input);
-        if(_position == priorPosition){
+        if(_position == priorPosition && checkMathematicSymbol(input[_position])){
             _position = 0;
 
             #if debug
@@ -78,16 +78,6 @@ bool programMemorySupport::isToExecute(string &input){
             #endif
 
             return true;
-        }
-        if(checkMathematicSymbol(input[_position])){
-            _position = 0;
-
-            #if debug
-            cout << "prior2: " << priorPosition << endl;
-            cout << "post: "<< _position << endl;
-            #endif
-            return true;
-
         }else{
             #if debug
             cout << "prior3: " << priorPosition << endl;
@@ -106,7 +96,7 @@ bool programMemorySupport::checkAndSave(string &input){
         _position = 0;
         lineQuantity = quantityOfSpecificChar(input, '\n')+1;
         for(auto i = 0; i< lineQuantity; i++){
-            lineNumber = takeDigit(input);
+            lineNumber = takeDigits(input);
             input.erase(0, _position);
 
             #ifdef debug
@@ -115,8 +105,10 @@ bool programMemorySupport::checkAndSave(string &input){
 
             _position = 0;
             skipWhiteSpace(input);
-            input.erase(0, _position);
-            _position = 0;
+            if(_position>0){
+                input.erase(0, _position);
+                _position = 0;
+            }
 
             #ifdef debug
             cout << "input2: " << input << endl;

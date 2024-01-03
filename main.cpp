@@ -18,13 +18,17 @@ void printFunction(string text){
     cout << text;
 }
 
+void errorFunction(string text){
+    cout << text << endl;
+}
+
 string inputFunction(){
     string text;
     getline(cin, text);
     return text;
 }
 
-basic bas(printFunction, inputFunction);
+basic bas(printFunction, errorFunction, inputFunction);
 
 bool interrupt(){
     char var;
@@ -38,7 +42,6 @@ bool interrupt(){
 int main(){
     system("cls");
     bas.addInterruptFunc(interrupt);
-    variables var;
     cout << "Basic interpreter example program" << endl;
     
     while(true){

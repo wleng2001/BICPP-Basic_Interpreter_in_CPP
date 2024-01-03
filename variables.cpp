@@ -40,3 +40,89 @@ string variables::convertHexToDecimal(string data){
         return data;
     }
 }
+
+bool variables::isInt(string &text, uint8_t length){
+    for(uint8_t i = 0; i<length; i++){
+        if(isdigit(text[i]))
+            continue;
+        else
+            return false;
+    }
+    return true;
+}
+
+bool variables::isNum(string &text, uint8_t length){
+    bool isPointer = false;
+    for(uint8_t i = 0; i <length; i++){
+        char c = text[i];
+        if(isdigit(c))
+            continue;
+        if(c=='.' && !isPointer){
+            isPointer = true;
+            continue;
+        }else{
+            return false;
+        }
+    }
+    return true;
+}
+
+void variables::addVariable(string &variableName, string &value){
+    uint8_t variableNameLength = variableName.length();
+    uint8_t valueLength = value.length();
+    char lastChar = variableName[variableNameLength-1];
+    if(lastChar=='%'){
+        if(isInt(value, valueLength)){
+            _VLI[variableName].isArray = false;
+            _VLI[variableName].value.reserve(1);
+            _VLI[variableName].value[0] = stoi(value);
+            return;
+        }
+        else{
+            errorFunc("Error: value assigment to variable isn't int (var: "+variableName+" value: "+value+")");
+            *error = true;
+            return;
+        }
+    }else{
+        if(lastChar=='$'){
+            _VLS[variableName].isArray = false;
+            _VLS[variableName].value.reserve(1);
+            _VLS[variableName].value[0] = value;
+            return;
+        }
+
+        if(lastChar==')'){
+            errorFunc("Error: array support not added yet");
+        }
+
+        if(isNum(value, valueLength)){
+            _VLN[variableName].isArray = false;
+            _VLN[variableName].value.reserve(1);
+            _VLN[variableName].value[0] = stof(value);
+            return;
+        }
+        else{
+            errorFunc("Error: value assigment to variable isn't num (var: "+variableName+" value: "+value+")");
+            *error = true;
+            return;
+        }
+    }
+}
+
+void variables::readVariable(string *variableName, value *var){
+    if(_VLI.find(*variableName)!=_VLI.end()){
+        var->type = 'i';
+        var->valueI = _VLI[*variableName].value[0];
+        return;
+    }
+    if(_VLN.find(*variableName)!=_VLN.end()){
+        var->type = 'n';
+        var->valueN = _VLN[*variableName].value[0];
+        return;
+    }
+    if(_VLS.find(*variableName)!=_VLS.end()){
+        var->type = 'i';
+        var->valueS = _VLS[*variableName].value[0];
+        return;
+    }
+}

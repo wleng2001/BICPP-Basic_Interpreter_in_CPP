@@ -12,6 +12,8 @@
 #include <fstream> //biblioteka do obsługi plików
 #include <algorithm>
 #include <math.h>
+#include <map>
+#include <vector>
 
 #define BOOL 0
 #define INT 1
@@ -28,17 +30,57 @@
 
 using namespace std;
 
+struct value{
+    char type; // i - int, n - numeric, s - string
+    int valueI;
+    float valueN;
+    string valueS;
+};
+
 class variables{
+    private:
+
+    void (*errorFunc)(string text);
+    bool *error;
+
+    struct variableParamI{
+        bool isArray = false;
+        uint8_t rows = 0;
+        uint8_t columns = 0;
+        vector <int> value;
+    };
+
+    struct variableParamN{
+        bool isArray = false;
+        uint8_t rows = 0;
+        uint8_t columns = 0;
+        vector <float> value;
+    };
+
+    struct variableParamS{
+        bool isArray = false;
+        uint8_t rows = 0;
+        uint8_t columns = 0;
+        vector <string> value;
+    };
+
+    typedef std::map < string, variableParamI > variablesListI;
+    typedef std::map < string, variableParamN > variablesListN;
+    typedef std::map < string, variableParamS > variablesListS;
+
+    variablesListI _VLI;
+    variablesListN _VLN;
+    variablesListS _VLS;
+
     public:
-    void defVariable(string &variables_name, string &variables_value, int quantity_of_variables){
-        int x;
-    }
 
+    variables(void (*errorFunction)(string text), bool *error): errorFunc(errorFunction), error(error){};
+    string convertScienceToDecimal(string data);
+    bool isInt(string &data, uint8_t length);
+    bool isNum(string &data, uint8_t length);
     string convertHexToDecimal(string data);
-
-    string returnValue(){//last char is type of variable value allways in decimal format
-        int y;
-    }
+    void addVariable(string &variableName, string &value);
+    void readVariable(string *variableName, value *var);
 };
 
 #endif

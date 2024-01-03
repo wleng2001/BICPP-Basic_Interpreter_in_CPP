@@ -9,7 +9,7 @@
 #include <iostream>
 #include <algorithm>
 
-#define quantityOfVariables 100
+//#define debug true
 
 using namespace std;
 
@@ -20,15 +20,19 @@ class basic : public programMemorySupport{
     bool (*interruptFunc)();
     bool _interruptExist=0;
     void (*printFunc)(string text);
+    void (*errorFunc)(string text);
     string (*inputFunc)();
     Memory _variableMemory;
     string *text;
-    variables var;
     text_analyzer txt_an;
 
     public:
 
-    basic(void (*printFunction)(string text), string (*inputFunction)()){
+    basic(){
+        txt_an.error = &error;
+    }
+
+    basic(void (*printFunction)(string text), void (*errorFunction)(string text), string (*inputFunction)()){
         printFunc = printFunction;
         txt_an.addPrintFuntion(printFunc);
         inputFunc = inputFunction;
@@ -40,7 +44,6 @@ class basic : public programMemorySupport{
     }
 
     string run(string *input){
-        txt_an.error = &error;
         error = 0;
         if(*input==""){
             return "";
@@ -60,7 +63,6 @@ class basic : public programMemorySupport{
             return "";
 
         #if debug
-        cout << "Listuje..." << endl;
         #endif
         if(*input == "LIST"){
             string output = "";
@@ -82,9 +84,11 @@ class basic : public programMemorySupport{
             expressions* e = pars.parseExpressions();
             return to_string(e->eval(_variableMemory));
         }catch(notParsed){
-            return "ERROR: not parsed";
+            errorFunc("ERROR: not parsed");
+            return "";
         }catch(variableNotFound){
-            return "ERROR: interpreter doesn't support variable";
+            errorFunc("ERROR: interpreter doesn't support variable");
+            return ""; 
         }
         
     }

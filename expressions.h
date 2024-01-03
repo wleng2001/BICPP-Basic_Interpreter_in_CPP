@@ -60,6 +60,7 @@ class binaryOperator : public expressions{
             case '+': return left->eval(m) + right->eval(m);
             case '-': return left->eval(m) - right->eval(m);
             case '/': return left->eval(m) / right->eval(m);
+            case '^': return pow(left->eval(m), right->eval(m));
         }
     }
 };
