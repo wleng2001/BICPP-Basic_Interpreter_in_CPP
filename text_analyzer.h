@@ -12,21 +12,24 @@
 #include <fstream> //biblioteka do obsługi plików
 #include <algorithm>
 
+//#define debug true
+
 using namespace std;
 
 class text_analyzer{
   private:
 
   int _position = 0;
-  void (*_printFunc)(string text);
+  void (*_errorFunc)(string text);
 
   bool special_char_in_correct_place(string &data, int position);
+  bool correctBracketQuantity(uint8_t *bracketQuantity, char c);
 
   public:
 
     bool *error;
 
-    void addPrintFuntion(void (*printFunction)(string text));
+    void addErrorFuntion(void (*errorFunction)(string text));
 
     static char mathematic_char[];
     int *p_mathematic_char;

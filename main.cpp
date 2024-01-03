@@ -19,7 +19,7 @@ void printFunction(string text){
 }
 
 void errorFunction(string text){
-    cout << text << endl;
+    cout << "\033[31m" << text << "\033[0m" << endl;
 }
 
 string inputFunction(){

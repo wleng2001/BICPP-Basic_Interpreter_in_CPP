@@ -8,8 +8,8 @@ char text_analyzer::special_char[] = {
   '%', '$'
 };
 
-void text_analyzer::addPrintFuntion(void (*printFunction)(string text)){
-  text_analyzer::_printFunc = printFunction;
+void text_analyzer::addErrorFuntion(void (*errorFunction)(string text)){
+  text_analyzer::_errorFunc = errorFunction;
 }
 
 bool text_analyzer::special_char_in_correct_place(string &data, int position){
@@ -18,7 +18,7 @@ bool text_analyzer::special_char_in_correct_place(string &data, int position){
       if((data[position+1]==' ' || data[position+1]=='(' || position==data.length()-1) && (isalpha(data[position-1])||isdigit(data[position-1]))){
         continue;
       }else{
-        _printFunc("ERROR: invalid syntax (char: "+to_string(position)+"): "+data+'\n');
+        _errorFunc("ERROR: invalid syntax (char: "+to_string(position)+"): "+data);
         *error = true;
         return false;
       }
@@ -27,34 +27,60 @@ bool text_analyzer::special_char_in_correct_place(string &data, int position){
   return true;
 }
 
+bool text_analyzer::correctBracketQuantity(uint8_t *bracketQuantity, char c){
+  if(c=='('){
+    *bracketQuantity+=1;
+    return true;
+  }
+  if(c==')'){
+    if(*bracketQuantity==0){
+      return false;
+    }else{
+      *bracketQuantity-=1;
+      return true;
+    }
+  }
+  return true;
+}
+
 void text_analyzer::delete_useless_spaces(string &data) { //uses all option of the class
+  
   data=text_analyzer::trim(data);
   text_analyzer::delete_spaces(data);
   data = text_analyzer::rm_comment(data);
   bool pre_spaces = false;
   bool start_quote = false;
   bool start_comment=false;
+  uint8_t bracketQuantity = 0;
   uint8_t i = 0;
   string temporary_data = "";
   bool quotation_in_text = false;
   while (i < data.length()) {
+    char c = data[i];
+    #if debug
+    cout << "i: " << to_string(i) << " c: " << c << endl;
+    #endif
     if(!start_comment && !start_quote){
+      if(!correctBracketQuantity(&bracketQuantity, c)){
+        _errorFunc("ERROR: too little open bracket (char: "+to_string(i)+"): "+data);
+        *error = true;
+        return;
+      }
       if(!special_char_in_correct_place(data, i))
         return;
     }
-
-    if(data[i] == '"' && (!data[i+1] == '"' != !data[i+1] == '"')){
+    if(c == '"' && (!data[i+1] == '"' != !data[i+1] == '"')){
       quotation_in_text = true;
     }else{
       quotation_in_text = false;
     }
-    if (data[i] == '"' && quotation_in_text == false) {
+    if (c == '"' && quotation_in_text == false) {
       start_quote = !start_quote;
     }
-    if(data[i] == 0x09){
+    if(c == 0x09){
       data[i] = ' ';
     }
-    if(data[i] == ';' && (data[i-1] == '\n' || i==0)){
+    if(c == ';' && (data[i-1] == '\n' || i==0)){
       start_comment= true;
     }
     if(toupper(data[i-1])=='M' && toupper(data[i-2])=='E' && toupper(data[i-3])=='R'){
@@ -63,21 +89,25 @@ void text_analyzer::delete_useless_spaces(string &data) { //uses all option of t
     if(start_comment==true && data[i]=='\n'){
       start_comment = false;
     }
-    if (data[i] == ' ' && start_quote == false && start_comment == false && pre_spaces == true) {
+    if (c == ' ' && start_quote == false && start_comment == false && pre_spaces == true) {
       //data=text_analyzer::rewrite_in_range(0,i,data)+text_analyzer::delete_spaces(text_analyzer::rewrite_in_range(i,data.length(),data));
     } else {
       if(start_comment==true || start_quote==true){
-        temporary_data+=data[i];
+        temporary_data+=c;
       }else{
-        temporary_data += toupper(data[i]);
+        temporary_data += toupper(c);
       }
-      if (data[i] == ' ') {
+      if (c == ' ') {
         pre_spaces = true;
       } else {
         pre_spaces = false;
       }
     }
     i++;
+  }
+  if(bracketQuantity>0){
+    _errorFunc("ERROR: too little closed bracket: "+data);
+    *error = true;
   }
   data = temporary_data;
 }
@@ -101,6 +131,8 @@ string text_analyzer::one_word_ret(string data){
   transform(comm.begin(), comm.end(), comm.begin(), ::toupper);
   return comm;
 }
+
+//reform input-----------------------------------------------------
 
 string text_analyzer::reform_input(string &data){
   text_analyzer::delete_useless_spaces(data);

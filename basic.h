@@ -28,14 +28,12 @@ class basic : public programMemorySupport{
 
     public:
 
-    basic(){
-        txt_an.error = &error;
-    }
-
     basic(void (*printFunction)(string text), void (*errorFunction)(string text), string (*inputFunction)()){
         printFunc = printFunction;
-        txt_an.addPrintFuntion(printFunc);
+        errorFunc = errorFunction;
+        txt_an.addErrorFuntion(errorFunction);
         inputFunc = inputFunction;
+        txt_an.error = &error;
     }
 
     bool addInterruptFunc(bool (*func)()){
