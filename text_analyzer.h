@@ -20,6 +20,8 @@ class text_analyzer{
   int _position = 0;
   void (*_printFunc)(string text);
 
+  bool special_char_in_correct_place(string &data, int position);
+
   public:
 
     bool *error;

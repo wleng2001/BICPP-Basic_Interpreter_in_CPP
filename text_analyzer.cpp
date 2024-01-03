@@ -12,6 +12,21 @@ void text_analyzer::addPrintFuntion(void (*printFunction)(string text)){
   text_analyzer::_printFunc = printFunction;
 }
 
+bool text_analyzer::special_char_in_correct_place(string &data, int position){
+  for(auto i = 0; i < sizeof(text_analyzer::special_char) / sizeof(text_analyzer::special_char[0]); i++){
+    if(special_char[i]==data[position]){
+      if((data[position+1]==' ' || data[position+1]=='(' || position==data.length()-1) && (isalpha(data[position-1])||isdigit(data[position-1]))){
+        continue;
+      }else{
+        _printFunc("ERROR: invalid syntax (char: "+to_string(position)+"): "+data+'\n');
+        *error = true;
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
 void text_analyzer::delete_useless_spaces(string &data) { //uses all option of the class
   data=text_analyzer::trim(data);
   text_analyzer::delete_spaces(data);
@@ -23,17 +38,11 @@ void text_analyzer::delete_useless_spaces(string &data) { //uses all option of t
   string temporary_data = "";
   bool quotation_in_text = false;
   while (i < data.length()) {
-    for(auto j = 0; j < sizeof(text_analyzer::special_char) / sizeof(text_analyzer::special_char[0]); j++){
-      if(special_char[j]==data[i]){
-        if((data[i+1]==' ' || data[i+1]=='(' || i==data.length()-1) && (isalpha(data[i-1])||isdigit(data[i-1]))){
-          continue;
-        }else{
-          _printFunc("ERROR! Invalid syntax (char: "+to_string(i)+"): "+data+'\n');
-          *error = true;
-          return;
-        }
-      }
+    if(!start_comment && !start_quote){
+      if(!special_char_in_correct_place(data, i))
+        return;
     }
+
     if(data[i] == '"' && (!data[i+1] == '"' != !data[i+1] == '"')){
       quotation_in_text = true;
     }else{

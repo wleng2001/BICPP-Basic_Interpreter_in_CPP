@@ -36,4 +36,4 @@ Array can be int, string and numeric and at end of name, but before bracker, you
 ##### `STRARRAY$(4)`
 It's array, which store five strings. If you want create 2 dimensional array you can do it at the way:
 ##### `STRARRAY$(4,2)`
-The array consist of 5 columns and 3 rows.
+The array consist of 5 rows and 3 columns.
