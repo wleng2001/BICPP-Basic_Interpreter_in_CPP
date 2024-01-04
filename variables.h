@@ -30,8 +30,8 @@
 
 using namespace std;
 
-struct value{
-    char type; // i - int, n - numeric, s - string
+struct variableValue{
+    char type; // i - int, n - numeric, s - string, N - NULL
     int valueI;
     float valueN;
     string valueS;
@@ -42,6 +42,8 @@ class variables{
 
     void (*errorFunc)(string text);
     bool *error;
+
+    bool isHexLetter(char c);
 
     struct variableParamI{
         bool isArray = false;
@@ -80,7 +82,7 @@ class variables{
     bool isNum(string &data, uint8_t length);
     string convertHexToDecimal(string data);
     void addVariable(string &variableName, string &value);
-    void readVariable(string *variableName, value *var);
+    bool readVariable(string *variableName, variableValue *var);
 };
 
 #endif

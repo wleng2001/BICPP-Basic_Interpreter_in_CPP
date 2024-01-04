@@ -1,11 +1,12 @@
 #include "variables.h"
 
 string variables::convertHexToDecimal(string data){
-    if(data[0] == '0'){
-        int length=data.length();
+    if(isdigit(data[0]) || isalpha(data[0])){
+        uint8_t length=data.length();
         int value = 0;
         if(data[length-1]=='H'){
-            data = data.substr(1, length-2);
+            data = data.substr(0, length-1);
+            errorFunc(data);
             length = data.length();
             for(int i = length-1; i>=0 ; i--){
                 char i_value = data[i];
@@ -34,16 +35,25 @@ string variables::convertHexToDecimal(string data){
                 }
             }
             data = to_string(value);
+            errorFunc(data);
             return data;
         }
-    }else{
-        return data;
     }
+    return data;
+}
+
+bool variables::isHexLetter(char c){
+    c = toupper(c);
+    if((c>='A' && c<='F'))
+        return true;
+    else
+        return false;
 }
 
 bool variables::isInt(string &text, uint8_t length){
     for(uint8_t i = 0; i<length; i++){
-        if(isdigit(text[i]))
+        char c = text[i];
+        if(isdigit(c) || isHexLetter(c) || (c=='H' && i==length-1))
             continue;
         else
             return false;
@@ -75,7 +85,7 @@ void variables::addVariable(string &variableName, string &value){
         if(isInt(value, valueLength)){
             _VLI[variableName].isArray = false;
             _VLI[variableName].value.reserve(1);
-            _VLI[variableName].value[0] = stoi(value);
+            _VLI[variableName].value[0] = stoi(convertHexToDecimal(value));
             return;
         }
         else{
@@ -87,7 +97,7 @@ void variables::addVariable(string &variableName, string &value){
         if(lastChar=='$'){
             _VLS[variableName].isArray = false;
             _VLS[variableName].value.reserve(1);
-            _VLS[variableName].value[0] = value;
+            _VLS[variableName].value.push_back(value);
             return;
         }
 
@@ -109,20 +119,27 @@ void variables::addVariable(string &variableName, string &value){
     }
 }
 
-void variables::readVariable(string *variableName, value *var){
+bool variables::readVariable(string *variableName, variableValue *var){
+    var->type = 'N';
+    var->valueI = 0;
+    var->valueN = 0;
+    var->valueS = "";
     if(_VLI.find(*variableName)!=_VLI.end()){
         var->type = 'i';
         var->valueI = _VLI[*variableName].value[0];
-        return;
+        var->valueN = 0;
+        var->valueS = "";
+        return true;
     }
     if(_VLN.find(*variableName)!=_VLN.end()){
         var->type = 'n';
         var->valueN = _VLN[*variableName].value[0];
-        return;
+        return true;
     }
     if(_VLS.find(*variableName)!=_VLS.end()){
-        var->type = 'i';
+        var->type = 's';
         var->valueS = _VLS[*variableName].value[0];
-        return;
+        return true;
     }
+    return false;
 }
