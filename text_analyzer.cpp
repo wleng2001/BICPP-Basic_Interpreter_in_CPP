@@ -1,20 +1,12 @@
 #include "text_analyzer.h"
 
-char text_analyzer::mathematic_char[] = {
-  '+', '-', '*','^', '/', '<', '>', '=','(',')'
-};
-
-char text_analyzer::special_char[] = {
-  '%', '$'
-};
-
 void text_analyzer::addErrorFuntion(void (*errorFunction)(string text)){
   text_analyzer::_errorFunc = errorFunction;
 }
 
 bool text_analyzer::special_char_in_correct_place(string &data, int position){
-  for(auto i = 0; i < sizeof(text_analyzer::special_char) / sizeof(text_analyzer::special_char[0]); i++){
-    if(special_char[i]==data[position]){
+  for(auto i = 0; i < sizeof(specialChar) / sizeof(specialChar[0]); i++){
+    if(specialChar[i]==data[position]){
       if((data[position+1]==' ' || data[position+1]=='(' || position==data.length()-1) && (isalpha(data[position-1])||isdigit(data[position-1]))){
         continue;
       }else{
@@ -69,7 +61,7 @@ void text_analyzer::delete_useless_spaces(string &data) { //uses all option of t
       if(!special_char_in_correct_place(data, i))
         return;
     }
-    if(c == '"' && (!data[i+1] == '"' != !data[i+1] == '"')){
+    if(c == '"' && (!data[i-1] == '"' != !data[i+1] == '"')){
       quotation_in_text = true;
     }else{
       quotation_in_text = false;
@@ -157,9 +149,9 @@ string text_analyzer::reform_input(string &data){
 
   //edit passage with mathematic char
 
-  for(int i = 0; i<sizeof(text_analyzer::mathematic_char)/sizeof(text_analyzer::mathematic_char[0]); i++){
+  for(int i = 0; i<sizeof(mathematicChar)/sizeof(mathematicChar[0]); i++){
     position = 0;
-    position = data.find(mathematic_char[i], position);
+    position = data.find(mathematicChar[i], position);
     while(position!=std::string::npos && position<data_len){
       if(data[position-1]==' ' && (position-1)>=0){
         data.erase(position-1, 1);
@@ -169,7 +161,7 @@ string text_analyzer::reform_input(string &data){
         data.erase(position+1, 1);
       }
       data_len = data.length();
-      position = data.find(mathematic_char[i], position+=2);
+      position = data.find(mathematicChar[i], position+=2);
     }
   }
 

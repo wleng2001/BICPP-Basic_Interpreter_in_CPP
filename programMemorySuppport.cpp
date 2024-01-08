@@ -3,7 +3,7 @@
 using namespace std;
 
 char programMemorySupport::mathematic_char[] = {
-  '+', '-', '%', '*', '/', '<', '>', '='
+  '+', '-', '^', '*', '/', '<', '>', '=','.'
 };
 
 bool programMemorySupport::checkMathematicSymbol(char input){

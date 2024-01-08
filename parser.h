@@ -15,6 +15,7 @@
 #include <map>
 #include "expressions.h"
 #include "expressions.cpp"
+#include "text_analyzer.h"
 
 
 using namespace std;
@@ -22,12 +23,16 @@ using namespace std;
 class parser{
     string _input;
     size_t _position;
+    bool *error;
+    void (*errorFunc)(string input);
 
     public:
 
-    parser(string input);
+    parser(string input, bool *error, void (*errorFunction)(string input));
 
     void skipWhiteSpace(); //pomija spacje itp.
+
+    bool isMathematicChar(char c);
 
     char lookAhead(); //zwraca następny znak po spacjach
 

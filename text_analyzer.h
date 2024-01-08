@@ -12,6 +12,8 @@
 #include <fstream> //biblioteka do obsługi plików
 #include <algorithm>
 
+#include "tablesAndOtherConst.h"
+
 //#define debug true
 
 using namespace std;
@@ -30,11 +32,6 @@ class text_analyzer{
     bool *error;
 
     void addErrorFuntion(void (*errorFunction)(string text));
-
-    static char mathematic_char[];
-    int *p_mathematic_char;
-
-    static char special_char[];
     
     string rewrite_in_range(uint8_t start, uint8_t end, string data) {
       string new_data = "";

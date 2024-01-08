@@ -75,8 +75,9 @@ class variables{
     variablesListS _VLS;
 
     public:
-
-    variables(void (*errorFunction)(string text), bool *error): errorFunc(errorFunction), error(error){};
+    
+    void addErrorFunction(void (*errorFunction)(string text));
+    void addErrorVariable(bool *error);
     string convertScienceToDecimal(string data);
     bool isInt(string &data, uint8_t length);
     bool isNum(string &data, uint8_t length);

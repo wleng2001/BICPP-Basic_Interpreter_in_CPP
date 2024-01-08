@@ -2,13 +2,23 @@
 
 const char EOS = 0;
 
-parser::parser(string input) : _input(input), _position(0){
+parser::parser(string input, bool *error, void (*errorFunction)(string input)) : _input(input), _position(0), error(error), errorFunc(errorFunction){
     input.push_back(EOS); //umieszcza strażnika na końcu
+    expError = error;
+    expErrorFunc = errorFunction;
 }
 
 void parser::skipWhiteSpace(){
     while(isspace(_input[_position])) //jeśli znak to biały znak
         _position++;
+}
+
+bool parser::isMathematicChar(char c){
+  for(uint8_t i = 0; i<10; i++)
+    if(c == mathematicChar[i]){
+      return true;
+    }else
+      return false;
 }
 
 char parser::lookAhead(){
@@ -63,7 +73,7 @@ expressions* parser::parseMult(){
 
 expressions* parser::parseTerm(){
     char c = lookAhead();
-    if(isdigit(c)){
+    if(isdigit(c) || c =='.' || c=='"'){
         return parseConstant();
     }else if(isalpha(c)){
         return parseVariable();
@@ -75,11 +85,37 @@ expressions* parser::parseTerm(){
 
 expressions* parser::parseConstant(){
     string n = "";
-    while(isdigit(_input[_position]) || _input[_position]=='.'){
-        n+= _input[_position];
-        _position++;
+    bool isDecimalSeparator = false;
+    bool isNumber = false;
+    if(_input[_position]!='"'){
+        errorFunc("Jestem w while1");
+        while(isdigit(_input[_position]) || (_input[_position]=='.')){
+            isNumber = true;
+            n+= _input[_position];
+            if(_input[_position]=='.'){
+                if(isDecimalSeparator == false)
+                    isDecimalSeparator = true;
+                else{
+                    *this->error = 1;
+                    this->errorFunc("Error: to much pointer: "+_input);
+                }
+            }
+            _position++;
+        }
+    }else{
+        while(_input[_position]!='"'){
+            errorFunc("Jestem w while2");
+            n+=_input[_position];
+            _position++;
+        }
     }
-    return new constant(stof(n));
+    if(isNumber == true){
+        if(isDecimalSeparator==false)
+            return new constant(stoi(n));
+        else
+            return new constantN(stof(n));
+    }else
+        return new constantS(n);
 }
 
 expressions* parser::parseVariable(){

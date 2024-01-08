@@ -18,32 +18,76 @@
 
 using namespace std;
 
-typedef map <string, int> Memory;
+//typedef map <string, int> Memory;
+
+bool *expError;
+void (*expErrorFunc)(string input);
 
 class expressions{
+
     public:
-    virtual float eval(Memory& m) = 0;
+    virtual variableValue eval(variables *vM) = 0;
     virtual ~expressions(){}
 };
 
 class constant : public expressions{
-    float valueI;
+    int value;
 
     public:
-    constant(float v) : valueI(v){
+    constant(int v) : value(v){
 
     }
 
-    virtual float eval(Memory& m){
-        return valueI;
+    virtual variableValue eval(variables *vM){
+        variableValue vV;
+        vV.type = 'i';
+        vV.valueI = value;
+        vV.valueN = value;
+        return vV;
     }
 
 
+};
+
+class constantN : public expressions{
+    float value;
+
+    public:
+    constantN(float v) : value(v){
+
+    }
+
+    virtual variableValue eval(variables *vM){
+        variableValue vV;
+        vV.type = 'n';
+        vV.valueN = value;
+        return vV;
+    }
+
+    
+
+};
+
+class constantS : public expressions{
+    string value;
+
+    public:
+    constantS(string v): value(v){
+
+    }
+
+    virtual variableValue eval(variables *vM){
+        variableValue vV;
+        vV.type = 'n';
+        vV.valueS = value;
+        return vV;
+    }
 };
 
 class binaryOperator : public expressions{
     char symbol;
     expressions* left, * right;
+    char type = 'N';
 
     public:
     binaryOperator(char s, expressions* l, expressions* r) : symbol(s), left(l), right(r){
@@ -54,14 +98,77 @@ class binaryOperator : public expressions{
         delete right;
     }
 
-    virtual float eval(Memory& m){
-        switch (symbol){
-            case '*': return left->eval(m) * right->eval(m);
-            case '+': return left->eval(m) + right->eval(m);
-            case '-': return left->eval(m) - right->eval(m);
-            case '/': return left->eval(m) / right->eval(m);
-            case '^': return pow(left->eval(m), right->eval(m));
+    virtual variableValue eval(variables *vM){
+        variableValue vV;
+        variableValue lVV = left -> eval(vM);
+        variableValue rVV = right -> eval(vM);
+
+        if(lVV.type == 'i' && rVV.type == 'i'){
+            vV.type = 'i';
+            switch(symbol){
+                case '*':
+                    vV.valueI = lVV.valueI * rVV.valueI;
+                    return vV;
+                case '/':
+                    vV.type = 'n';
+                    vV.valueN = lVV.valueI / rVV.valueI;
+                    return vV;
+                case '+':
+                    vV.valueI = lVV.valueI + rVV.valueI;
+                    return vV;
+                case '-':
+                    vV.valueI = lVV.valueI - rVV.valueI;
+                    return vV;
+                case '^':
+                    type = 'n';
+                    vV.valueN = pow(lVV.valueN, rVV.valueN);
+                    return vV;
+                default:
+                    *expError = 1;
+                    expErrorFunc("Error: can't "+string(1, symbol)+" for int");
+            }
+            return vV;
         }
+
+        if((lVV.type == 'i' || lVV.type == 'n') && (rVV.type == 'i' || rVV.type == 'n')){
+
+            vV.type = 'n';
+            switch(symbol){
+                case '*':
+                    vV.valueN = lVV.valueN * rVV.valueN;
+                    return vV;
+                case '/':
+                    vV.valueN = lVV.valueN / rVV.valueN;
+                    return vV;
+                case '+':
+                    vV.valueN = lVV.valueN + rVV.valueN;
+                    return vV;
+                case '-':
+                    vV.valueN = lVV.valueN - rVV.valueN;
+                    return vV;
+                case '^':
+                    vV.valueN = pow(lVV.valueN, rVV.valueN);
+                    return vV;
+                default:
+                    *expError = 1;
+                    expErrorFunc("Error: can't "+string(1, symbol)+" for numeric");
+            }
+            return vV;
+        }
+
+        if(lVV.type == 's' && rVV.type == 's'){
+            vV.type = 's';
+            switch(symbol){
+                case '&':
+                    vV.valueS = lVV.valueS + rVV.valueS;
+                    return vV;
+                default:
+                    *expError = 1;
+                    expErrorFunc("Error: can't " + string(1, symbol) + " for strings");
+            }
+        }
+
+        return vV;
     }
 };
 
@@ -77,11 +184,11 @@ class variable : public expressions{
         
     }
 
-    virtual float eval(Memory& m){
-        Memory::iterator it = m.find(name);
-        if(it == m.end())
+    virtual variableValue eval(variables *vM){
+        variableValue vV;
+        if(!vM->readVariable(&name, &vV))
             throw variableNotFound();
-        return it->second;
+        return vV;
     }
 };
 

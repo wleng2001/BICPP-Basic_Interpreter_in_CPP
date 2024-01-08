@@ -1,5 +1,13 @@
 #include "variables.h"
 
+void variables::addErrorFunction(void (*errorFunction)(string text)){
+    errorFunc = errorFunction;
+}
+
+void variables::addErrorVariable(bool *error){
+    this->error = error;
+}
+
 string variables::convertHexToDecimal(string data){
     if(isdigit(data[0]) || isalpha(data[0])){
         uint8_t length=data.length();
@@ -141,5 +149,6 @@ bool variables::readVariable(string *variableName, variableValue *var){
         var->valueS = _VLS[*variableName].value[0];
         return true;
     }
+    errorFunc("ERROR: can't find variable: "+*variableName);
     return false;
 }

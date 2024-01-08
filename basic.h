@@ -22,7 +22,7 @@ class basic : public programMemorySupport{
     void (*printFunc)(string text);
     void (*errorFunc)(string text);
     string (*inputFunc)();
-    Memory _variableMemory;
+    variables _varMemory;
     string *text;
     text_analyzer txt_an;
 
@@ -32,8 +32,10 @@ class basic : public programMemorySupport{
         printFunc = printFunction;
         errorFunc = errorFunction;
         txt_an.addErrorFuntion(errorFunction);
+        _varMemory.addErrorFunction(errorFunction);
         inputFunc = inputFunction;
         txt_an.error = &error;
+        _varMemory.addErrorVariable(&error);
     }
 
     bool addInterruptFunc(bool (*func)()){
@@ -78,9 +80,17 @@ class basic : public programMemorySupport{
 
 
         try{
-            parser pars(*input);
+            parser pars(*input, &error, errorFunc);
             expressions* e = pars.parseExpressions();
-            return to_string(e->eval(_variableMemory));
+            variableValue vV = e->eval(&_varMemory);
+            switch(vV.type){
+                case 's':
+                    return vV.valueS;
+                case 'i':
+                    return to_string(vV.valueI);
+                case 'n':
+                    return to_string(vV.valueN);
+            }
         }catch(notParsed){
             errorFunc("ERROR: not parsed");
             return "";
