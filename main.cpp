@@ -18,7 +18,7 @@ string inputFunction(){
 }
 
 basic bas(printFunction, errorFunction, inputFunction);
-
+#ifdef _WIN32
 bool interrupt(){
     char var;
     if(GetKeyState(VK_ESCAPE) & 0x8000){
@@ -27,10 +27,15 @@ bool interrupt(){
         return 0;
     }
 }
+#endif
 
 int main(){
+    #ifdef _WIN32
     system("cls");
     bas.addInterruptFunc(interrupt);
+    #else
+    system("clear");
+    #endif
     cout << "Basic interpreter example program" << endl;
     
     while(true){

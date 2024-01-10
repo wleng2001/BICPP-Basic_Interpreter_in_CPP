@@ -2,14 +2,8 @@
 #define parser_h
 
 #include <iostream>
-#include <stdio.h> //aby działał getchar i exit
-#include <iomanip> //biblioteka do manipulaowania wejściem i wyjściem
+#include <stdio.h>
 #include <cmath>
-#include <windows.h> //unistd.h dla linux
-#include <cstdlib> //biblioteka, aby działały komendy sytemowe np: system("cls");
-#include <time.h>
-#include <conio.h> //wprowadzanie danych bez entera
-#include <fstream> //biblioteka do obsługi plików
 #include <algorithm>
 #include <math.h>
 #include <map>
