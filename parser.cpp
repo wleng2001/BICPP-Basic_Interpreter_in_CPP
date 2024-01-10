@@ -35,13 +35,36 @@ expressions* parser::parseExpressions(){
         throw notParsed();
 }
 
+/*
+expressions* parser::parseRange(){
+    expressions* e = parseSum();
+    char c = lookAhead();
+
+    try{
+        if(c == '['){
+            while(){
+
+            }
+        }
+    }catch(notParsed){
+        delete e;
+        throw notParsed();
+    }
+
+    #ifdef debug
+    errorFunc("parseRange");
+    #endif
+
+    return e;
+}*/
+
 expressions* parser::parseSum(){
     expressions* e = parseMult();
     char c = lookAhead();
 
     try{
-        while(c == '+' || c == '-'){
-            _position ++;
+        while(c == '+' || c == '-' || c == '&'){
+            _position++;
             e = new binaryOperator(c, e, parseMult());
             c = lookAhead();
         }
@@ -49,6 +72,9 @@ expressions* parser::parseSum(){
         delete e;
         throw notParsed();
     }
+    #ifdef debug
+    errorFunc("parseSum");
+    #endif
     return e;
 }
 
@@ -68,10 +94,16 @@ expressions* parser::parseMult(){
         delete e;
         throw notParsed();
     }
+    #ifdef debug
+    errorFunc("parseMult");
+    #endif
     return e;
 }
 
 expressions* parser::parseTerm(){
+    #ifdef debug
+    errorFunc("parseTerm");
+    #endif
     char c = lookAhead();
     if(isdigit(c) || c =='.' || c=='"'){
         return parseConstant();
@@ -87,8 +119,10 @@ expressions* parser::parseConstant(){
     string n = "";
     bool isDecimalSeparator = false;
     bool isNumber = false;
+    #ifdef debug
+    errorFunc("parseConstant");
+    #endif
     if(_input[_position]!='"'){
-        errorFunc("Jestem w while1");
         while(isdigit(_input[_position]) || (_input[_position]=='.')){
             isNumber = true;
             n+= _input[_position];
@@ -103,19 +137,21 @@ expressions* parser::parseConstant(){
             _position++;
         }
     }else{
+        _position++;
         while(_input[_position]!='"'){
-            errorFunc("Jestem w while2");
             n+=_input[_position];
             _position++;
         }
+        _position++;
     }
     if(isNumber == true){
         if(isDecimalSeparator==false)
             return new constant(stoi(n));
         else
             return new constantN(stof(n));
-    }else
+    }else{
         return new constantS(n);
+    }
 }
 
 expressions* parser::parseVariable(){

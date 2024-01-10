@@ -18,7 +18,7 @@
 
 using namespace std;
 
-//typedef map <string, int> Memory;
+//#define debug true
 
 bool *expError;
 void (*expErrorFunc)(string input);
@@ -78,7 +78,7 @@ class constantS : public expressions{
 
     virtual variableValue eval(variables *vM){
         variableValue vV;
-        vV.type = 'n';
+        vV.type = 's';
         vV.valueS = value;
         return vV;
     }
@@ -103,6 +103,10 @@ class binaryOperator : public expressions{
         variableValue lVV = left -> eval(vM);
         variableValue rVV = right -> eval(vM);
 
+        #ifdef debug
+            expErrorFunc("binaryOperator");
+        #endif
+
         if(lVV.type == 'i' && rVV.type == 'i'){
             vV.type = 'i';
             switch(symbol){
@@ -110,8 +114,7 @@ class binaryOperator : public expressions{
                     vV.valueI = lVV.valueI * rVV.valueI;
                     return vV;
                 case '/':
-                    vV.type = 'n';
-                    vV.valueN = lVV.valueI / rVV.valueI;
+                    vV.valueI = lVV.valueI / rVV.valueI;
                     return vV;
                 case '+':
                     vV.valueI = lVV.valueI + rVV.valueI;
@@ -120,8 +123,7 @@ class binaryOperator : public expressions{
                     vV.valueI = lVV.valueI - rVV.valueI;
                     return vV;
                 case '^':
-                    type = 'n';
-                    vV.valueN = pow(lVV.valueN, rVV.valueN);
+                    vV.valueI = pow(lVV.valueI, rVV.valueI);
                     return vV;
                 default:
                     *expError = 1;

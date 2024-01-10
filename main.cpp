@@ -1,18 +1,7 @@
 #include <iostream>
-/*#include <stdio.h> //aby działał getchar i exit
-#include <iomanip> //biblioteka do manipulaowania wejściem i wyjściem
-#include <cmath>
-#include <windows.h> //unistd.h dla linux
-#include <cstdlib> //biblioteka, aby działały komendy sytemowe np: system("cls");
-#include <time.h>
-#include <conio.h> //wprowadzanie danych bez entera
-#include <fstream> //biblioteka do obsługi plików
-#include <algorithm>*/
 #include "basic.h"
 
 using namespace std;
-
-string text = "jakis tekst \n i inny tekst teraz \n teraz jeszcze inny \n";
 
 void printFunction(string text){
     cout << text;

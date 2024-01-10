@@ -37,6 +37,7 @@ class parser{
     char lookAhead(); //zwraca następny znak po spacjach
 
     expressions* parseExpressions();
+    expressions* parseRange();
     expressions* parseSum();
     expressions* parseMult();
     expressions* parseTerm();
