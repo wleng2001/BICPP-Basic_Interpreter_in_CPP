@@ -2,7 +2,7 @@
 
 const char EOS = 0;
 
-parser::parser(string input, bool *error, void (*errorFunction)(string input)) : _input(input), _position(0), error(error), errorFunc(errorFunction){
+parser::parser(string input, bool *error, void (*errorFunction)(string input), uint8_t *parserPosition) : _input(input), _position(0), error(error), errorFunc(errorFunction), _parserPosition(parserPosition){
     input.push_back(EOS); //umieszcza strażnika na końcu
     expError = error;
     expErrorFunc = errorFunction;
@@ -27,7 +27,7 @@ char parser::lookAhead(){
 }
 
 expressions* parser::parseExpressions(){
-    expressions* e = parseSum();
+    expressions* e = parseConcatenation();
     if(lookAhead() == EOS)
         return e;
     else
@@ -35,18 +35,64 @@ expressions* parser::parseExpressions(){
         throw notParsed();
 }
 
-/*
+expressions* parser::parseConcatenation(){
+    #ifdef debug
+    errorFunc("parseConcatenation");
+    #endif
+    expressions* e = parseRange();
+    char c = lookAhead();
+    try{
+        while(c =='&'){
+            _position++;
+            e = new concatenationOperator(c, e, parseRange());
+            c = lookAhead();
+        }
+    }catch(...){
+        delete e;
+
+    }
+    return e;
+}
+
 expressions* parser::parseRange(){
+    #ifdef debug
+    errorFunc("parseRange");
+    #endif
+    uint8_t position = _position;
     expressions* e = parseSum();
     char c = lookAhead();
 
     try{
         if(c == '['){
-            while(){
-
+            _position++;
+            expressions* startRange = parseSum();
+            c = lookAhead();
+            if(c==':'){
+                _position++;
+                expressions* endRange = parseSum();
+                c = lookAhead();
+                if(c==']'){
+                    e = new substringOperation(e, startRange, endRange);
+                    _position++;
+                }else{
+                    delete e;
+                    delete startRange;
+                    delete endRange;
+                    *_parserPosition = _position;
+                    throw wrongStringRange();
+                }
+            }else{
+                delete e;
+                delete startRange;
+                *_parserPosition = _position;
+                throw wrongStringRange();
             }
+        }else{
+            delete e;
+            _position = position;
+            return parseSum();
         }
-    }catch(notParsed){
+    }catch(...){
         delete e;
         throw notParsed();
     }
@@ -56,29 +102,32 @@ expressions* parser::parseRange(){
     #endif
 
     return e;
-}*/
+}
 
 expressions* parser::parseSum(){
+    #ifdef debug
+    errorFunc("parseSum");
+    #endif
     expressions* e = parseMult();
     char c = lookAhead();
 
     try{
-        while(c == '+' || c == '-' || c == '&'){
+        while(c == '+' || c == '-'){
             _position++;
             e = new binaryOperator(c, e, parseMult());
             c = lookAhead();
         }
-    }catch(notParsed){
+    }catch(...){
         delete e;
         throw notParsed();
     }
-    #ifdef debug
-    errorFunc("parseSum");
-    #endif
     return e;
 }
 
 expressions* parser::parseMult(){
+    #ifdef debug
+    errorFunc("parseMult");
+    #endif
     expressions* e = NULL;
 
     try{
@@ -94,9 +143,6 @@ expressions* parser::parseMult(){
         delete e;
         throw notParsed();
     }
-    #ifdef debug
-    errorFunc("parseMult");
-    #endif
     return e;
 }
 
@@ -112,6 +158,7 @@ expressions* parser::parseTerm(){
     }else if(c =='('){
         return parseParen();
     }else
+        *_parserPosition = _position;
         throw notParsed();
 }
 
@@ -165,12 +212,13 @@ expressions* parser::parseVariable(){
 
 expressions* parser::parseParen(){
     _position++;
-    expressions* e = parseSum();
+    expressions* e = parseConcatenation();
     if(lookAhead() == ')'){
         _position++;
         return e;
     }else{
         delete e;
+        *_parserPosition = _position;
         throw notParsed();
     }
 }

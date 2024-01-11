@@ -10,6 +10,7 @@
 #include <map>
 #include "variables.h"
 #include "variables.cpp"
+#include "errorClasses.h"
 
 using namespace std;
 
@@ -75,6 +76,85 @@ class constantS : public expressions{
         variableValue vV;
         vV.type = 's';
         vV.valueS = value;
+        return vV;
+    }
+};
+
+class concatenationOperator : public expressions{
+    expressions* left, *right;
+    char symbol;
+    char type = 'N';
+    public:
+    concatenationOperator(char s, expressions* l, expressions* r) : symbol(s), left(l), right(r){}
+
+    virtual ~concatenationOperator(){
+        delete left;
+        delete right;
+    }
+
+    virtual variableValue eval(variables *vM){
+        variableValue vV;
+        variableValue rVV = right->eval(vM);
+        variableValue lVV = left->eval(vM);
+
+        #ifdef debug
+            expErrorFunc("concatenationOperators");
+        #endif
+
+        if(lVV.type == 's' && rVV.type == 's'){
+            vV.type = 's';
+            switch(symbol){
+                case '&':
+                    vV.valueS = lVV.valueS + rVV.valueS;
+                    return vV;
+                default:
+                    *expError = 1;
+                    expErrorFunc("Error: can't " + string(1, symbol) + " for strings");
+            }
+        }else{
+            *expError = 1;
+            throw wrongType();
+            return vV;
+        }
+
+        
+
+    }
+};
+
+class substringOperation : public expressions{
+    expressions* tSS, *sR, *eR;
+
+    public:
+    substringOperation(expressions* toSubString, expressions* startRange, expressions* endRange): tSS(toSubString), sR(startRange), eR(endRange){}
+
+    virtual ~substringOperation(){
+        delete tSS;
+        delete sR;
+        delete eR;
+    }
+
+    virtual variableValue eval(variables *vM){
+        #ifdef debug
+        expErrorFunc("substringOperation");
+        #endif
+
+        variableValue vV;
+        variableValue tSSVV = tSS->eval(vM);
+        variableValue sRVV = sR->eval(vM);
+        variableValue eRVV = eR->eval(vM);
+        if(tSSVV.type == 's' && sRVV.type == 'i' && eRVV.type == 'i'){
+            if(sRVV.valueI>eRVV.valueI)
+                throw wrongRange();
+            else{
+                vV.type = 's';
+                for(uint8_t i = sRVV.valueI; i<=eRVV.valueI; i++){
+                    vV.valueS+=tSSVV.valueS[i];
+                }
+            }
+        }else{
+            throw wrongType();
+        }
         return vV;
     }
 };
@@ -152,25 +232,10 @@ class binaryOperator : public expressions{
             }
             return vV;
         }
-
-        if(lVV.type == 's' && rVV.type == 's'){
-            vV.type = 's';
-            switch(symbol){
-                case '&':
-                    vV.valueS = lVV.valueS + rVV.valueS;
-                    return vV;
-                default:
-                    *expError = 1;
-                    expErrorFunc("Error: can't " + string(1, symbol) + " for strings");
-            }
-        }
-
+        *expError = 1;
+        throw variableNotFound();
         return vV;
     }
-};
-
-class variableNotFound{
-
 };
 
 class variable : public expressions{
@@ -184,7 +249,8 @@ class variable : public expressions{
     virtual variableValue eval(variables *vM){
         variableValue vV;
         if(!vM->readVariable(&name, &vV))
-            throw variableNotFound();
+            *expError = 1;
+            throw variableNotFound(); //erroClasses.h
         return vV;
     }
 };

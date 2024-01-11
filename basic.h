@@ -78,9 +78,10 @@ class basic : public programMemorySupport{
             return output;
         }
 
-
+        uint8_t _parserPosition = 0;
         try{
-            parser pars(*input, &error, errorFunc);
+            
+            parser pars(*input, &error, errorFunc, &_parserPosition);
             expressions* e = pars.parseExpressions();
             variableValue vV = e->eval(&_varMemory);
             switch(vV.type){
@@ -92,11 +93,17 @@ class basic : public programMemorySupport{
                     return to_string(vV.valueN);
             }
         }catch(notParsed){
-            errorFunc("ERROR: not parsed");
+            errorFunc("ERROR: not parsed (char : " + to_string(_parserPosition) + "): "+*input);
             return "";
         }catch(variableNotFound){
             errorFunc("ERROR: interpreter doesn't support variable");
             return ""; 
+        }catch(wrongStringRange){
+            errorFunc("Error: incorrect range for substring operation (char: "+ to_string(_parserPosition) +"): "+*input);
+        }catch(wrongType()){
+            errorFunc("Error: can't use binaryOperator (char: "+to_string(_parserPosition)+"): "+*input);
+        }catch(wrongRange()){
+            errorFunc("Error: start of range is bigger than end (char: "+to_string(_parserPosition)+"): "+*input);
         }
         
     }

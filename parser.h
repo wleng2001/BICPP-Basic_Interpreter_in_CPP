@@ -11,7 +11,6 @@
 #include "expressions.cpp"
 #include "text_analyzer.h"
 
-
 using namespace std;
 
 class parser{
@@ -19,10 +18,11 @@ class parser{
     size_t _position;
     bool *error;
     void (*errorFunc)(string input);
+    uint8_t *_parserPosition;
 
     public:
 
-    parser(string input, bool *error, void (*errorFunction)(string input));
+    parser(string input, bool *error, void (*errorFunction)(string input), uint8_t *parserPosition);
 
     void skipWhiteSpace(); //pomija spacje itp.
 
@@ -31,6 +31,7 @@ class parser{
     char lookAhead(); //zwraca następny znak po spacjach
 
     expressions* parseExpressions();
+    expressions* parseConcatenation();
     expressions* parseRange();
     expressions* parseSum();
     expressions* parseMult();
@@ -39,7 +40,5 @@ class parser{
     expressions* parseVariable();
     expressions* parseParen();
 };
-
-class notParsed{};
 
 #endif
