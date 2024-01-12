@@ -27,12 +27,47 @@ char parser::lookAhead(){
 }
 
 expressions* parser::parseExpressions(){
-    expressions* e = parseConcatenation();
+    expressions* e = parseRelation();
     if(lookAhead() == EOS)
         return e;
     else
         delete e;
         throw notParsed();
+}
+
+expressions* parser::parseRelation(){
+    #ifdef debuf
+    errorFunc("parseRelation");
+    #endif
+    expressions* e = parseConcatenation();
+    char c = lookAhead();
+    string s="";
+    s=string(1,c);
+    errorFunc(s);
+    while(c=='>' || c=='<' || c=='='){
+        _position++;
+        c = _input[_position];
+        if(c=='='||c=='<'||c=='>'){
+            s+=c;
+            _position++;
+            errorFunc(s);
+            try{
+                e = new relationOperator(s, e, parseConcatenation());
+            }catch(...){
+                delete e;
+                throw notParsed();
+            }
+        }else{
+            try{
+                e = new relationOperator(s, e, parseConcatenation());
+            }catch(...){
+                delete e;
+                throw notParsed();
+            }
+        }
+        c = lookAhead();
+    }
+    return e;
 }
 
 expressions* parser::parseConcatenation(){
@@ -139,7 +174,7 @@ expressions* parser::parseMult(){
             e = new binaryOperator(c, e, parseTerm());
             c = lookAhead();
         }
-    }catch(notParsed){
+    }catch(...){
         delete e;
         throw notParsed();
     }
@@ -212,7 +247,7 @@ expressions* parser::parseVariable(){
 
 expressions* parser::parseParen(){
     _position++;
-    expressions* e = parseConcatenation();
+    expressions* e = parseRelation();
     if(lookAhead() == ')'){
         _position++;
         return e;

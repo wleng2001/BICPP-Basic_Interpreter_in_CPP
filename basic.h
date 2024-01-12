@@ -93,7 +93,7 @@ class basic : public programMemorySupport{
                     return to_string(vV.valueN);
             }
         }catch(notParsed){
-            errorFunc("ERROR: not parsed (char : " + to_string(_parserPosition) + "): "+*input);
+            errorFunc("ERROR: not parsed (char: " + to_string(_parserPosition) + "): "+*input);
             return "";
         }catch(variableNotFound){
             errorFunc("ERROR: interpreter doesn't support variable");
@@ -104,6 +104,8 @@ class basic : public programMemorySupport{
             errorFunc("Error: can't use binaryOperator (char: "+to_string(_parserPosition)+"): "+*input);
         }catch(wrongRange()){
             errorFunc("Error: start of range is bigger than end (char: "+to_string(_parserPosition)+"): "+*input);
+        }catch(wrongOperator()){
+            errorFunc("Error: wrong operator (char: "+to_string(_parserPosition)+"): "+*input);
         }
         
     }

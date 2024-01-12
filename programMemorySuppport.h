@@ -3,6 +3,7 @@
 #include <iostream>
 #include <algorithm>
 #include <map>
+//#include "tablesAndOtherConst.h"
 
 //#define debug true
 
@@ -16,7 +17,6 @@ class programMemorySupport{
     int takeDigits(string &input);
     void skipWhiteSpace(string &input);
     unsigned int quantityOfSpecificChar(string &input, char c);
-    static char mathematic_char[];
 
     protected:
 

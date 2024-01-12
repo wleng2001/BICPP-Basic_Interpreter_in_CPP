@@ -14,7 +14,7 @@
 
 using namespace std;
 
-//#define debug true
+#define debug true
 
 bool *expError;
 void (*expErrorFunc)(string input);
@@ -77,6 +77,135 @@ class constantS : public expressions{
         vV.type = 's';
         vV.valueS = value;
         return vV;
+    }
+};
+
+class relationOperator : public expressions{
+    string convertToString(variableValue *v){
+        string value = "";
+        if(v->type == 's'){
+            value = v->valueS;
+        }else{
+            if(v->type == 'i'){
+                value = to_string(v->valueI);
+            }else{
+                if(v->type == 'n'){
+                    value = to_string(int(v->valueN));
+                }else{
+                    throw wrongType();
+                    return value;
+                }
+            }
+        }
+    }
+    expressions* left, *right;
+    string symbol="";
+    public:
+    relationOperator(string s, expressions* l, expressions* r) : symbol(s), left(l), right(r){};
+
+    virtual ~relationOperator(){
+        delete left;
+        delete right;
+    }
+
+    variableValue eval(variables *vM){
+        variableValue vV;
+        variableValue rVV = right->eval(vM);
+        variableValue lVV = left->eval(vM);
+        string rightValue;
+        string leftValue;
+        uint8_t rightLength;
+        uint8_t leftLength;
+        #ifdef debug
+            expErrorFunc("relationOperator");
+        #endif
+
+        try{
+            rightValue = convertToString(&rVV);
+            rightLength = rightValue.length();
+
+            leftValue = convertToString(&lVV);
+            leftLength = leftValue.length();
+
+            if((lVV.type!='s' && lVV.type!='l')&&(rVV.type!='s' && rVV.type!='l')){
+                if(leftLength>rightLength){
+                    for(uint8_t i =0; i<leftLength-rightLength; i++){
+                        rightValue = '0'+rightValue;
+                    }
+                }else{
+                    if(leftLength<rightLength){
+                        for(uint8_t i =0; i<leftLength-rightLength; i++){
+                            rightValue = '0'+rightValue;
+                    }
+                    }
+
+                }
+            }
+        }catch(...){
+            delete &vV;
+            delete &lVV;
+            delete &rVV;
+            throw wrongType();
+        }
+        vV.type = 'i';
+        #ifdef debug
+        expErrorFunc("Left: "+leftValue+"\tRight: "+rightValue+"\tOperator: "+symbol);
+        #endif
+        if(symbol == ">"){
+            if(leftValue>rightValue){
+                vV.valueI = 1;
+                return vV;
+            }else{
+                vV.valueI = 0;
+                return vV;
+            }
+        }
+        if(symbol == ">="){
+            if(leftValue>=rightValue){
+                vV.valueI = 1;
+                return vV;
+            }else{
+                vV.valueI = 0;
+                return vV;
+            }
+        }
+        if(symbol == "<"){
+            if(leftValue<rightValue){
+                vV.valueI = 1;
+                return vV;
+            }else{
+                vV.valueI = 0;
+                return vV;
+            }
+        }
+        if(symbol == "<=" || symbol == "=<"){
+            if(leftValue<=rightValue){
+                vV.valueI = 1;
+                return vV;
+            }else{
+                vV.valueI = 0;
+                return vV;
+            }
+        }
+        if(symbol == "="){
+            if(leftValue==rightValue){
+                vV.valueI = 1;
+                return vV;
+            }else{
+                vV.valueI = 0;
+                return vV;
+            }
+        }
+        if(symbol == "<>"){
+            if(leftValue!=rightValue){
+                vV.valueI = 1;
+                return vV;
+            }else{
+                vV.valueI = 0;
+                return vV;
+            }
+        }
+        throw wrongOperator();
     }
 };
 

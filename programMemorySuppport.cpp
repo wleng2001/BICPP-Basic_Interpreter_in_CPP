@@ -2,13 +2,9 @@
 
 using namespace std;
 
-char programMemorySupport::mathematic_char[] = {
-  '+', '-', '^', '*', '/', '<', '>', '=','.'
-};
-
 bool programMemorySupport::checkMathematicSymbol(char input){
-    for(uint8_t i = 0; i<sizeof(mathematic_char)/sizeof(mathematic_char[0]); i++){
-        if(mathematic_char[i]==input){
+    for(uint8_t i = 0; i<sizeof(mathematicChar)/sizeof(mathematicChar[0]); i++){
+        if(mathematicChar[i]==input){
             return true;
         }
     }
