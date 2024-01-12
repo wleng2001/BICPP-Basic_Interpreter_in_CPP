@@ -14,7 +14,7 @@
 
 using namespace std;
 
-#define debug true
+//#define debug true
 
 bool *expError;
 void (*expErrorFunc)(string input);

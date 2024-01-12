@@ -165,27 +165,5 @@ string text_analyzer::reform_input(string &data){
     }
   }
 
-  //edit passage with variable assigment
-
-  position = 0;
-  position = data.find( '=', position);
-  while(position != std::string::npos){
-    if(data[position-1]!=' ' && (position-1)>=0 && data[position-1]!='>' && data[position-1]!='<'){
-      data.insert(position, " ");
-      position++;
-    }else{
-      if(data[position-1]=='>' || data[position-1]=='<'){
-        position = data.find('=', position+1);
-        continue;
-      }
-    }
-    if(data[position+1]!=' '){
-      data.insert(position+1, " ");
-      position++;
-    }
-    data_len = data.length();
-    position = data.find('=', position+1);
-  }
-
   return data;
 }

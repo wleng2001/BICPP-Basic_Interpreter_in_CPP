@@ -43,14 +43,12 @@ expressions* parser::parseRelation(){
     char c = lookAhead();
     string s="";
     s=string(1,c);
-    errorFunc(s);
     while(c=='>' || c=='<' || c=='='){
         _position++;
         c = _input[_position];
         if(c=='='||c=='<'||c=='>'){
             s+=c;
             _position++;
-            errorFunc(s);
             try{
                 e = new relationOperator(s, e, parseConcatenation());
             }catch(...){
