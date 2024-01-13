@@ -56,4 +56,14 @@ Array can be int, string and numeric and at end of name, but before bracker, you
 It's array, which store five strings. If you want create 2 dimensional array you can do it at the way:
 ##### `STRARRAY$(4,2)`
 The array consist of 5 rows and 3 columns.
+
+Integer, numeric and string value can be compared by relational operator, which are:
+- *>* returns true, when left value is bigger than right;
+- *>=* returns true, when left value is bigger or equal to right;
+- *<* returns true, when right value is bigger than left;
+- *<=* or *=<* returns true, when right value is bigger or equal left;
+- *=* returns true, when left value is equal to right;
+- *<>* returns true, when left value is unequal to right;
+
+You must remember, that numeric value are converted to int value before compare.
   

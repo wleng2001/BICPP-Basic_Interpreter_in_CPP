@@ -74,6 +74,12 @@ class basic : public programMemorySupport{
                     output += to_string(i) + '\t' + partOutput + '\n';
                     partOutput = "";
                 }
+                if(_interruptExist==1){
+                    if(interruptFunc()==1){
+                        errorFunc("User interrupt");
+                        return "";
+                }
+        }
             }
             return output;
         }
