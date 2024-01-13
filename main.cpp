@@ -36,7 +36,8 @@ int main(){
     #else
     system("clear");
     #endif
-    cout << "Basic interpreter example program" << endl;
+    cout << "Basic interpreter example implementation" << endl;
+    cout << "Version: "<< _basicVersion << endl;
     
     while(true){
         string text;

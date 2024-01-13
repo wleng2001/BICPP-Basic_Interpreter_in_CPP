@@ -39,7 +39,7 @@ expressions* parser::parseLogical(){
     #ifdef debug
     errorFunc("parseLogical: "+to_string(_position));
     #endif
-    expressions* e = parseRelation();
+    expressions* e = parseNot();
     char c = lookAhead();
     string s = "";
     #ifdef debug
@@ -48,25 +48,60 @@ expressions* parser::parseLogical(){
     while(c=='N' || c=='O' || c=='A' || c=='X' || c=='I' || c == 'E'){
         s.push_back(c);
         _position++;
-        s.push_back(lookAhead());
+        s.push_back(_input[_position]);
         if(s=="OR"){
             _position++;
-            e = new logicalOperator(s, e, parseRelation());
+            e = new logicalOperator(s, e, parseNot());
             s="";
         }else{
             #ifdef debug
             errorFunc("parseLogical4: "+to_string(_position));
             #endif
             _position++;
-            s.push_back(lookAhead());
+            s.push_back(_input[_position]);
             _position++;
-            e = new logicalOperator(s, e, parseRelation());
+            e = new logicalOperator(s, e, parseNot());
             s="";
         }
         c=lookAhead();
 
     }
     return e;
+}
+
+expressions* parser::parseNot(){
+    #ifdef debug
+    errorFunc("parseNot: "+to_string(_position));
+    #endif
+    expressions* e;
+    char c = lookAhead();
+    string s;
+    try{
+        if(c=='N'){
+            s.push_back(c);
+            _position++;
+            s.push_back(_input[_position]);
+            _position++;
+            s.push_back(_input[_position]);
+            if(s=="NOT"){
+                _position++;
+                return new notOperator(s, parseRelation());
+            }else{
+                _position-=3;
+                e = parseRelation();
+            }
+            
+        }else{
+            e = parseRelation();
+            return e;
+        }
+    }catch(notParsed()){
+        delete e;
+        throw notParsed();
+    }catch(wrongType()){
+        delete e;
+        throw wrongType();
+    }
 }
 
 expressions* parser::parseRelation(){

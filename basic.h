@@ -9,7 +9,7 @@
 #include <iostream>
 #include <algorithm>
 
-//#define debug true
+#define _basicVersion "A0.01"
 
 using namespace std;
 

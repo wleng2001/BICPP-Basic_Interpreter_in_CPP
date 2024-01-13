@@ -32,6 +32,7 @@ class parser{
 
     expressions* parseExpressions();
     expressions* parseLogical();
+    expressions* parseNot();
     expressions* parseRelation();
     expressions* parseConcatenation();
     expressions* parseRange();

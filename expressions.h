@@ -98,16 +98,33 @@ string convertToString(variableValue *v){
     string value = "";
     if(v->type == 's'){
         value = v->valueS;
+        return value;
     }else{
         if(v->type == 'i'){
             value = to_string(v->valueI);
+            return value;
         }else{
             if(v->type == 'n'){
                 value = to_string(int(v->valueN));
+                return value;
             }else{
                 throw wrongType();
                 return value;
             }
+        }
+    }
+}
+
+int convertToInt(variableValue *v){
+    int value;
+    if(v->type == 'i'){
+        return v->valueI;
+    }else{
+        if(v->type == 'n'){
+            value = int(v->valueN);
+            return value;
+        }else{
+            throw wrongType();
         }
     }
 }
@@ -130,28 +147,24 @@ class logicalOperator : public expressions{
         variableValue vV;
         variableValue lVV = left->eval(vM);
         variableValue rVV = right->eval(vM);
-        if(lVV.type=='s' || rVV.type=='s'){
+        int leftValue;
+        int rightValue;
+        try{
+            leftValue = convertToInt(&lVV);
+            rightValue = convertToInt(&rVV);
+        }catch(wrongType()){
+            delete left;
+            delete right;
             throw wrongType();
             return vV;
         }
-        string leftValue = convertToString(&lVV);
-        string rightValue = convertToString(&rVV);
         #ifdef debug
-        expErrorFunc(leftValue + " " + symbol + " " + rightValue);
+        expErrorFunc(to_string(leftValue) + " " + symbol + " " + to_string(rightValue));
         #endif
         vV.type = 'i';
-        /*
-        if(symbol == "NOT"){
-            if(rightValue>"0"){
-                vV.valueI = 0;
-                return vV;
-            }else{
-                vV.valueI = 1;
-                return vV;
-            }
-        }*/
+
         if(symbol == "OR"){
-            if(leftValue>"0" || rightValue>"0"){
+            if(leftValue>0 || rightValue>0){
                 vV.valueI = 1;
                 return vV;
             }else{
@@ -160,7 +173,7 @@ class logicalOperator : public expressions{
             }
         }
         if(symbol == "AND"){
-            if(leftValue>"0" && rightValue>"0"){
+            if(leftValue>0 && rightValue>0){
                 vV.valueI = 1;
                 return vV;
             }else{
@@ -170,7 +183,7 @@ class logicalOperator : public expressions{
         }
 
         if(symbol == "XOR"){
-            if((leftValue>"0" || rightValue>"0") && (leftValue!=rightValue)){
+            if((leftValue>0 || rightValue>0) && (leftValue!=rightValue)){
                 vV.valueI = 1;
                 return vV;
             }else{
@@ -180,7 +193,7 @@ class logicalOperator : public expressions{
         }
 
         if(symbol == "IMP"){
-            if((leftValue>"0" && rightValue>"0")||(leftValue=="0" && rightValue=="0")||(leftValue=="0" && rightValue>"0")){
+            if((leftValue>0 && rightValue>0)||(leftValue==0 && rightValue==0)||(leftValue==0 && rightValue>0)){
                 vV.valueI = 1;
                 return vV;
             }else{
@@ -190,7 +203,7 @@ class logicalOperator : public expressions{
         }
 
         if(symbol == "EQV"){
-            if((leftValue>"0" && rightValue>"0")||(leftValue=="0" && rightValue=="0")){
+            if((leftValue>0 && rightValue>0)||(leftValue==0 && rightValue==0)){
                 vV.valueI = 1;
                 return vV;
             }else{
@@ -200,6 +213,50 @@ class logicalOperator : public expressions{
         }
         throw wrongOperator();
         return vV;
+    }
+};
+
+class notOperator : public expressions{
+    string symbol;
+    expressions *right;
+
+    public:
+
+    notOperator(string s, expressions* r) : symbol(s), right(r){};
+
+    virtual ~notOperator(){
+        delete right;
+    }
+
+    variableValue eval(variables *vM){
+        variableValue vV;
+        variableValue rVV = right->eval(vM);
+        int rightValue;
+        
+        try{
+            rightValue = convertToInt(&rVV);
+        }catch(wrongType()){
+            delete right;
+            delete &rVV;
+            throw wrongType();
+            return vV;
+        }
+
+        vV.type = 'i';
+        #ifdef debug
+        expErrorFunc(symbol+" "+to_string(rightValue));
+        #endif
+        if(symbol == "NOT"){
+            if(rightValue>0){
+                vV.valueI = 0;
+            }else{
+                vV.valueI = 1;
+            }
+            return vV;
+        }else{
+            throw wrongOperator();
+            return vV;
+        }
     }
 };
 
