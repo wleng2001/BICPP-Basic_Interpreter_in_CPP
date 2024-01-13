@@ -27,7 +27,7 @@ char parser::lookAhead(){
 }
 
 expressions* parser::parseExpressions(){
-    expressions* e = parseRelation();
+    expressions* e = parseLogical();
     if(lookAhead() == EOS)
         return e;
     else
@@ -35,9 +35,43 @@ expressions* parser::parseExpressions(){
         throw notParsed();
 }
 
+expressions* parser::parseLogical(){
+    #ifdef debug
+    errorFunc("parseLogical: "+to_string(_position));
+    #endif
+    expressions* e = parseRelation();
+    char c = lookAhead();
+    string s = "";
+    #ifdef debug
+    errorFunc("parseLogical2: "+to_string(_position));
+    #endif
+    while(c=='N' || c=='O' || c=='A' || c=='X' || c=='I' || c == 'E'){
+        s.push_back(c);
+        _position++;
+        s.push_back(lookAhead());
+        if(s=="OR"){
+            _position++;
+            e = new logicalOperator(s, e, parseRelation());
+            s="";
+        }else{
+            #ifdef debug
+            errorFunc("parseLogical4: "+to_string(_position));
+            #endif
+            _position++;
+            s.push_back(lookAhead());
+            _position++;
+            e = new logicalOperator(s, e, parseRelation());
+            s="";
+        }
+        c=lookAhead();
+
+    }
+    return e;
+}
+
 expressions* parser::parseRelation(){
-    #ifdef debuf
-    errorFunc("parseRelation");
+    #ifdef debug
+    errorFunc("parseRelation: "+to_string(_position));
     #endif
     expressions* e = parseConcatenation();
     char c = lookAhead();
@@ -70,7 +104,7 @@ expressions* parser::parseRelation(){
 
 expressions* parser::parseConcatenation(){
     #ifdef debug
-    errorFunc("parseConcatenation");
+    errorFunc("parseConcatenation: "+to_string(_position));
     #endif
     expressions* e = parseRange();
     char c = lookAhead();
@@ -89,7 +123,7 @@ expressions* parser::parseConcatenation(){
 
 expressions* parser::parseRange(){
     #ifdef debug
-    errorFunc("parseRange");
+    errorFunc("parseRange: "+to_string(_position));
     #endif
     uint8_t position = _position;
     expressions* e = parseSum();
@@ -139,7 +173,7 @@ expressions* parser::parseRange(){
 
 expressions* parser::parseSum(){
     #ifdef debug
-    errorFunc("parseSum");
+    errorFunc("parseSum: "+to_string(_position));
     #endif
     expressions* e = parseMult();
     char c = lookAhead();
@@ -159,7 +193,7 @@ expressions* parser::parseSum(){
 
 expressions* parser::parseMult(){
     #ifdef debug
-    errorFunc("parseMult");
+    errorFunc("parseMult: "+to_string(_position));
     #endif
     expressions* e = NULL;
 
@@ -181,13 +215,13 @@ expressions* parser::parseMult(){
 
 expressions* parser::parseTerm(){
     #ifdef debug
-    errorFunc("parseTerm");
+    errorFunc("parseTerm: "+to_string(_position));
     #endif
     char c = lookAhead();
     if(isdigit(c) || c =='.' || c=='"'){
         return parseConstant();
     }else if(isalpha(c)){
-        return parseVariable();
+        return parseLogicalVariable();
     }else if(c =='('){
         return parseParen();
     }else
@@ -200,7 +234,7 @@ expressions* parser::parseConstant(){
     bool isDecimalSeparator = false;
     bool isNumber = false;
     #ifdef debug
-    errorFunc("parseConstant");
+    errorFunc("parseConstant: "+to_string(_position));
     #endif
     if(_input[_position]!='"'){
         while(isdigit(_input[_position]) || (_input[_position]=='.')){
@@ -234,8 +268,29 @@ expressions* parser::parseConstant(){
     }
 }
 
-expressions* parser::parseVariable(){
-    string s;
+expressions* parser::parseLogicalVariable(){
+    string s = "";
+    #ifdef debug
+    errorFunc("parserLogicalVariable: "+to_string(_position));
+    #endif
+    int position = _position;
+    while(isalpha(_input[_position])){
+        s.push_back(_input[_position]);
+        for(uint8_t i = 0; i<(sizeof(reservedName)/sizeof(reservedName[0])); i++){
+            if(s==reservedName[i]){
+                _position = position;
+                return new logicalSymbol(s);
+            }
+        }
+        _position++;
+    }
+    return parseVariable(s);
+}
+
+expressions* parser::parseVariable(string &s){
+    #ifdef debug
+    errorFunc("parseVariable: "+to_string(_position));
+    #endif
     while(isalnum(_input[_position])){
         s.push_back(_input[_position]);
         _position++;
@@ -245,7 +300,10 @@ expressions* parser::parseVariable(){
 
 expressions* parser::parseParen(){
     _position++;
-    expressions* e = parseRelation();
+    #ifdef debug
+    errorFunc("parseParen: "+to_string(_position));
+    #endif
+    expressions* e = parseLogical();
     if(lookAhead() == ')'){
         _position++;
         return e;

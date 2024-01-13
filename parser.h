@@ -39,7 +39,8 @@ class parser{
     expressions* parseMult();
     expressions* parseTerm();
     expressions* parseConstant();
-    expressions* parseVariable();
+    expressions* parseLogicalVariable();
+    expressions* parseVariable(string &s);
     expressions* parseParen();
 };
 

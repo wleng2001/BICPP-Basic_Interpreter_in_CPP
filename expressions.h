@@ -80,24 +80,130 @@ class constantS : public expressions{
     }
 };
 
-class relationOperator : public expressions{
-    string convertToString(variableValue *v){
-        string value = "";
-        if(v->type == 's'){
-            value = v->valueS;
+class logicalSymbol : public expressions{
+    string value;
+
+    public:
+    logicalSymbol(string v): value(v){}
+
+    virtual variableValue eval(variables *vM){
+        variableValue vV;
+        vV.type = 'l';
+        vV.valueS = value;
+        return vV;
+    }
+};
+
+string convertToString(variableValue *v){
+    string value = "";
+    if(v->type == 's'){
+        value = v->valueS;
+    }else{
+        if(v->type == 'i'){
+            value = to_string(v->valueI);
         }else{
-            if(v->type == 'i'){
-                value = to_string(v->valueI);
+            if(v->type == 'n'){
+                value = to_string(int(v->valueN));
             }else{
-                if(v->type == 'n'){
-                    value = to_string(int(v->valueN));
-                }else{
-                    throw wrongType();
-                    return value;
-                }
+                throw wrongType();
+                return value;
             }
         }
     }
+}
+
+class logicalOperator : public expressions{
+    string symbol;
+    expressions* left, *right;
+    public:
+    logicalOperator(string s , expressions* l, expressions* r) : symbol(s), left(l), right(r){};
+
+    virtual ~logicalOperator(){
+        delete left;
+        delete right;
+    }
+
+    variableValue eval(variables *vM){
+        #ifdef debug
+        expErrorFunc("logicalOperator");
+        #endif
+        variableValue vV;
+        variableValue lVV = left->eval(vM);
+        variableValue rVV = right->eval(vM);
+        if(lVV.type=='s' || rVV.type=='s'){
+            throw wrongType();
+            return vV;
+        }
+        string leftValue = convertToString(&lVV);
+        string rightValue = convertToString(&rVV);
+        #ifdef debug
+        expErrorFunc(leftValue + " " + symbol + " " + rightValue);
+        #endif
+        vV.type = 'i';
+        /*
+        if(symbol == "NOT"){
+            if(rightValue>"0"){
+                vV.valueI = 0;
+                return vV;
+            }else{
+                vV.valueI = 1;
+                return vV;
+            }
+        }*/
+        if(symbol == "OR"){
+            if(leftValue>"0" || rightValue>"0"){
+                vV.valueI = 1;
+                return vV;
+            }else{
+                vV.valueI = 0;
+                return vV;
+            }
+        }
+        if(symbol == "AND"){
+            if(leftValue>"0" && rightValue>"0"){
+                vV.valueI = 1;
+                return vV;
+            }else{
+                vV.valueI = 0;
+                return vV;
+            }
+        }
+
+        if(symbol == "XOR"){
+            if((leftValue>"0" || rightValue>"0") && (leftValue!=rightValue)){
+                vV.valueI = 1;
+                return vV;
+            }else{
+                vV.valueI = 0;
+                return vV;
+            }
+        }
+
+        if(symbol == "IMP"){
+            if((leftValue>"0" && rightValue>"0")||(leftValue=="0" && rightValue=="0")||(leftValue=="0" && rightValue>"0")){
+                vV.valueI = 1;
+                return vV;
+            }else{
+                vV.valueI = 0;
+                return vV;
+            }
+        }
+
+        if(symbol == "EQV"){
+            if((leftValue>"0" && rightValue>"0")||(leftValue=="0" && rightValue=="0")){
+                vV.valueI = 1;
+                return vV;
+            }else{
+                vV.valueI = 0;
+                return vV;
+            }
+        }
+        throw wrongOperator();
+        return vV;
+    }
+};
+
+class relationOperator : public expressions{
     expressions* left, *right;
     string symbol="";
     public:
