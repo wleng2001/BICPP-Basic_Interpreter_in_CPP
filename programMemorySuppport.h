@@ -3,7 +3,6 @@
 #include <iostream>
 #include <algorithm>
 #include <map>
-//#include "tablesAndOtherConst.h"
 
 //#define debug true
 
@@ -17,14 +16,19 @@ class programMemorySupport{
     int takeDigits(string &input);
     void skipWhiteSpace(string &input);
     unsigned int quantityOfSpecificChar(string &input, char c);
+    void (*_errorFunc)(string input);
+    programMemorySupport *vMS;
 
-    protected:
+    public:
 
     programMemory _pM;
     int maxLine = 0;
 
-    public:
-
+    programMemorySupport(){};
+    programMemorySupport(programMemorySupport *higherInstance, void (*errorFunc)(string input)) : vMS(higherInstance),  _errorFunc(errorFunc){};
+    void addErrorFunction(void (*errorFunction)(string input)){
+        _errorFunc = errorFunction;
+    };
     bool isToExecute(string &input); //zwraca true jeśli input to równanie a nie linijka do zapisania w pamięci
     bool checkAndSave(string &input);
 

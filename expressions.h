@@ -232,7 +232,9 @@ class notOperator : public expressions{
         variableValue vV;
         variableValue rVV = right->eval(vM);
         int rightValue;
-        
+        #ifdef debug
+        expErrorFunc("notOperator");
+        #endif
         try{
             rightValue = convertToInt(&rVV);
         }catch(wrongType()){
@@ -436,7 +438,7 @@ class substringOperation : public expressions{
         variableValue sRVV = sR->eval(vM);
         variableValue eRVV = eR->eval(vM);
         if(tSSVV.type == 's' && sRVV.type == 'i' && eRVV.type == 'i'){
-            if(sRVV.valueI>eRVV.valueI)
+            if(sRVV.valueI>eRVV.valueI || eRVV.valueI>=tSSVV.valueS.length())
                 throw wrongRange();
             else{
                 vV.type = 's';
@@ -473,7 +475,10 @@ class binaryOperator : public expressions{
         #ifdef debug
             expErrorFunc("binaryOperator");
         #endif
-
+        if(lVV.type == 's' || rVV.type == 's'){
+            throw wrongType();
+            return vV;
+        }
         if(lVV.type == 'i' && rVV.type == 'i'){
             vV.type = 'i';
             switch(symbol){
@@ -494,7 +499,7 @@ class binaryOperator : public expressions{
                     return vV;
                 default:
                     *expError = 1;
-                    expErrorFunc("Error: can't "+string(1, symbol)+" for int");
+                    throw wrongOperator();
             }
             return vV;
         }
@@ -520,7 +525,7 @@ class binaryOperator : public expressions{
                     return vV;
                 default:
                     *expError = 1;
-                    expErrorFunc("Error: can't "+string(1, symbol)+" for numeric");
+                    throw wrongOperator();
             }
             return vV;
         }

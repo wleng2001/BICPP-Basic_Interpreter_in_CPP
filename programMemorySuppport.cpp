@@ -93,6 +93,10 @@ bool programMemorySupport::checkAndSave(string &input){
         lineQuantity = quantityOfSpecificChar(input, '\n')+1;
         for(auto i = 0; i< lineQuantity; i++){
             lineNumber = takeDigits(input);
+            if(lineNumber<=0){
+                _errorFunc("Error: line number must be bigger than 0: "+input);
+                return 0;
+            }
             input.erase(0, _position);
 
             #ifdef debug

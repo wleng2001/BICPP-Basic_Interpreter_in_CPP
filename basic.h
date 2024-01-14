@@ -13,7 +13,7 @@
 
 using namespace std;
 
-class basic : public programMemorySupport{
+class basic{
     private:
 
     bool error = 0;
@@ -25,14 +25,16 @@ class basic : public programMemorySupport{
     variables _varMemory;
     string *text;
     text_analyzer txt_an;
+    programMemorySupport pMS;
 
     public:
 
     basic(void (*printFunction)(string text), void (*errorFunction)(string text), string (*inputFunction)()){
         printFunc = printFunction;
         errorFunc = errorFunction;
-        txt_an.addErrorFuntion(errorFunction);
-        _varMemory.addErrorFunction(errorFunction);
+        txt_an.addErrorFuntion(errorFunc);
+        _varMemory.addErrorFunction(errorFunc);
+        pMS.addErrorFunction(errorFunc);
         inputFunc = inputFunction;
         txt_an.error = &error;
         _varMemory.addErrorVariable(&error);
@@ -59,7 +61,7 @@ class basic : public programMemorySupport{
         cout << *input << endl;
         #endif
 
-        if(!programMemorySupport::checkAndSave(*input))
+        if(!pMS.checkAndSave(*input))
             return "";
 
         #if debug
@@ -67,10 +69,10 @@ class basic : public programMemorySupport{
         if(*input == "LIST"){
             string output = "";
             string partOutput = "";
-            for(auto i = 0; i<=programMemorySupport::maxLine; i++){
+            for(auto i = 0; i<=pMS.maxLine; i++){
                 partOutput = "";
-                if(programMemorySupport::_pM.count(i)){
-                    partOutput += programMemorySupport::_pM[i];
+                if(pMS._pM.count(i)){
+                    partOutput += pMS._pM[i];
                     output += to_string(i) + '\t' + partOutput + '\n';
                     partOutput = "";
                 }
@@ -84,7 +86,7 @@ class basic : public programMemorySupport{
             return output;
         }
 
-        uint8_t _parserPosition = 0;
+        uint8_t _parserPosition;
         try{
             
             parser pars(*input, &error, errorFunc, &_parserPosition);
@@ -106,12 +108,16 @@ class basic : public programMemorySupport{
             return ""; 
         }catch(wrongStringRange){
             errorFunc("Error: incorrect range for substring operation (char: "+ to_string(_parserPosition) +"): "+*input);
-        }catch(wrongType()){
+            return ""; 
+        }catch(wrongType){
             errorFunc("Error: can't use binaryOperator (char: "+to_string(_parserPosition)+"): "+*input);
-        }catch(wrongRange()){
+            return ""; 
+        }catch(wrongRange){
             errorFunc("Error: start of range is bigger than end (char: "+to_string(_parserPosition)+"): "+*input);
-        }catch(wrongOperator()){
+            return ""; 
+        }catch(wrongOperator){
             errorFunc("Error: wrong operator (char: "+to_string(_parserPosition)+"): "+*input);
+            return ""; 
         }
         
     }
