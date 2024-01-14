@@ -87,9 +87,10 @@ class basic{
         }
 
         uint8_t _parserPosition;
+        parser pars(*input, &error, errorFunc, &_parserPosition);
         try{
             
-            parser pars(*input, &error, errorFunc, &_parserPosition);
+            
             expressions* e = pars.parseExpressions();
             variableValue vV = e->eval(&_varMemory);
             switch(vV.type){
@@ -113,7 +114,7 @@ class basic{
             errorFunc("Error: can't use binaryOperator (char: "+to_string(_parserPosition)+"): "+*input);
             return ""; 
         }catch(wrongRange){
-            errorFunc("Error: start of range is bigger than end (char: "+to_string(_parserPosition)+"): "+*input);
+            errorFunc("Error: wrong substring range (char: "+to_string(_parserPosition)+"): "+*input);
             return ""; 
         }catch(wrongOperator){
             errorFunc("Error: wrong operator (char: "+to_string(_parserPosition)+"): "+*input);

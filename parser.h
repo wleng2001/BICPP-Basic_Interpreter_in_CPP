@@ -20,9 +20,15 @@ class parser{
     void (*errorFunc)(string input);
     uint8_t *_parserPosition;
 
+    
+
     public:
 
     parser(string input, bool *error, void (*errorFunction)(string input), uint8_t *parserPosition);
+
+    uint8_t parserPosition(){
+        return _position;
+    }
 
     void skipWhiteSpace(); //pomija spacje itp.
 

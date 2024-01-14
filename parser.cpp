@@ -245,14 +245,6 @@ expressions* parser::parseRange(){
             _position = position;
             return parseSum();
         }
-    }catch(wrongOperator()){
-        delete e;
-        *_parserPosition = _position;
-        throw wrongOperator();
-    }catch(wrongType()){
-        delete e;
-        *_parserPosition = _position;
-        throw wrongType();
     }catch(wrongRange()){
         delete e;
         *_parserPosition = _position;
@@ -261,10 +253,6 @@ expressions* parser::parseRange(){
         delete e;
         *_parserPosition = _position;
         throw wrongStringRange();
-    }catch(variableNotFound()){
-        delete e;
-        *_parserPosition = _position;
-        throw variableNotFound();
     }catch(notParsed()){
         delete e;
         *_parserPosition = _position;
@@ -294,14 +282,6 @@ expressions* parser::parseSum(){
         delete e;
         *_parserPosition = _position;
         throw wrongType();
-    }catch(wrongRange()){
-        delete e;
-        *_parserPosition = _position;
-        throw wrongRange();
-    }catch(wrongStringRange()){
-        delete e;
-        *_parserPosition = _position;
-        throw wrongStringRange();
     }catch(variableNotFound()){
         delete e;
         *_parserPosition = _position;
