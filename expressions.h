@@ -10,11 +10,8 @@
 #include <map>
 #include "variables.h"
 #include "variables.cpp"
-#include "errorClasses.h"
 
 using namespace std;
-
-//#define debug true
 
 bool *expError;
 void (*expErrorFunc)(string input);
@@ -505,6 +502,13 @@ class binaryOperator : public expressions{
         }
 
         if((lVV.type == 'i' || lVV.type == 'n') && (rVV.type == 'i' || rVV.type == 'n')){
+            if(lVV.type == 'i'){
+                lVV.valueN = lVV.valueI;
+            }
+
+            if(rVV.type == 'i'){
+                rVV.valueN = rVV.valueI;
+            }
 
             vV.type = 'n';
             switch(symbol){
@@ -539,15 +543,20 @@ class variable : public expressions{
     string name;
 
     public:
-    variable(string n) : name(n){
-        
-    }
+    variable(string n) : name(n){};
 
     virtual variableValue eval(variables *vM){
         variableValue vV;
-        if(!vM->readVariable(&name, &vV))
+        #ifdef debug
+        expErrorFunc("variable");
+        #endif 
+        if(!vM->readVariable(&name, &vV)){
             *expError = 1;
             throw variableNotFound(); //erroClasses.h
+        }
+        #ifdef debug
+        expErrorFunc("variableValue: "+name+" "+to_string(vV.valueI)+'\t'+to_string(vV.valueI)+'\t'+vV.valueS);
+        #endif
         return vV;
     }
 };

@@ -99,13 +99,14 @@ void variables::addVariable(string &variableName, string &value){
         else{
             errorFunc("Error: value assigment to variable isn't int (var: "+variableName+" value: "+value+")");
             *error = true;
+            throw wrongType();
             return;
         }
     }else{
         if(lastChar=='$'){
             _VLS[variableName].isArray = false;
-            _VLS[variableName].value.reserve(1);
-            _VLS[variableName].value.push_back(value);
+            //_VLS[variableName].value.reserve(1);
+            _VLS[variableName].value[0] = value;
             return;
         }
 
@@ -122,12 +123,16 @@ void variables::addVariable(string &variableName, string &value){
         else{
             errorFunc("Error: value assigment to variable isn't num (var: "+variableName+" value: "+value+")");
             *error = true;
+            throw wrongType();
             return;
         }
     }
 }
 
 bool variables::readVariable(string *variableName, variableValue *var){
+    #ifdef debug
+    errorFunc("readVariable");
+    #endif
     var->type = 'N';
     var->valueI = 0;
     var->valueN = 0;
@@ -146,7 +151,7 @@ bool variables::readVariable(string *variableName, variableValue *var){
     }
     if(_VLS.find(*variableName)!=_VLS.end()){
         var->type = 's';
-        var->valueS = _VLS[*variableName].value[0];
+        var->valueS += _VLS[*variableName].value[0];
         return true;
     }
     errorFunc("ERROR: can't find variable: "+*variableName);

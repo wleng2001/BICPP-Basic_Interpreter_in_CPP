@@ -1,6 +1,8 @@
 #ifndef variables_h
 #define variables_h
 
+#define debug true
+
 #include <iostream>
 #include <stdio.h> //aby działał getchar i exit
 #include <iomanip> //biblioteka do manipulaowania wejściem i wyjściem
@@ -18,6 +20,7 @@
 #include <math.h>
 #include <map>
 #include <vector>
+#include "errorClasses.h"
 
 #define BOOL 0
 #define INT 1
@@ -35,7 +38,7 @@
 using namespace std;
 
 struct variableValue{
-    char type; // i - int, n - numeric, s - string, N - NULL
+    char type = 'N'; // i - int, n - numeric, s - string, N - NULL
     int valueI;
     float valueN;
     string valueS;

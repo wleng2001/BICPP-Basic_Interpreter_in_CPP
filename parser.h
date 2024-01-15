@@ -9,6 +9,7 @@
 #include <map>
 #include "expressions.h"
 #include "expressions.cpp"
+#include "statements.h"
 #include "text_analyzer.h"
 
 using namespace std;
@@ -32,11 +33,15 @@ class parser{
 
     void skipWhiteSpace(); //pomija spacje itp.
 
-    bool isMathematicChar(char c);
-
     char lookAhead(); //zwraca następny znak po spacjach
 
     expressions* parseExpressions();
+    expressions* parseCommand();
+    expressions* parseStatements();
+
+    expressions* parseLet(string statement);
+
+    expressions* parseFunction();
     expressions* parseLogical();
     expressions* parseNot();
     expressions* parseRelation();

@@ -88,9 +88,7 @@ class basic{
 
         uint8_t _parserPosition;
         parser pars(*input, &error, errorFunc, &_parserPosition);
-        try{
-            
-            
+        try{ 
             expressions* e = pars.parseExpressions();
             variableValue vV = e->eval(&_varMemory);
             switch(vV.type){
@@ -100,18 +98,20 @@ class basic{
                     return to_string(vV.valueI);
                 case 'n':
                     return to_string(vV.valueN);
+                case 'N':
+                    return "";
             }
         }catch(notParsed){
             errorFunc("ERROR: not parsed (char: " + to_string(_parserPosition) + "): "+*input);
             return "";
         }catch(variableNotFound){
-            errorFunc("ERROR: interpreter doesn't support variable");
+            errorFunc("(char: "+to_string(_parserPosition)+"): "+*input);
             return ""; 
         }catch(wrongStringRange){
             errorFunc("Error: incorrect range for substring operation (char: "+ to_string(_parserPosition) +"): "+*input);
             return ""; 
         }catch(wrongType){
-            errorFunc("Error: can't use binaryOperator (char: "+to_string(_parserPosition)+"): "+*input);
+            errorFunc("Error: wrong type (char: "+to_string(_parserPosition)+"): "+*input);
             return ""; 
         }catch(wrongRange){
             errorFunc("Error: wrong substring range (char: "+to_string(_parserPosition)+"): "+*input);

@@ -7,10 +7,10 @@ void text_analyzer::addErrorFuntion(void (*errorFunction)(string text)){
 bool text_analyzer::special_char_in_correct_place(string &data, int position){
   for(auto i = 0; i < sizeof(specialChar) / sizeof(specialChar[0]); i++){
     if(specialChar[i]==data[position]){
-      if((data[position+1]==' ' || data[position+1]=='(' || position==data.length()-1) && (isalpha(data[position-1])||isdigit(data[position-1]))){
+      if((data[position+1]==' ' || isMathematicChar(data[position+1]) || data[position+1]=='[' || position==data.length()-1) && (isalnum(data[position-1]))){
         continue;
       }else{
-        _errorFunc("ERROR: invalid syntax (char: "+to_string(position)+"): "+data);
+        _errorFunc("Error: invalid syntax (char: "+to_string(position)+"): "+data);
         *error = true;
         return false;
       }

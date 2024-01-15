@@ -13,14 +13,6 @@ void parser::skipWhiteSpace(){
         _position++;
 }
 
-bool parser::isMathematicChar(char c){
-  for(uint8_t i = 0; i<10; i++)
-    if(c == mathematicChar[i]){
-      return true;
-    }else
-      return false;
-}
-
 char parser::lookAhead(){
     skipWhiteSpace();
     return _input[_position];
@@ -28,7 +20,7 @@ char parser::lookAhead(){
 
 expressions* parser::parseExpressions(){
     expressions* e;
-    e = parseLogical();
+    e = parseStatements();
 
     if(lookAhead() == EOS)
         return e;
@@ -36,6 +28,85 @@ expressions* parser::parseExpressions(){
         delete e;
         throw notParsed();
     }
+}
+
+expressions* parser::parseStatements(){
+    #ifdef debug 
+    errorFunc("parserStatements: "+to_string(_position));
+    #endif
+    expressions *e;
+    char c = lookAhead();
+    string statement;
+    try{
+        while(isalpha(c)){
+            statement.push_back(c);
+            _position++;
+            c = _input[_position];
+        }
+        if(c == ' '){
+            e = parseLet(statement);
+        }else{
+            _position = 0;
+            return parseFunction();
+        }
+    }catch(wrongType){
+        delete e;
+        *_parserPosition = _position;
+        throw wrongType();
+        return e;
+    }catch(notParsed){
+        delete e;
+        throw notParsed();
+    }
+    return e;
+}
+
+expressions* parser::parseLet(string statement){
+    expressions *e;
+    if(statement == "LET"){
+        #ifdef debug
+        errorFunc("parseLet: "+to_string(_position));
+        #endif
+        char c = lookAhead();
+        string s;
+        while(c!='='){
+            s.push_back(c);
+            _position++;
+            c = lookAhead();
+        }
+        #ifdef debug
+        errorFunc("varName: "+s);
+        #endif
+        _position++;
+        if(s!=""){
+            try{
+                e = new letStatement(s, parseFunction());
+                return e;
+            }catch(wrongType){
+                delete e;
+                *_parserPosition = _position;
+                throw wrongType();
+                return e;
+            }catch(notParsed){
+                delete e;
+                throw notParsed();
+            }
+        }else{
+            *_parserPosition = _position;
+            throw variableNameAbsence();
+            return e;
+        }
+    }else{
+        delete e;
+        return e;
+    }
+}
+
+expressions* parser::parseFunction(){
+    #ifdef debug
+    errorFunc("parseFunction: "+to_string(_position));
+    #endif
+    return parseLogical();
 }
 
 expressions* parser::parseLogical(){
@@ -79,6 +150,7 @@ expressions* parser::parseLogical(){
     }catch(wrongType()){
         delete e;
         *_parserPosition = _position;
+        cout << _position << endl;
         throw wrongType();
     }catch(notParsed()){
         delete e;
@@ -106,7 +178,7 @@ expressions* parser::parseNot(){
                 _position++;
                 return new notOperator(s, parseRelation());
             }else{
-                _position-=3;
+                _position=_position-2;
                 e = parseRelation();
             }
             
@@ -254,7 +326,8 @@ expressions* parser::parseRange(){
         *_parserPosition = _position;
         throw wrongStringRange();
     }catch(notParsed()){
-        delete e;
+        cout << "nieparsowalny "+to_string(_position);
+        //delete e;
         *_parserPosition = _position;
         throw notParsed();
     }
@@ -265,28 +338,29 @@ expressions* parser::parseSum(){
     #ifdef debug
     errorFunc("parseSum: "+to_string(_position));
     #endif
-    expressions* e = parseMult();
-    char c = lookAhead();
+    expressions* e;
 
     try{
+        e = parseMult();
+        char c = lookAhead();
         while(c == '+' || c == '-'){
             _position++;
             e = new binaryOperator(c, e, parseMult());
             c = lookAhead();
         }
-    }catch(wrongOperator()){
+    }catch(wrongOperator){
         delete e;
         *_parserPosition = _position;
         throw wrongOperator();
-    }catch(wrongType()){
+    }catch(wrongType){
         delete e;
         *_parserPosition = _position;
         throw wrongType();
-    }catch(variableNotFound()){
+    }catch(variableNotFound){
         delete e;
         *_parserPosition = _position;
         throw variableNotFound();
-    }catch(notParsed()){
+    }catch(notParsed){
         delete e;
         *_parserPosition = _position;
         throw notParsed();
@@ -298,7 +372,7 @@ expressions* parser::parseMult(){
     #ifdef debug
     errorFunc("parseMult: "+to_string(_position));
     #endif
-    expressions* e = NULL;
+    expressions* e;
 
     try{
         e = parseTerm();
@@ -317,7 +391,8 @@ expressions* parser::parseMult(){
         delete e;
         *_parserPosition = _position;
         throw wrongType();
-    }catch(notParsed()){
+    }catch(notParsed){
+        cout << "nieparsowalny "+to_string(_position);
         delete e;
         *_parserPosition = _position;
         throw notParsed();
@@ -358,6 +433,7 @@ expressions* parser::parseConstant(){
                 else{
                     *this->error = 1;
                     this->errorFunc("Error: to much pointer: "+_input);
+                    throw notParsed();
                 }
             }
             _position++;
@@ -403,11 +479,24 @@ expressions* parser::parseVariable(string &s){
     #ifdef debug
     errorFunc("parseVariable: "+to_string(_position));
     #endif
-    while(isalnum(_input[_position])){
+    char c = _input[_position];
+    while(isalnum(c) || c == '%' || c == '$'){
         s.push_back(_input[_position]);
         _position++;
+        c = _input[_position];
     }
-    return new variable(s);
+    try{
+        #if debug
+        errorFunc("variable name: "+s);
+        #endif
+        return new variable(s);
+    }catch(variableNotFound){
+        *_parserPosition = _position;
+        throw variableNotFound();
+    }catch(variableNameAbsence){
+        *_parserPosition = _position;
+        throw variableNameAbsence();
+    }
 }
 
 expressions* parser::parseParen(){

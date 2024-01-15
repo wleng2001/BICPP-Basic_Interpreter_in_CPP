@@ -7,5 +7,6 @@ class wrongStringRange{};
 class wrongType{};
 class wrongRange{};
 class wrongOperator{};
+class variableNameAbsence{};
 
 #endif
