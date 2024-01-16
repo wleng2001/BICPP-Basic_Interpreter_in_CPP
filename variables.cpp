@@ -108,7 +108,6 @@ void variables::addVariable(string &variableName, string &value){
         _VLS[variableName].value.clear();
         _VLS[variableName].value.reserve(1);
         _VLS[variableName].value.push_back(value);
-        cout << _VLS[variableName].value[0] << endl;
         return;
     case ')':
         errorFunc("Error: array support not added yet");
@@ -151,7 +150,6 @@ bool variables::readVariable(string *variableName, variableValue *var){
     }
     if(_VLS.find(*variableName)!=_VLS.end()){
         var->type = 's';
-        cout << *variableName << endl;
         var->valueS += _VLS[*variableName].value[0];
         return true;
     }

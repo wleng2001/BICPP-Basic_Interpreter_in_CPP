@@ -26,6 +26,7 @@ expressions* parser::parseExpressions(){
         return e;
     else{
         delete e;
+        *_parserPosition = _position;
         throw notParsed();
     }
 }
@@ -54,17 +55,21 @@ expressions* parser::parseStatements(){
             _position = 0;
             return parseFunction();
         }
-    }catch(wrongType){
+    }catch(wrongType()){
         delete e;
         *_parserPosition = _position;
         throw wrongType();
         return e;
-    }catch(notParsed()){
+    }catch(wrongVariableName()){
+        cout << "a";
+        delete e;
+        throw;
+    }catch(...){
         #if debug
         errorFunc("nieparsowalny statement");
         #endif
         delete e;
-        throw notParsed();
+        throw;
     }
     return e;
 }
@@ -77,6 +82,11 @@ expressions* parser::parseLet(string statement){
         #endif
         char c = lookAhead();
         string s;
+        if(isdigit(c)){
+            *_parserPosition = _position;
+            //throw wrongVariableName();
+            return e;
+        }
         while(c!='='){
             s.push_back(c);
             _position++;
@@ -86,28 +96,33 @@ expressions* parser::parseLet(string statement){
         errorFunc("varName: "+s);
         #endif
         _position++;
-        if(s!=""){
-            try{
+        try{
+            if(s!=""){
                 e = new letStatement(s, parseLogical());
                 return e;
-            }catch(wrongType){
-                delete e;
+            }else{
                 *_parserPosition = _position;
-                throw wrongType();
+                throw variableNameAbsence();
                 return e;
-            }catch(notParsed){
-                delete e;
-                throw notParsed();
             }
-        }else{
+                    }catch(wrongType()){
+            delete e;
             *_parserPosition = _position;
-            throw variableNameAbsence();
+            throw wrongType();
             return e;
+        }catch(notParsed()){
+            delete e;
+            *_parserPosition = _position;
+            throw notParsed();
+        }catch(...){
+            delete e;
+            throw;
         }
     }else{
         delete e;
         return e;
     }
+
 }
 
 expressions* parser::parseFunction(){
@@ -223,8 +238,8 @@ expressions* parser::parseRelation(){
     try{
         e = parseConcatenation();
         c = lookAhead();
-        s=string(1,c);
         while(c=='>' || c=='<' || c=='='){
+            s+=c;
             _position++;
             c = _input[_position];
             if(c=='='||c=='<'||c=='>'){
@@ -235,11 +250,12 @@ expressions* parser::parseRelation(){
                 e = new relationOperator(s, e, parseConcatenation());
             }
             c = lookAhead();
+            s="";
         }
     }catch(wrongOperator()){
         delete e;
         *_parserPosition = _position;
-        throw wrongOperator();
+        throw;
     }catch(wrongType()){
         delete e;
         *_parserPosition = _position;

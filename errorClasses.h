@@ -8,5 +8,6 @@ class wrongType{};
 class wrongRange{};
 class wrongOperator{};
 class variableNameAbsence{};
+class wrongVariableName{};
 
 #endif

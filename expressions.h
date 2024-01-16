@@ -349,7 +349,7 @@ class relationOperator : public expressions{
                 return vV;
             }
         }
-        if(symbol == "="){
+        if(symbol == "=" || symbol == "=="){
             if(leftValue==rightValue){
                 vV.valueI = 1;
                 return vV;

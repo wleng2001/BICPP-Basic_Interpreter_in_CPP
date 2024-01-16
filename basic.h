@@ -102,7 +102,7 @@ class basic{
                     return "";
             }
         }catch(notParsed){
-            errorFunc("ERROR: not parsed (char: " + to_string(_parserPosition) + "): "+*input);
+            errorFunc("Error: not parsed (char: " + to_string(_parserPosition) + "): "+*input);
             return "";
         }catch(variableNotFound){
             errorFunc("(char: "+to_string(_parserPosition)+"): "+*input);
@@ -119,6 +119,11 @@ class basic{
         }catch(wrongOperator){
             errorFunc("Error: wrong operator (char: "+to_string(_parserPosition)+"): "+*input);
             return ""; 
+        }catch(variableNameAbsence()){
+            return "";
+        }catch(wrongVariableName()){
+            errorFunc("Error: variable can't begin by number (char: "+to_string(_parserPosition)+"): "+*input);
+            return "";
         }
         
     }

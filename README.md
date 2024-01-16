@@ -62,7 +62,7 @@ Integer, numeric and string value can be compared by relational operator, which 
 - *>=* returns true, when left value is bigger or equal to right;
 - *<* returns true, when right value is bigger than left;
 - *<=* or *=<* returns true, when right value is bigger or equal left;
-- *=* returns true, when left value is equal to right;
+- *=* or *==* returns true, when left value is equal to right;
 - *<>* returns true, when left value is unequal to right;
 
 You must remember, that numeric value are converted to int value before compare.
