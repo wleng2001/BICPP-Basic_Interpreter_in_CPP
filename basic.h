@@ -102,27 +102,27 @@ class basic{
                     return "";
             }
         }catch(notParsed){
-            errorFunc("Error: not parsed (char: " + to_string(_parserPosition) + "): "+*input);
+            errorFunc("Error: not parsed (char: " + to_string(pars.parserPosition()) + "): "+*input);
             return "";
         }catch(variableNotFound){
-            errorFunc("(char: "+to_string(_parserPosition)+"): "+*input);
+            errorFunc("(char: "+to_string(pars.parserPosition())+"): "+*input);
             return ""; 
         }catch(wrongStringRange){
-            errorFunc("Error: incorrect range for substring operation (char: "+ to_string(_parserPosition) +"): "+*input);
+            errorFunc("Error: incorrect range for substring operation (char: "+ to_string(pars.parserPosition()) +"): "+*input);
             return ""; 
         }catch(wrongType){
-            errorFunc("Error: wrong type (char: "+to_string(_parserPosition)+"): "+*input);
+            errorFunc("Error: wrong type (char: "+to_string(pars.parserPosition())+"): "+*input);
             return ""; 
         }catch(wrongRange){
-            errorFunc("Error: wrong substring range (char: "+to_string(_parserPosition)+"): "+*input);
+            errorFunc("Error: wrong substring range (char: "+to_string(pars.parserPosition())+"): "+*input);
             return ""; 
         }catch(wrongOperator){
-            errorFunc("Error: wrong operator (char: "+to_string(_parserPosition)+"): "+*input);
+            errorFunc("Error: wrong operator (char: "+to_string(pars.parserPosition())+"): "+*input);
             return ""; 
         }catch(variableNameAbsence()){
             return "";
         }catch(wrongVariableName()){
-            errorFunc("Error: variable can't begin by number (char: "+to_string(_parserPosition)+"): "+*input);
+            errorFunc("Error: variable can't begin by number (char: "+to_string(pars.parserPosition())+"): "+*input);
             return "";
         }
         

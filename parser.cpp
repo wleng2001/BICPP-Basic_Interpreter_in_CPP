@@ -64,6 +64,10 @@ expressions* parser::parseStatements(){
         cout << "a";
         delete e;
         throw;
+    }catch(std::out_of_range){
+        delete e;
+        _position = 0;
+        throw notParsed();
     }catch(...){
         #if debug
         errorFunc("nieparsowalny statement");

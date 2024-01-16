@@ -28,7 +28,7 @@ class parser{
     parser(string input, bool *error, void (*errorFunction)(string input), uint8_t *parserPosition);
 
     uint8_t parserPosition(){
-        return _position;
+        return uint8_t(_position);
     }
 
     void skipWhiteSpace(); //pomija spacje itp.

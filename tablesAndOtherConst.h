@@ -20,7 +20,7 @@ bool isMathematicChar(char c){
   for(uint8_t i = 0; i<10; i++)
     if(c == mathematicChar[i]){
       return true;
-    }else
-      return false;
+    }
+  return false;
 }
 #endif
