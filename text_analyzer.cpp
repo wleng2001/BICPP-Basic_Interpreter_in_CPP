@@ -69,7 +69,7 @@ void text_analyzer::delete_useless_spaces(string &data) { //uses all option of t
     if (c == '"' && quotation_in_text == false) {
       start_quote = !start_quote;
     }
-    if(c == 0x09){
+    if(c == '\t'){
       data[i] = ' ';
     }
     if(c == ';' && (data[i-1] == '\n' || i==0)){
@@ -82,7 +82,6 @@ void text_analyzer::delete_useless_spaces(string &data) { //uses all option of t
       start_comment = false;
     }
     if (c == ' ' && start_quote == false && start_comment == false && pre_spaces == true) {
-      //data=text_analyzer::rewrite_in_range(0,i,data)+text_analyzer::delete_spaces(text_analyzer::rewrite_in_range(i,data.length(),data));
     } else {
       if(start_comment==true || start_quote==true){
         temporary_data+=c;

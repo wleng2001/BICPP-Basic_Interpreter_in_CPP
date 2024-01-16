@@ -51,7 +51,7 @@ unsigned int programMemorySupport::quantityOfSpecificChar(string &input, char c)
 }
 
 bool programMemorySupport::isToExecute(string &input){
-
+    input.push_back(0);
     if(isdigit(input[_position])){
         _position++;
         while(isdigit(input[_position])){
@@ -65,7 +65,7 @@ bool programMemorySupport::isToExecute(string &input){
         #endif
 
         skipWhiteSpace(input);
-        if(_position == priorPosition && checkMathematicSymbol(input[_position])){
+        if(_position == priorPosition && checkMathematicSymbol(input[_position]) || input[_position]==0){
             _position = 0;
 
             #if debug

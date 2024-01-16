@@ -9,7 +9,7 @@
 #include <iostream>
 #include <algorithm>
 
-#define _basicVersion "A0.01"
+#define _basicVersion "A0.02"
 
 using namespace std;
 
@@ -66,7 +66,7 @@ class basic{
 
         #if debug
         #endif
-        if(*input == "LIST"){
+        if( input->find("LIST")!=string::npos){
             string output = "";
             string partOutput = "";
             for(auto i = 0; i<=pMS.maxLine; i++){
@@ -86,7 +86,7 @@ class basic{
             return output;
         }
 
-        uint8_t _parserPosition;
+        uint8_t _parserPosition=0;
         parser pars(*input, &error, errorFunc, &_parserPosition);
         try{ 
             expressions* e = pars.parseExpressions();

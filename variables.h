@@ -1,7 +1,7 @@
 #ifndef variables_h
 #define variables_h
 
-#define debug true
+//#define debug true
 
 #include <iostream>
 #include <stdio.h> //aby działał getchar i exit

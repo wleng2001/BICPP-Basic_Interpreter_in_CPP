@@ -89,7 +89,8 @@ void variables::addVariable(string &variableName, string &value){
     uint8_t variableNameLength = variableName.length();
     uint8_t valueLength = value.length();
     char lastChar = variableName[variableNameLength-1];
-    if(lastChar=='%'){
+    switch(lastChar){
+    case '%':
         if(isInt(value, valueLength)){
             _VLI[variableName].isArray = false;
             _VLI[variableName].value.reserve(1);
@@ -102,18 +103,17 @@ void variables::addVariable(string &variableName, string &value){
             throw wrongType();
             return;
         }
-    }else{
-        if(lastChar=='$'){
-            _VLS[variableName].isArray = false;
-            //_VLS[variableName].value.reserve(1);
-            _VLS[variableName].value[0] = value;
-            return;
-        }
-
-        if(lastChar==')'){
-            errorFunc("Error: array support not added yet");
-        }
-
+    case '$':
+        _VLS[variableName].isArray = false;
+        _VLS[variableName].value.clear();
+        _VLS[variableName].value.reserve(1);
+        _VLS[variableName].value.push_back(value);
+        cout << _VLS[variableName].value[0] << endl;
+        return;
+    case ')':
+        errorFunc("Error: array support not added yet");
+        return;
+    default:
         if(isNum(value, valueLength)){
             _VLN[variableName].isArray = false;
             _VLN[variableName].value.reserve(1);
@@ -131,7 +131,7 @@ void variables::addVariable(string &variableName, string &value){
 
 bool variables::readVariable(string *variableName, variableValue *var){
     #ifdef debug
-    errorFunc("readVariable");
+    errorFunc("readVariable: ");
     #endif
     var->type = 'N';
     var->valueI = 0;
@@ -151,9 +151,11 @@ bool variables::readVariable(string *variableName, variableValue *var){
     }
     if(_VLS.find(*variableName)!=_VLS.end()){
         var->type = 's';
+        cout << *variableName << endl;
         var->valueS += _VLS[*variableName].value[0];
         return true;
     }
     errorFunc("ERROR: can't find variable: "+*variableName);
+    //throw variableNotFound();
     return false;
 }

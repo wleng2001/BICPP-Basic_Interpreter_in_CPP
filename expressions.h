@@ -552,7 +552,7 @@ class variable : public expressions{
         #endif 
         if(!vM->readVariable(&name, &vV)){
             *expError = 1;
-            throw variableNotFound(); //erroClasses.h
+            throw variableNotFound(); //errorClasses.h
         }
         #ifdef debug
         expErrorFunc("variableValue: "+name+" "+to_string(vV.valueI)+'\t'+to_string(vV.valueI)+'\t'+vV.valueS);
