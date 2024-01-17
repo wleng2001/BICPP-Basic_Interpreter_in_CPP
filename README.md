@@ -1,4 +1,4 @@
-# BreadcrumbsBICPP-Basic_Interpreter_in_CPP
+# BICPP-Basic_Interpreter_in_CPP
 ## Description
 It's basic interpreter written in C++.
 ## Introduction
@@ -34,7 +34,7 @@ Integer and numeric variable or constants have the same operator, which are:
 - *-* substract two numbers (e.g.: `4-2` returns `2`);
 - */* divide two numbers (e.g.: `8/2` returns `4`);
 - *\** multiply two numbers (e.g.: `8*2` returns `16`);
-- *^* raise a number to power (e.g.: `8^2` returns `16`);
+- *^* raise a number to power (e.g.: `8^2` returns `64`);
 
  **Attention!** If expression consist of integer result will be integer so you lose information after the decimal separator e.g.: `7/2` result is `3` not `3.5`. If you want, that result will be numeric you must write it as numeric e.g.: `7.0/2.0` returns `3.5`.  
  You can place expression in round brackets, which influencs sequences of operations e.g.: `2+2/2` returns `3` but  `(2+2)/2` returns `2`.
@@ -66,4 +66,18 @@ Integer, numeric and string value can be compared by relational operator, which 
 - *<>* returns true, when left value is unequal to right;
 
 You must remember, that numeric value are converted to int value before compare.
+
+Result of relation operations or numbers can be checked by logical operators, which are:
+- *NOT* deny term (e.g.: `NOT 1` return `0`);
+- *AND* return `1` only if left and right term is `1` (e.g.: `1 AND 0` return `0` but `1 AND 1` return `1`);
+- *OR* return `1` if even one term is `1` (e.g.: `1 OR 1` return `1` and `1 OR 0` return `1`);
+- *XOR* return `1` if one term is `1` (e.g.: `1 XOR 1` return `0` but `1 XOR 0` return `1`);
+- *IMP* return `1` if two terms are `1` or `1` or first terms is `1` and second term is `1` (e.g.: `0 IMP 0` return `1` and `0 IMP 1` return `1` but `1 IMP 0` return `0`);
+- *EQV* return `1` only if two term are `1` or `1` (e.g.: `1 EQV 1` return `1` and `1 EQV 0` return `0`).
+
+#### Statements
+
+At the moment there are the following statements:
+- `LET`
+- `REM`
   
