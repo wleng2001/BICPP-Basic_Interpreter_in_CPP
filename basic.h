@@ -119,9 +119,9 @@ class basic{
         }catch(wrongOperator){
             errorFunc("Error: wrong operator (char: "+to_string(pars.parserPosition())+"): "+*input);
             return ""; 
-        }catch(variableNameAbsence()){
+        }catch(variableNameAbsence){
             return "";
-        }catch(wrongVariableName()){
+        }catch(wrongVariableName){
             errorFunc("Error: variable can't begin by number (char: "+to_string(pars.parserPosition())+"): "+*input);
             return "";
         }

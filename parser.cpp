@@ -44,7 +44,10 @@ expressions* parser::parseStatements(){
             _position++;
             c = _input[_position];
         }
-        if(c == ' '){
+        if(c == ' ' || c==0){
+            if(parseRem(statement)==nullptr){
+                return new constantS("");
+            }
             e = parseLet(statement);
 
             if(e==nullptr){
@@ -55,25 +58,36 @@ expressions* parser::parseStatements(){
             _position = 0;
             return parseFunction();
         }
-    }catch(wrongType()){
+    }catch(wrongType){
         delete e;
         *_parserPosition = _position;
         throw wrongType();
         return e;
-    }catch(wrongVariableName()){
-        cout << "a";
+    }catch(wrongVariableName){
         delete e;
         throw;
     }catch(std::out_of_range){
         delete e;
         _position = 0;
         throw notParsed();
-    }catch(...){
+    }catch(notParsed){
         #if debug
         errorFunc("nieparsowalny statement");
         #endif
         delete e;
         throw;
+    }
+    return e;
+}
+
+expressions* parser::parseRem(string statement){
+    expressions *e;
+    if(statement == "REM"){
+        while(lookAhead()!=0){
+            _position++;
+        }
+        e = nullptr;
+        return e;
     }
     return e;
 }
@@ -87,9 +101,7 @@ expressions* parser::parseLet(string statement){
         char c = lookAhead();
         string s;
         if(isdigit(c)){
-            *_parserPosition = _position;
-            //throw wrongVariableName();
-            return e;
+            throw wrongVariableName();
         }
         while(c!='='){
             s.push_back(c);
@@ -105,7 +117,6 @@ expressions* parser::parseLet(string statement){
                 e = new letStatement(s, parseLogical());
                 return e;
             }else{
-                *_parserPosition = _position;
                 throw variableNameAbsence();
                 return e;
             }
@@ -127,6 +138,13 @@ expressions* parser::parseLet(string statement){
         return e;
     }
 
+}
+
+expressions* parser::parseInput(string statement){
+    expressions* e = nullptr;
+    if(statement=="INPUT"){
+
+    }
 }
 
 expressions* parser::parseFunction(){

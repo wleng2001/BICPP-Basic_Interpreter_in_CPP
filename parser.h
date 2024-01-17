@@ -21,8 +21,6 @@ class parser{
     void (*errorFunc)(string input);
     uint8_t *_parserPosition;
 
-    
-
     public:
 
     parser(string input, bool *error, void (*errorFunction)(string input), uint8_t *parserPosition);
@@ -39,7 +37,9 @@ class parser{
     expressions* parseCommand();
     expressions* parseStatements();
 
+    expressions* parseRem(string statement);
     expressions* parseLet(string statement);
+    expressions* parseInput(string statement);
 
     expressions* parseFunction();
     expressions* parseLogical();
