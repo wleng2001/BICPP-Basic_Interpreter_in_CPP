@@ -99,7 +99,7 @@ bool programMemorySupport::checkAndSave(string &input){
             }
             input.erase(0, _position);
 
-            #ifdef debug
+            #if debug
             cout << "input1: " << input << endl;
             #endif
 
@@ -110,7 +110,7 @@ bool programMemorySupport::checkAndSave(string &input){
                 _position = 0;
             }
 
-            #ifdef debug
+            #if debug
             cout << "input2: " << input << endl;
             #endif
 
@@ -119,7 +119,7 @@ bool programMemorySupport::checkAndSave(string &input){
             else
                 _pM[lineNumber] = input.erase(0, input.find('\n'));
 
-            #ifdef debug
+            #if debug
             cout << "Line value: " << _pM[lineNumber] << endl;
             #endif
             

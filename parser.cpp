@@ -2,7 +2,7 @@
 
 const char EOS = 0;
 
-parser::parser(string input, bool *error, void (*errorFunction)(string input), uint8_t *parserPosition) : _input(input), _position(0), error(error), errorFunc(errorFunction), _parserPosition(parserPosition){
+parser::parser(string input, bool *error, void (*errorFunction)(string input)) : _input(input), _position(0), error(error), errorFunc(errorFunction){
     input.push_back(EOS); //umieszcza strażnika na końcu
     expError = error;
     expErrorFunc = errorFunction;
@@ -26,13 +26,12 @@ expressions* parser::parseExpressions(){
         return e;
     else{
         delete e;
-        *_parserPosition = _position;
         throw notParsed();
     }
 }
 
 expressions* parser::parseStatements(){
-    #ifdef debug 
+    #if debug 
     errorFunc("parserStatements: "+to_string(_position));
     #endif
     expressions *e = nullptr;
@@ -60,7 +59,6 @@ expressions* parser::parseStatements(){
         }
     }catch(wrongType){
         delete e;
-        *_parserPosition = _position;
         throw wrongType();
         return e;
     }catch(wrongVariableName){
@@ -95,7 +93,7 @@ expressions* parser::parseRem(string statement){
 expressions* parser::parseLet(string statement){
     expressions *e = nullptr;
     if(statement == "LET"){
-        #ifdef debug
+        #if debug
         errorFunc("parseLet: "+to_string(_position));
         #endif
         char c = lookAhead();
@@ -108,7 +106,7 @@ expressions* parser::parseLet(string statement){
             _position++;
             c = lookAhead();
         }
-        #ifdef debug
+        #if debug
         errorFunc("varName: "+s);
         #endif
         _position++;
@@ -122,12 +120,10 @@ expressions* parser::parseLet(string statement){
             }
                     }catch(wrongType()){
             delete e;
-            *_parserPosition = _position;
             throw wrongType();
             return e;
         }catch(notParsed()){
             delete e;
-            *_parserPosition = _position;
             throw notParsed();
         }catch(...){
             delete e;
@@ -188,11 +184,9 @@ expressions* parser::parseLogical(){
         }
     }catch(wrongOperator()){
         delete e;
-        *_parserPosition = _position;
         throw wrongOperator();
     }catch(wrongType()){
         delete e;
-        *_parserPosition = _position;
         cout << _position << endl;
         throw wrongType();
     }catch(notParsed()){
@@ -200,14 +194,13 @@ expressions* parser::parseLogical(){
         errorFunc("nieparsowalny logical");
         #endif
         delete e;
-        *_parserPosition = _position;
         throw notParsed();
     }
     return e;
 }
 
 expressions* parser::parseNot(){
-    #ifdef debug
+    #if debug
     errorFunc("parseNot: "+to_string(_position));
     #endif
     expressions* e;
@@ -224,7 +217,7 @@ expressions* parser::parseNot(){
                 _position++;
                 return new notOperator(s, parseRelation());
             }else{
-                _position=_position-2;
+                _position=_position-3;
                 e = parseRelation();
             }
             
@@ -234,24 +227,21 @@ expressions* parser::parseNot(){
         }
     }catch(wrongOperator()){
         delete e;
-        *_parserPosition = _position;
         throw wrongOperator();
     }catch(wrongType()){
         delete e;
-        *_parserPosition = _position;
         throw wrongType();
     }catch(notParsed()){
         #if debug
         errorFunc("nieparsowalny not");
         #endif
         delete e;
-        *_parserPosition = _position;
         throw notParsed();
     }
 }
 
 expressions* parser::parseRelation(){
-    #ifdef debug
+    #if debug
     errorFunc("parseRelation: "+to_string(_position));
     #endif
     expressions* e;
@@ -276,25 +266,22 @@ expressions* parser::parseRelation(){
         }
     }catch(wrongOperator()){
         delete e;
-        *_parserPosition = _position;
         throw;
     }catch(wrongType()){
         delete e;
-        *_parserPosition = _position;
         throw wrongType();
     }catch(notParsed()){
         #if debug
         errorFunc("nieparsowalny relation");
         #endif
         delete e;
-        *_parserPosition = _position;
         throw notParsed();
     }
     return e;
 }
 
 expressions* parser::parseConcatenation(){
-    #ifdef debug
+    #if debug
     errorFunc("parseConcatenation: "+to_string(_position));
     #endif
     expressions* e;
@@ -309,77 +296,68 @@ expressions* parser::parseConcatenation(){
         }
     }catch(wrongType()){
         delete e;
-        *_parserPosition = _position;
         throw wrongType();
     }catch(notParsed()){
         #if debug
         errorFunc("nieparsowalny concatenation");
         #endif
         delete e;
-        *_parserPosition = _position;
         throw notParsed();
     }
     return e;
 }
 
 expressions* parser::parseRange(){
-    #ifdef debug
+    #if debug
     errorFunc("parseRange: "+to_string(_position));
     #endif
     uint8_t position = _position;
     expressions* e;
     char c;
-
-    try{
-        e = parseSum();
-        c = lookAhead();
-        if(c == '['){
-
-            _position++;
-            expressions* startRange = parseSum();
+    if(find(_input.begin(), _input.end(),'[')!=_input.end()){
+        try{
+            e = parseSum();
             c = lookAhead();
-            if(c==':'){
+            if(c == '['){
+
                 _position++;
-                expressions* endRange = parseSum();
+                expressions* startRange = parseSum();
                 c = lookAhead();
-                if(c==']'){
-                    e = new substringOperation(e, startRange, endRange);
+                if(c==':'){
                     _position++;
+                    expressions* endRange = parseSum();
+                    c = lookAhead();
+                    if(c==']'){
+                        e = new substringOperation(e, startRange, endRange);
+                        _position++;
+                    }else{
+                        delete e;
+                        delete startRange;
+                        delete endRange;
+
+                        throw wrongStringRange();
+                    }
                 }else{
                     delete e;
                     delete startRange;
-                    delete endRange;
-                    *_parserPosition = _position;
                     throw wrongStringRange();
                 }
-            }else{
-                delete e;
-                delete startRange;
-                *_parserPosition = _position;
-                throw wrongStringRange();
             }
-        }else{
+        }catch(wrongRange()){
             delete e;
-            _position = position;
-            return parseSum();
+            throw wrongRange();
+        }catch(wrongStringRange()){
+            delete e;
+            throw wrongStringRange();
+        }catch(notParsed()){
+            #if debug
+            errorFunc("nieparsowalny range");
+            #endif
+            delete e;
+            throw notParsed();
         }
-    }catch(wrongRange()){
-        delete e;
-        *_parserPosition = _position;
-        throw wrongRange();
-    }catch(wrongStringRange()){
-        delete e;
-        *_parserPosition = _position;
-        throw wrongStringRange();
-    }catch(notParsed()){
-        #if debug
-        errorFunc("nieparsowalny range");
-        #endif
-        delete e;
-        *_parserPosition = _position;
-        throw notParsed();
     }
-    return e;
+    return parseSum();
 }
 
 expressions* parser::parseSum(){
@@ -398,18 +376,15 @@ expressions* parser::parseSum(){
         }
     }catch(wrongOperator){
         delete e;
-        *_parserPosition = _position;
         throw wrongOperator();
     }catch(wrongType){
         delete e;
-        *_parserPosition = _position;
         throw wrongType();
     }catch(notParsed()){
         #if debug
         errorFunc("nieparsowalny sum");
         #endif
         delete e;
-        *_parserPosition = _position;
         throw notParsed();
     }
     return e;
@@ -430,26 +405,23 @@ expressions* parser::parseMult(){
             e = new binaryOperator(c, e, parseTerm());
             c = lookAhead();
         }
-    }catch(wrongOperator()){
+    }catch(wrongOperator){
         delete e;
-        *_parserPosition = _position;
         throw wrongOperator();
-    }catch(wrongType()){
+    }catch(wrongType){
         delete e;
-        *_parserPosition = _position;
         throw wrongType();
-    }catch(notParsed()){
+    }catch(notParsed){
         #if debug
         errorFunc("nieparsowalny mult");
         #endif
-        *_parserPosition = _position;
         throw notParsed();
     }
     return e;
 }
 
 expressions* parser::parseTerm(){
-    #ifdef debug
+    #if debug
     errorFunc("parseTerm: "+to_string(_position));
     #endif
     char c = lookAhead();
@@ -460,7 +432,6 @@ expressions* parser::parseTerm(){
     }else if(c =='('){
         return parseParen();
     }else
-        *_parserPosition = _position;
         throw notParsed();
 }
 
@@ -468,7 +439,7 @@ expressions* parser::parseConstant(){
     string n = "";
     bool isDecimalSeparator = false;
     bool isNumber = false;
-    #ifdef debug
+    #if debug
     errorFunc("parseConstant: "+to_string(_position));
     #endif
     if(_input[_position]!='"'){
@@ -494,11 +465,17 @@ expressions* parser::parseConstant(){
         }
         _position++;
     }
+    float value;
     if(isNumber == true){
         if(isDecimalSeparator==false)
             return new constant(stoi(n));
         else
-            return new constantN(stof(n));
+            try{
+                value = stof(n);
+            }catch(std::invalid_argument){
+                throw notNumber();
+            }
+            return new constantN(value);
     }else{
         return new constantS(n);
     }
@@ -506,7 +483,7 @@ expressions* parser::parseConstant(){
 
 expressions* parser::parseLogicalVariable(){
     string s = "";
-    #ifdef debug
+    #if debug
     errorFunc("parserLogicalVariable: "+to_string(_position));
     #endif
     int position = _position;
@@ -524,7 +501,7 @@ expressions* parser::parseLogicalVariable(){
 }
 
 expressions* parser::parseVariable(string &s){
-    #ifdef debug
+    #if debug
     errorFunc("parseVariable: "+to_string(_position));
     #endif
     expressions *e;
@@ -540,13 +517,10 @@ expressions* parser::parseVariable(string &s){
         #endif
         e = new variable(s);
         return e;
-    }catch(variableNotFound()){
-        cout << _position << endl;
+    }catch(variableNotFound){
         delete e;
-        *_parserPosition = _position;
         throw variableNotFound();
-    }catch(variableNameAbsence()){
-        *_parserPosition = _position;
+    }catch(variableNameAbsence){
         delete e;
         throw variableNameAbsence();
     }
@@ -554,7 +528,7 @@ expressions* parser::parseVariable(string &s){
 
 expressions* parser::parseParen(){
     _position++;
-    #ifdef debug
+    #if debug
     errorFunc("parseParen: "+to_string(_position));
     #endif
     expressions* e = parseLogical();
@@ -563,7 +537,6 @@ expressions* parser::parseParen(){
         return e;
     }else{
         delete e;
-        *_parserPosition = _position;
         throw notParsed();
     }
 }

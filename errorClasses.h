@@ -3,6 +3,7 @@ using namespace std;
 
 class variableNotFound{};
 class notParsed{};
+class notNumber{};
 class wrongStringRange{};
 class wrongType{};
 class wrongRange{};

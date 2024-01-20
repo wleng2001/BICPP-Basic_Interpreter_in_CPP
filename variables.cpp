@@ -129,8 +129,8 @@ void variables::addVariable(string &variableName, string &value){
 }
 
 bool variables::readVariable(string *variableName, variableValue *var){
-    #ifdef debug
-    errorFunc("readVariable: ");
+    #if debug
+    errorFunc("readVariable: "+*variableName);
     #endif
     var->type = 'N';
     var->valueI = 0;
@@ -154,6 +154,5 @@ bool variables::readVariable(string *variableName, variableValue *var){
         return true;
     }
     errorFunc("ERROR: can't find variable: "+*variableName);
-    //throw variableNotFound();
     return false;
 }

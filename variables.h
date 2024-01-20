@@ -1,8 +1,6 @@
 #ifndef variables_h
 #define variables_h
 
-//#define debug true
-
 #include <iostream>
 #include <stdio.h> //aby działał getchar i exit
 #include <iomanip> //biblioteka do manipulaowania wejściem i wyjściem
@@ -21,6 +19,7 @@
 #include <map>
 #include <vector>
 #include "errorClasses.h"
+#include "config.h"
 
 #define BOOL 0
 #define INT 1
@@ -41,7 +40,12 @@ struct variableValue{
     char type = 'N'; // i - int, n - numeric, s - string, N - NULL
     int valueI;
     float valueN;
+    #if arduino 
+    String valueS;
+    #else
     string valueS;
+    #endif
+
 };
 
 class variables{
@@ -70,19 +74,30 @@ class variables{
         bool isArray = false;
         uint8_t rows = 0;
         uint8_t columns = 0;
+        #if arduino
+        vector <String> value;
+        #else
         vector <string> value;
+        #endif
     };
 
+    #if arduino
+    typedef std::map < String, variableParamI > variablesListI;
+    typedef std::map < String, variableParamN > variablesListN;
+    typedef std::map < String, variableParamS > variablesListS;
+    #else
     typedef std::map < string, variableParamI > variablesListI;
     typedef std::map < string, variableParamN > variablesListN;
     typedef std::map < string, variableParamS > variablesListS;
+    #endif
 
     variablesListI _VLI;
     variablesListN _VLN;
     variablesListS _VLS;
 
     public:
-    
+    #if arduino
+    #else
     void addErrorFunction(void (*errorFunction)(string text));
     void addErrorVariable(bool *error);
     string convertScienceToDecimal(string data);
@@ -91,6 +106,7 @@ class variables{
     string convertHexToDecimal(string data);
     void addVariable(string &variableName, string &value);
     bool readVariable(string *variableName, variableValue *var);
+    #endif
 };
 
 #endif

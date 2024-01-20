@@ -138,7 +138,7 @@ class logicalOperator : public expressions{
     }
 
     variableValue eval(variables *vM){
-        #ifdef debug
+        #if debug
         expErrorFunc("logicalOperator");
         #endif
         variableValue vV;
@@ -155,7 +155,7 @@ class logicalOperator : public expressions{
             throw wrongType();
             return vV;
         }
-        #ifdef debug
+        #if debug
         expErrorFunc(to_string(leftValue) + " " + symbol + " " + to_string(rightValue));
         #endif
         vV.type = 'i';
@@ -229,7 +229,7 @@ class notOperator : public expressions{
         variableValue vV;
         variableValue rVV = right->eval(vM);
         int rightValue;
-        #ifdef debug
+        #if debug
         expErrorFunc("notOperator");
         #endif
         try{
@@ -242,7 +242,7 @@ class notOperator : public expressions{
         }
 
         vV.type = 'i';
-        #ifdef debug
+        #if debug
         expErrorFunc(symbol+" "+to_string(rightValue));
         #endif
         if(symbol == "NOT"){
@@ -278,7 +278,7 @@ class relationOperator : public expressions{
         string leftValue;
         uint8_t rightLength;
         uint8_t leftLength;
-        #ifdef debug
+        #if debug
             expErrorFunc("relationOperator");
         #endif
 
@@ -310,7 +310,7 @@ class relationOperator : public expressions{
             throw wrongType();
         }
         vV.type = 'i';
-        #ifdef debug
+        #if debug
         expErrorFunc("Left: "+leftValue+"\tRight: "+rightValue+"\tOperator: "+symbol);
         #endif
         if(symbol == ">"){
@@ -388,7 +388,7 @@ class concatenationOperator : public expressions{
         variableValue rVV = right->eval(vM);
         variableValue lVV = left->eval(vM);
 
-        #ifdef debug
+        #if debug
             expErrorFunc("concatenationOperators");
         #endif
 
@@ -426,7 +426,7 @@ class substringOperation : public expressions{
     }
 
     virtual variableValue eval(variables *vM){
-        #ifdef debug
+        #if debug
         expErrorFunc("substringOperation");
         #endif
 
@@ -469,7 +469,7 @@ class binaryOperator : public expressions{
         variableValue lVV = left -> eval(vM);
         variableValue rVV = right -> eval(vM);
 
-        #ifdef debug
+        #if debug
             expErrorFunc("binaryOperator");
         #endif
         if(lVV.type == 's' || rVV.type == 's'){
@@ -540,22 +540,25 @@ class binaryOperator : public expressions{
 };
 
 class variable : public expressions{
-    string name;
+    string name = "";
 
     public:
-    variable(string n) : name(n){};
+    variable(string n) : name(n){
+        cout << name << endl;
+    };
 
     virtual variableValue eval(variables *vM){
+        cout << "nie\n";
         variableValue vV;
-        #ifdef debug
+        #if debug
         expErrorFunc("variable");
         #endif 
         if(!vM->readVariable(&name, &vV)){
             *expError = 1;
             throw variableNotFound(); //errorClasses.h
         }
-        #ifdef debug
-        expErrorFunc("variableValue: "+name+" "+to_string(vV.valueI)+'\t'+to_string(vV.valueI)+'\t'+vV.valueS);
+        #if debug
+        expErrorFunc("variableValue: "+name+"\t"+to_string(vV.valueI)+'\t'+to_string(vV.valueN)+'\t'+vV.valueS);
         #endif
         return vV;
     }

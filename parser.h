@@ -19,11 +19,10 @@ class parser{
     size_t _position;
     bool *error;
     void (*errorFunc)(string input);
-    uint8_t *_parserPosition;
 
     public:
 
-    parser(string input, bool *error, void (*errorFunction)(string input), uint8_t *parserPosition);
+    parser(string input, bool *error, void (*errorFunction)(string input));
 
     uint8_t parserPosition(){
         return uint8_t(_position);

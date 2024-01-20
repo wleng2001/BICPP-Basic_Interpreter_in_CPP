@@ -73,7 +73,7 @@ Result of relation operations or numbers can be checked by logical operators, wh
 - *OR* return `1` if even one term is `1` (e.g.: `1 OR 1` return `1` and `1 OR 0` return `1`);
 - *XOR* return `1` if one term is `1` (e.g.: `1 XOR 1` return `0` but `1 XOR 0` return `1`);
 - *IMP* return `1` if two terms are `1` or `1` or first terms is `1` and second term is `1` (e.g.: `0 IMP 0` return `1` and `0 IMP 1` return `1` but `1 IMP 0` return `0`);
-- *EQV* return `1` only if two term are `1` or `1` (e.g.: `1 EQV 1` return `1` and `1 EQV 0` return `0`).
+- *EQV* return `1` only if two term are `0` or `1` (e.g.: `1 EQV 1` return `1` but `1 EQV 0` return `0`).
 
 #### Statements
 

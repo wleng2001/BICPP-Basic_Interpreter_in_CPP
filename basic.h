@@ -86,8 +86,7 @@ class basic{
             return output;
         }
 
-        uint8_t _parserPosition=0;
-        parser pars(*input, &error, errorFunc, &_parserPosition);
+        parser pars(*input, &error, errorFunc);
         try{ 
             expressions* e = pars.parseExpressions();
             variableValue vV = e->eval(&_varMemory);
@@ -105,24 +104,27 @@ class basic{
             errorFunc("Error: not parsed (char: " + to_string(pars.parserPosition()) + "): "+*input);
             return "";
         }catch(variableNotFound){
-            errorFunc("(char: "+to_string(pars.parserPosition())+"): "+*input);
+            errorFunc("(char: "+to_string(pars.parserPosition()-1)+"): "+*input);
             return ""; 
         }catch(wrongStringRange){
-            errorFunc("Error: incorrect range for substring operation (char: "+ to_string(pars.parserPosition()) +"): "+*input);
+            errorFunc("Error: incorrect range for substring operation (char: "+ to_string(pars.parserPosition()-1) +"): "+*input);
             return ""; 
         }catch(wrongType){
-            errorFunc("Error: wrong type (char: "+to_string(pars.parserPosition())+"): "+*input);
+            errorFunc("Error: wrong type (char: "+to_string(pars.parserPosition()-1)+"): "+*input);
             return ""; 
         }catch(wrongRange){
-            errorFunc("Error: wrong substring range (char: "+to_string(pars.parserPosition())+"): "+*input);
+            errorFunc("Error: wrong substring range (char: "+to_string(pars.parserPosition()-1)+"): "+*input);
             return ""; 
         }catch(wrongOperator){
-            errorFunc("Error: wrong operator (char: "+to_string(pars.parserPosition())+"): "+*input);
+            errorFunc("Error: wrong operator (char: "+to_string(pars.parserPosition()-1)+"): "+*input);
             return ""; 
         }catch(variableNameAbsence){
             return "";
         }catch(wrongVariableName){
-            errorFunc("Error: variable can't begin by number (char: "+to_string(pars.parserPosition())+"): "+*input);
+            errorFunc("Error: variable can't begin by number (char: "+to_string(pars.parserPosition()-1)+"): "+*input);
+            return "";
+        }catch(notNumber){
+            errorFunc("Error: it's not numeric constant (char: "+to_string(pars.parserPosition()-1)+"): "+*input);
             return "";
         }
         

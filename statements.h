@@ -13,11 +13,21 @@ class letStatement : public expressions{
         delete e;
     }
     variableValue eval(variables *vM){
-        #ifdef debug
+        #if debug
         expErrorFunc("LET "+varName);
         #endif
         variableValue vV;
-        variableValue eVV = e->eval(vM);
+        variableValue eVV;
+        try{
+            eVV = e->eval(vM);
+        }catch(variableNotFound){
+            cout << "evalLet\n";
+            delete e;
+            throw;
+        }catch(notParsed){
+            delete e;
+            throw;
+        };
         string value;
         if(eVV.type == 'i'){
             value = to_string(eVV.valueI);
@@ -34,7 +44,7 @@ class letStatement : public expressions{
                 }
             }
         }
-        #ifdef debug
+        #if debug
         expErrorFunc("LET "+varName+" = "+value);
         #endif
         try{
