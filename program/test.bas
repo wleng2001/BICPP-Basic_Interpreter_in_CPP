@@ -1,7 +1,10 @@
 rem arythmetic expressions
 1+1
+1.0+1.0
 2+2/2
+2.0+2.0/2.0
 (2+2)/2
+(2.0+2.0)/2.0
 n
 let x = 2
 x
@@ -13,7 +16,13 @@ let y = 2
 y
 let x = x+y
 x
-let 
+let x$ = 2
+x$
+let x$ = x$+x
+x$
 rem string
 "napis"
 let x$ = "abcdefghijklmnopqrstuvwxyz"
+x$[0:2]
+x$[2:0]
+x$&"1234"

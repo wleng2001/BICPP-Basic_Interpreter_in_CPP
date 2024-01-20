@@ -216,8 +216,9 @@ expressions* parser::parseNot(){
                 _position++;
                 return new notOperator(s, parseRelation());
             }else{
-                _position=_position-3;
+                _position=_position-2;
                 e = parseRelation();
+                return e;
             }
             
         }else{
