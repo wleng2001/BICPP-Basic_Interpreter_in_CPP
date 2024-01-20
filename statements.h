@@ -21,7 +21,6 @@ class letStatement : public expressions{
         try{
             eVV = e->eval(vM);
         }catch(variableNotFound){
-            cout << "evalLet\n";
             delete e;
             throw;
         }catch(notParsed){

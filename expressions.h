@@ -470,12 +470,12 @@ class binaryOperator : public expressions{
         variableValue rVV = right -> eval(vM);
 
         #if debug
-            expErrorFunc("binaryOperator");
+            expErrorFunc("binaryOperator: "+string(1,symbol));
         #endif
         if(lVV.type == 's' || rVV.type == 's'){
             throw wrongType();
-            return vV;
         }
+        
         if(lVV.type == 'i' && rVV.type == 'i'){
             vV.type = 'i';
             switch(symbol){
@@ -544,11 +544,9 @@ class variable : public expressions{
 
     public:
     variable(string n) : name(n){
-        cout << name << endl;
     };
 
     virtual variableValue eval(variables *vM){
-        cout << "nie\n";
         variableValue vV;
         #if debug
         expErrorFunc("variable");

@@ -187,7 +187,6 @@ expressions* parser::parseLogical(){
         throw wrongOperator();
     }catch(wrongType()){
         delete e;
-        cout << _position << endl;
         throw wrongType();
     }catch(notParsed()){
         #if debug
@@ -314,12 +313,11 @@ expressions* parser::parseRange(){
     uint8_t position = _position;
     expressions* e;
     char c;
-    if(find(_input.begin(), _input.end(),'[')!=_input.end()){
+    if(_input.rfind('[') != string::npos){
         try{
             e = parseSum();
             c = lookAhead();
             if(c == '['){
-
                 _position++;
                 expressions* startRange = parseSum();
                 c = lookAhead();
@@ -334,7 +332,6 @@ expressions* parser::parseRange(){
                         delete e;
                         delete startRange;
                         delete endRange;
-
                         throw wrongStringRange();
                     }
                 }else{
@@ -342,6 +339,7 @@ expressions* parser::parseRange(){
                     delete startRange;
                     throw wrongStringRange();
                 }
+                return e;
             }
         }catch(wrongRange()){
             delete e;
