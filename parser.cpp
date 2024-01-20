@@ -314,7 +314,8 @@ expressions* parser::parseRange(){
     uint8_t position = _position;
     expressions* e;
     char c;
-    if(_input.rfind('[') != string::npos){
+    size_t findPos = _input.find('[');
+    if( findPos != string::npos && findPos>_position){
         try{
             e = parseSum();
             c = lookAhead();
@@ -327,8 +328,8 @@ expressions* parser::parseRange(){
                     expressions* endRange = parseSum();
                     c = lookAhead();
                     if(c==']'){
-                        e = new substringOperation(e, startRange, endRange);
                         _position++;
+                        return new substringOperation(e, startRange, endRange);
                     }else{
                         delete e;
                         delete startRange;
@@ -340,7 +341,6 @@ expressions* parser::parseRange(){
                     delete startRange;
                     throw wrongStringRange();
                 }
-                return e;
             }
         }catch(wrongRange()){
             delete e;
@@ -430,8 +430,12 @@ expressions* parser::parseTerm(){
         return parseLogicalVariable();
     }else if(c =='('){
         return parseParen();
-    }else
+    }else{
+        #if debug
+        errorFunc("nieparsowalny Term");
+        #endif
         throw notParsed();
+    }
 }
 
 expressions* parser::parseConstant(){
@@ -458,12 +462,9 @@ expressions* parser::parseConstant(){
         }
     }else{
         _position++;
-        while(_input[_position]!='"'){
-            n+=_input[_position];
-            _position++;
-        }
-        _position++;
+        return parseLiteral();
     }
+        
     float value;
     if(isNumber == true){
         if(isDecimalSeparator==false)
@@ -475,9 +476,47 @@ expressions* parser::parseConstant(){
                 throw notNumber();
             }
             return new constantN(value);
-    }else{
-        return new constantS(n);
     }
+}
+
+expressions* parser::parseLiteral(){
+    #if debug
+    errorFunc("parseLiteral");
+    #endif
+    string literal = "";
+    char c = lookAhead();
+    bool endAnalyze = false;
+    while(!endAnalyze){
+        switch(c){
+            case('"'):
+                if(_input[_position+1]=='"'){
+                    literal+=c;
+                    _position+=2;
+                    break;
+                }else{
+                    _position++;
+                    endAnalyze = true;
+                    break;
+                }
+                break;
+            case('\\'):
+                switch(_input[_position+1]){
+                    case('n'):
+                        literal+='\n';
+                        break;
+                    case('t'):
+                        literal+='\t';
+                        break;
+                }
+                _position+=2;
+                break;
+            default:
+                literal+=c;
+                _position++;
+        }
+        c = lookAhead();
+    }
+    return new constantS(literal);
 }
 
 expressions* parser::parseLogicalVariable(){
