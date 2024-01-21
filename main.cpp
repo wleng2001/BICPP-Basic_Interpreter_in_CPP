@@ -1,5 +1,6 @@
 #include <iostream>
-#include "basic.h"
+
+#include "basic.cpp"
 
 using namespace std;
 

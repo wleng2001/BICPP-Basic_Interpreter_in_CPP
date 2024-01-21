@@ -10,5 +10,6 @@ class wrongRange{};
 class wrongOperator{};
 class variableNameAbsence{};
 class wrongVariableName{};
+class tooManyArg{};
 
 #endif

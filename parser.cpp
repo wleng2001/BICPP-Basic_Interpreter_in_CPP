@@ -16,7 +16,13 @@ string parser::returnString(expressions *e){
     }
 }
 
-parser::parser(string &input, void (*errorFunction)(string input), string (*inputFunction)(), void (*printFunction)(string *input), variables *variableMemory) : _input(input), _position(0), errorFunc(errorFunction), _inputFunc(inputFunction), _printFunc(printFunction), _vM(variableMemory){
+void parser::setProgramLine(unsigned int programLine){
+    if(programLine>0){
+        *_programLine = programLine;
+    }
+}
+
+parser::parser(string &input, void (*errorFunction)(string input), string (*inputFunction)(), void printFunction(string *input), variables *variableMemory, unsigned int *programLineIterator) : _input(input), _position(0), errorFunc(errorFunction), _inputFunc(inputFunction), _printFunc(printFunction), _vM(variableMemory), _programLine(programLineIterator){
     input.push_back(EOS); //umieszcza strażnika na końcu
     expErrorFunc = errorFunction;
 }
@@ -43,6 +49,8 @@ expressions* parser::parseExpressions(){
     }
 }
 
+//parseStatementStart-------------------------------------------------------
+
 expressions* parser::parseStatements(){
     #if debug 
     errorFunc("parserStatements: "+to_string(_position));
@@ -64,6 +72,7 @@ expressions* parser::parseStatements(){
             parsed = parseLet(statement, parsed);
             parsed = parseInput(statement, parsed);
             parsed = parsePrint(statement, parsed);
+            parsed = parseRun(statement, parsed);
             if(parsed==false){
                 _position = 0;
                 return parseFunction();
@@ -85,6 +94,9 @@ expressions* parser::parseStatements(){
         delete e;
         _position = 0;
         throw notParsed();
+    }catch(tooManyArg){
+        delete e;
+        throw;
     }catch(notParsed){
         #if debug
         errorFunc("nieparsowalny statement");
@@ -140,7 +152,6 @@ bool parser::parseLet(string statement, bool parsed){
             delete e;
             throw notParsed();
         }catch(...){
-            delete e;
             throw;
         }
     }else{
@@ -225,11 +236,27 @@ bool parser::parsePrint(string statement, bool parsed){
             }
             c = lookAhead();
         }while(c==',');
+        output+='\n';
         _printFunc(&output);
         return true;
     }
     return parsed;
 }
+
+bool parser::parseRun(string statement, bool parsed){
+    if(statement == "RUN"){
+        char c = lookAhead();
+        if(c!=0){
+            throw tooManyArg();
+        }else{
+            setProgramLine(1);
+            return true;
+        }
+    }
+    return parsed;
+}
+
+//parseStatementEnd---------------------------------------------------------
 
 expressions* parser::parseFunction(){
     #if debug
