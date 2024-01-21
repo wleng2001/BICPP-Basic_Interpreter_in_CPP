@@ -2,6 +2,20 @@
 
 const char EOS = 0;
 
+string parser::returnString(expressions *e){
+    variableValue vV = e->eval(_vM);
+    switch(vV.type){
+        case('s'):
+            return vV.valueS;
+        case('i'):
+            return to_string(vV.valueI);
+        case('n'):
+            return to_string(vV.valueN);
+        default:
+            throw wrongType();
+    }
+}
+
 parser::parser(string &input, void (*errorFunction)(string input), string (*inputFunction)(), void (*printFunction)(string *input), variables *variableMemory) : _input(input), _position(0), errorFunc(errorFunction), _inputFunc(inputFunction), _printFunc(printFunction), _vM(variableMemory){
     input.push_back(EOS); //umieszcza strażnika na końcu
     expErrorFunc = errorFunction;
@@ -49,6 +63,7 @@ expressions* parser::parseStatements(){
             }
             parsed = parseLet(statement, parsed);
             parsed = parseInput(statement, parsed);
+            parsed = parsePrint(statement, parsed);
             if(parsed==false){
                 _position = 0;
                 return parseFunction();
@@ -113,11 +128,12 @@ bool parser::parseLet(string statement, bool parsed){
         try{
             if(s!=""){
                 e = new letStatement(s, parseLogical());
+                e->eval(_vM);
                 return true;
             }else{
                 throw variableNameAbsence();
             }
-                    }catch(wrongType()){
+        }catch(wrongType()){
             delete e;
             throw wrongType();
         }catch(notParsed()){
@@ -189,6 +205,30 @@ bool parser::parseInput(string statement, bool parsed){
     }else{
         return parsed;
     }
+}
+
+bool parser::parsePrint(string statement, bool parsed){
+    if(statement == "PRINT"){
+        #if debug
+        errorFunc("parsePrint");
+        #endif
+        string output = "";
+        char c;
+        do{
+            _position++;
+            expressions *e = parseFunction();
+            try{
+                output += returnString(e);
+            }catch(wrongType){
+                delete e;
+                throw;
+            }
+            c = lookAhead();
+        }while(c==',');
+        _printFunc(&output);
+        return true;
+    }
+    return parsed;
 }
 
 expressions* parser::parseFunction(){

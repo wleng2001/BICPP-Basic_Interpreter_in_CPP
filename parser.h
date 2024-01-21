@@ -21,6 +21,7 @@ class parser{
     string (*_inputFunc)();
     void (*_printFunc)(string *input);
     variables *_vM;
+    string returnString(expressions *e);
 
     public:
 
@@ -41,6 +42,7 @@ class parser{
     bool parseRem(string statement, bool parsed);
     bool parseLet(string statement, bool parsed);
     bool parseInput(string statement, bool parsed);
+    bool parsePrint(string statement, bool parsed);
 
     expressions* parseFunction();
     expressions* parseLogical();

@@ -7,7 +7,8 @@ void text_analyzer::addErrorFuntion(void (*errorFunction)(string text)){
 bool text_analyzer::special_char_in_correct_place(string &data, int position){
   for(auto i = 0; i < sizeof(specialChar) / sizeof(specialChar[0]); i++){
     if(specialChar[i]==data[position]){
-      if((data[position+1]==' ' || isMathematicChar(data[position+1]) || data[position+1]=='[' || position==data.length()-1 || data[position+1]=='&') && (isalnum(data[position-1]))){
+      char c = data[position+1];
+      if((c==' ' || isMathematicChar(data[position+1]) || c=='[' || position==data.length()-1 || c=='&' || c==',') && (isalnum(data[position-1]))){
         break;
       }else{
 
