@@ -29,6 +29,7 @@ class programMemorySupport{
     void addErrorFunction(void (*errorFunction)(string input)){
         _errorFunc = errorFunction;
     };
+    void memoryClear();
     bool isToExecute(string &input); //zwraca true jeśli input to równanie a nie linijka do zapisania w pamięci
     bool checkAndSave(string &input);
 

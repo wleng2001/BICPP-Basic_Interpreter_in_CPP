@@ -104,6 +104,7 @@ class variables{
     bool isInt(string &data, uint8_t length);
     bool isNum(string &data, uint8_t length);
     string convertHexToDecimal(string data);
+    void clearMemory();
     void addVariable(string &variableName, string &value);
     bool readVariable(string *variableName, variableValue *var);
     #endif

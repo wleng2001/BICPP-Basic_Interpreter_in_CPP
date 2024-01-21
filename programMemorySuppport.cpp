@@ -50,6 +50,10 @@ unsigned int programMemorySupport::quantityOfSpecificChar(string &input, char c)
     return quantityOfFindElements;
 }
 
+void programMemorySupport::memoryClear(){
+    _pM.clear();
+}
+
 bool programMemorySupport::isToExecute(string &input){
     input.push_back(0);
     if(isdigit(input[_position])){

@@ -1,5 +1,14 @@
 #include "basic.h"
 
+void basic::printError(string errorText, char c, string *input, unsigned int *lineNumber){
+    string text = errorText+" (char: "+to_string(c);
+    if(*lineNumber>0){
+        text+=" line: "+to_string(*lineNumber);
+    }
+    text+=+"): "+*input;
+    errorFunc(text);
+}
+
 basic::basic(void (*printFunction)(string *text), void (*errorFunction)(string text), string (*inputFunction)()){
     printFunc = printFunction;
     errorFunc = errorFunction;
@@ -78,33 +87,33 @@ string basic::programLoop(string *input){
             expressions* e = pars.parseExpressions();
             vV = e->eval(&_varMemory);
         }catch(notParsed){
-            errorFunc("Error: not parsed (char: " + to_string(pars.parserPosition()) + "): "+text);
+            printError("Error: not parsed", pars.parserPosition(), &text, &i);
             return "";
         }catch(variableNotFound){
-            errorFunc("(char: "+to_string(pars.parserPosition()-1)+"): "+text);
+            printError("", pars.parserPosition()-1, &text, &i);
             return ""; 
         }catch(wrongStringRange){
-            errorFunc("Error: incorrect range for substring operation (char: "+ to_string(pars.parserPosition()-1) +"): "+text);
+            printError("Error: incorrect range for substring operation", pars.parserPosition()-1, &text, &i);
             return ""; 
         }catch(wrongType){
-            errorFunc("Error: wrong type (char: "+to_string(pars.parserPosition()-1)+"): "+text);
+            printError("Error: wrong type", pars.parserPosition()-1, &text, &i);
             return ""; 
         }catch(wrongRange){
-            errorFunc("Error: wrong substring range (char: "+to_string(pars.parserPosition()-1)+"): "+text);
+            printError("Error: wrong substring range", pars.parserPosition()-1, &text, &i);
             return ""; 
         }catch(wrongOperator){
-            errorFunc("Error: wrong operator (char: "+to_string(pars.parserPosition()-1)+"): "+text);
+            printError("Error: wrong operator", pars.parserPosition()-1, &text, &i);
             return ""; 
         }catch(variableNameAbsence){
             return "";
         }catch(wrongVariableName){
-            errorFunc("Error: variable can't begin by number (char: "+to_string(pars.parserPosition()-1)+"): "+text);
+            printError("Error: variable can't begin by number", pars.parserPosition()-1, &text, &i);
             return "";
         }catch(notNumber){
-            errorFunc("Error: it's not numeric constant (char: "+to_string(pars.parserPosition()-1)+"): "+text);
+            printError("Error: it's not numeric constant", pars.parserPosition()-1, &text, &i);
             return "";
         }catch(tooManyArg){
-            errorFunc("Error: to many arguments given: "+text);
+            printError("Error: to many arguments given", pars.parserPosition()-1, &text, &i);
             return "";
         }
         if(i==0){

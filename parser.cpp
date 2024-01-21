@@ -66,13 +66,14 @@ expressions* parser::parseStatements(){
         }
         if(c == ' ' || c==0){
             bool parsed;
+            parsed = parseRun(statement, parsed);
             if(parseRem(statement, parsed)==true){
                 return new constantS("");
             }
             parsed = parseLet(statement, parsed);
             parsed = parseInput(statement, parsed);
             parsed = parsePrint(statement, parsed);
-            parsed = parseRun(statement, parsed);
+            parsed = parseClear(statement, parsed);
             if(parsed==false){
                 _position = 0;
                 return parseFunction();
@@ -105,6 +106,19 @@ expressions* parser::parseStatements(){
         throw;
     }
     return e;
+}
+
+bool parser::parseRun(string statement, bool parsed){
+    if(statement == "RUN"){
+        char c = lookAhead();
+        if(c!=0){
+            throw tooManyArg();
+        }else{
+            setProgramLine(1);
+            return true;
+        }
+    }
+    return parsed;
 }
 
 bool parser::parseRem(string statement, bool parsed){
@@ -243,14 +257,14 @@ bool parser::parsePrint(string statement, bool parsed){
     return parsed;
 }
 
-bool parser::parseRun(string statement, bool parsed){
-    if(statement == "RUN"){
+bool parser::parseClear(string statement, bool parsed){
+    if(statement == "CLEAR"){
         char c = lookAhead();
-        if(c!=0){
-            throw tooManyArg();
-        }else{
-            setProgramLine(1);
+        if(c==0){
+            _vM->clearMemory();
             return true;
+        }else{
+            throw tooManyArg();
         }
     }
     return parsed;

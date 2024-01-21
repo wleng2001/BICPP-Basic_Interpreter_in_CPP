@@ -9,7 +9,7 @@
 #include <iostream>
 #include <algorithm>
 
-#define _basicVersion "A0.02"
+#define _basicVersion "A0.03"
 
 using namespace std;
 
@@ -28,6 +28,7 @@ class basic{
     string *text;
     text_analyzer txt_an;
     programMemorySupport pMS;
+    void printError(string errorText, char c, string *input, unsigned int *lineNumber);
 
     public:
 

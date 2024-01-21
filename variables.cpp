@@ -85,6 +85,12 @@ bool variables::isNum(string &text, uint8_t length){
     return true;
 }
 
+void variables::clearMemory(){
+    _VLI.clear();
+    _VLN.clear();
+    _VLS.clear();
+}
+
 void variables::addVariable(string &variableName, string &value){
     uint8_t variableNameLength = variableName.length();
     uint8_t valueLength = value.length();

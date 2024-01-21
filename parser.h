@@ -41,11 +41,12 @@ class parser{
     expressions* parseCommand();
     expressions* parseStatements();
 
+    bool parseRun(string statement, bool parsed);
     bool parseRem(string statement, bool parsed);
     bool parseLet(string statement, bool parsed);
     bool parseInput(string statement, bool parsed);
     bool parsePrint(string statement, bool parsed);
-    bool parseRun(string statement, bool parsed);
+    bool parseClear(string statement, bool parsed);
 
     expressions* parseFunction();
     expressions* parseLogical();
