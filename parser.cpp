@@ -74,6 +74,7 @@ expressions* parser::parseStatements(){
             parsed = parseInput(statement, parsed);
             parsed = parsePrint(statement, parsed);
             parsed = parseClear(statement, parsed);
+            parsed = parseGoto(statement, parsed);
             if(parsed==false){
                 _position = 0;
                 return parseFunction();
@@ -222,7 +223,7 @@ bool parser::parseInput(string statement, bool parsed){
                 delete internalE;
                 _input = value;
                 _position = position;
-                throw;
+                throw wrongType();
             }
 
         }
@@ -266,6 +267,34 @@ bool parser::parseClear(string statement, bool parsed){
         }else{
             throw tooManyArg();
         }
+    }
+    return parsed;
+}
+
+bool parser::parseGoto(string statement, bool parsed){
+    if(statement == "GOTO"){
+        #if debug
+        errorFunc("parseGoto");
+        #endif
+        expressions *e;
+        variableValue vV;
+        try{
+            lookAhead();
+            e = parseConstant();
+            vV = e->eval(_vM);
+        }catch(...){
+            delete e;
+            throw;
+        }
+        
+        if(vV.type!='i'){
+            throw wrongType();
+        }
+        if(vV.valueI>10000){
+            throw wrongRange();
+        }
+        setProgramLine(vV.valueI-1);
+        return true;
     }
     return parsed;
 }
@@ -642,7 +671,7 @@ expressions* parser::parseLiteral(){
                 literal+=c;
                 _position++;
         }
-        c = lookAhead();
+        c = _input[_position];
     }
     return new constantS(literal);
 }

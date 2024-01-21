@@ -24,10 +24,9 @@ class parser{
     string returnString(expressions *e);
     unsigned int *_programLine;
     void setProgramLine(unsigned int programLine);
-
     public:
 
-    parser(string &input, void (*errorFunction)(string input), string (*inputFunction)(), void printFunction(string *input), variables *variableMemory, unsigned int *programLineIterator);
+    parser(string &input, void (*errorFunction)(string input), string (*inputFunction)(), void printFunction(string *input), variables *variableMemory, unsigned int *programLine);
 
     uint8_t parserPosition(){
         return uint8_t(_position);
@@ -47,6 +46,7 @@ class parser{
     bool parseInput(string statement, bool parsed);
     bool parsePrint(string statement, bool parsed);
     bool parseClear(string statement, bool parsed);
+    bool parseGoto(string statement, bool parsed);
 
     expressions* parseFunction();
     expressions* parseLogical();

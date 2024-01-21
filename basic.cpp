@@ -33,7 +33,7 @@ string basic::run(string *input){
     txt_an.reform_input(*input);
     if(error) return "";
     #if debug
-    cout << *input << endl;
+    errorFunc(*input);
     #endif
 
     if(!pMS.checkAndSave(*input))
@@ -114,6 +114,9 @@ string basic::programLoop(string *input){
             return "";
         }catch(tooManyArg){
             printError("Error: to many arguments given", pars.parserPosition()-1, &text, &i);
+            return "";
+        }
+        if(pMS.maxLine==0 && i>0){
             return "";
         }
         if(i==0){
