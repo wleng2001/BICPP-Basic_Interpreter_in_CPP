@@ -11,6 +11,7 @@
 #include "variables.h"
 #include "variables.cpp"
 #include "text_analyzer.h"
+#include "programMemorySuppport.h"
 
 using namespace std;
 

@@ -81,7 +81,7 @@ string basic::programLoop(string *input){
         }else{
             text = *input;
         }
-        parser pars(text, errorFunc, inputFunc, printFunc, &_varMemory, &i);
+        parser pars(text, errorFunc, inputFunc, printFunc, &_varMemory, &pMS, &i);
         variableValue vV;
         try{ 
             expressions* e = pars.parseExpressions();

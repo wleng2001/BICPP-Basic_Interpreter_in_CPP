@@ -21,12 +21,13 @@ class parser{
     string (*_inputFunc)();
     void (*_printFunc)(string *input);
     variables *_vM;
+    programMemorySupport *_pMS;
     string returnString(expressions *e);
     unsigned int *_programLine;
     void setProgramLine(unsigned int programLine);
     public:
 
-    parser(string &input, void (*errorFunction)(string input), string (*inputFunction)(), void printFunction(string *input), variables *variableMemory, unsigned int *programLine);
+    parser(string &input, void (*errorFunction)(string input), string (*inputFunction)(), void printFunction(string *input), variables *variableMemory, programMemorySupport *pMS, unsigned int *programLine);
 
     uint8_t parserPosition(){
         return uint8_t(_position);

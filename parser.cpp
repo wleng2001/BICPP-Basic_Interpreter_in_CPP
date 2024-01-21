@@ -22,7 +22,7 @@ void parser::setProgramLine(unsigned int programLine){
     }
 }
 
-parser::parser(string &input, void (*errorFunction)(string input), string (*inputFunction)(), void printFunction(string *input), variables *variableMemory, unsigned int *programLineIterator) : _input(input), _position(0), errorFunc(errorFunction), _inputFunc(inputFunction), _printFunc(printFunction), _vM(variableMemory), _programLine(programLineIterator){
+parser::parser(string &input, void (*errorFunction)(string input), string (*inputFunction)(), void printFunction(string *input), variables *variableMemory, programMemorySupport *pMS, unsigned int *programLineIterator) : _input(input), _position(0), errorFunc(errorFunction), _inputFunc(inputFunction), _printFunc(printFunction), _vM(variableMemory), _pMS(pMS), _programLine(programLineIterator){
     input.push_back(EOS); //umieszcza strażnika na końcu
     expErrorFunc = errorFunction;
 }
@@ -263,6 +263,7 @@ bool parser::parseClear(string statement, bool parsed){
         char c = lookAhead();
         if(c==0){
             _vM->clearMemory();
+            _pMS->memoryClear();
             return true;
         }else{
             throw tooManyArg();
