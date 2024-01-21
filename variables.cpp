@@ -61,7 +61,7 @@ bool variables::isHexLetter(char c){
 bool variables::isInt(string &text, uint8_t length){
     for(uint8_t i = 0; i<length; i++){
         char c = text[i];
-        if(isdigit(c) || isHexLetter(c) || (c=='H' && i==length-1))
+        if(isdigit(c) || isHexLetter(c) || (c=='H' && i==length-1) || (c=='-' && i==0))
             continue;
         else
             return false;
@@ -74,6 +74,8 @@ bool variables::isNum(string &text, uint8_t length){
     for(uint8_t i = 0; i <length; i++){
         char c = text[i];
         if(isdigit(c))
+            continue;
+        if(c=='-' && i==0)
             continue;
         if(c=='.' && !isPointer){
             isPointer = true;
