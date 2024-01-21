@@ -315,48 +315,46 @@ expressions* parser::parseRange(){
     expressions* e;
     char c;
     size_t findPos = _input.find('[');
-    if( findPos != string::npos && findPos>_position){
-        try{
-            e = parseSum();
+    try{
+        e = parseSum();
+        c = lookAhead();
+        if(c == '['){
+            _position++;
+            expressions* startRange = parseSum();
             c = lookAhead();
-            if(c == '['){
+            if(c==':'){
                 _position++;
-                expressions* startRange = parseSum();
+                expressions* endRange = parseSum();
                 c = lookAhead();
-                if(c==':'){
+                if(c==']'){
                     _position++;
-                    expressions* endRange = parseSum();
-                    c = lookAhead();
-                    if(c==']'){
-                        _position++;
-                        return new substringOperation(e, startRange, endRange);
-                    }else{
-                        delete e;
-                        delete startRange;
-                        delete endRange;
-                        throw wrongStringRange();
-                    }
+                    return new substringOperation(e, startRange, endRange);
                 }else{
                     delete e;
                     delete startRange;
+                    delete endRange;
                     throw wrongStringRange();
                 }
+            }else{
+                delete e;
+                delete startRange;
+                throw wrongStringRange();
             }
-        }catch(wrongRange()){
-            delete e;
-            throw wrongRange();
-        }catch(wrongStringRange()){
-            delete e;
-            throw wrongStringRange();
-        }catch(notParsed()){
-            #if debug
-            errorFunc("nieparsowalny range");
-            #endif
-            delete e;
-            throw notParsed();
         }
+    }catch(wrongRange()){
+        delete e;
+        throw wrongRange();
+    }catch(wrongStringRange()){
+        delete e;
+        throw wrongStringRange();
+    }catch(notParsed()){
+        #if debug
+        errorFunc("nieparsowalny range");
+        #endif
+        delete e;
+        throw notParsed();
     }
-    return parseSum();
+    return e;
 }
 
 expressions* parser::parseSum(){
