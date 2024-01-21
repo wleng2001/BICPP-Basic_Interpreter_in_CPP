@@ -10,17 +10,17 @@
 #include <map>
 #include "variables.h"
 #include "variables.cpp"
+#include "text_analyzer.h"
 
 using namespace std;
 
-bool *expError;
 void (*expErrorFunc)(string input);
 
 class expressions{
 
     public:
     virtual variableValue eval(variables *vM) = 0;
-    virtual ~expressions(){}
+    virtual ~expressions(){};
 };
 
 class constant : public expressions{
@@ -399,11 +399,9 @@ class concatenationOperator : public expressions{
                     vV.valueS = lVV.valueS + rVV.valueS;
                     return vV;
                 default:
-                    *expError = 1;
                     expErrorFunc("Error: can't " + string(1, symbol) + " for strings");
             }
         }else{
-            *expError = 1;
             throw wrongType();
             return vV;
         }
@@ -495,7 +493,6 @@ class binaryOperator : public expressions{
                     vV.valueI = pow(lVV.valueI, rVV.valueI);
                     return vV;
                 default:
-                    *expError = 1;
                     throw wrongOperator();
             }
             return vV;
@@ -528,12 +525,10 @@ class binaryOperator : public expressions{
                     vV.valueN = pow(lVV.valueN, rVV.valueN);
                     return vV;
                 default:
-                    *expError = 1;
                     throw wrongOperator();
             }
             return vV;
         }
-        *expError = 1;
         throw variableNotFound();
         return vV;
     }
@@ -552,7 +547,6 @@ class variable : public expressions{
         expErrorFunc("variable");
         #endif 
         if(!vM->readVariable(&name, &vV)){
-            *expError = 1;
             throw variableNotFound(); //errorClasses.h
         }
         #if debug

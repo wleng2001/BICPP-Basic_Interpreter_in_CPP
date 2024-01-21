@@ -3,8 +3,8 @@
 
 using namespace std;
 
-void printFunction(string text){
-    cout << text;
+void printFunction(string *text){
+    cout << *text;
 }
 
 void errorFunction(string text){

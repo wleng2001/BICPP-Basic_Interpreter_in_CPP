@@ -17,12 +17,14 @@ using namespace std;
 class parser{
     string _input;
     size_t _position;
-    bool *error;
     void (*errorFunc)(string input);
+    string (*_inputFunc)();
+    void (*_printFunc)(string *input);
+    variables *_vM;
 
     public:
 
-    parser(string input, bool *error, void (*errorFunction)(string input));
+    parser(string &input, void (*errorFunction)(string input), string (*inputFunction)(), void printFunction(string *input), variables *variableMemory);
 
     uint8_t parserPosition(){
         return uint8_t(_position);
@@ -36,9 +38,9 @@ class parser{
     expressions* parseCommand();
     expressions* parseStatements();
 
-    expressions* parseRem(string statement);
-    expressions* parseLet(string statement);
-    expressions* parseInput(string statement);
+    bool parseRem(string statement, bool parsed);
+    bool parseLet(string statement, bool parsed);
+    bool parseInput(string statement, bool parsed);
 
     expressions* parseFunction();
     expressions* parseLogical();
@@ -52,7 +54,7 @@ class parser{
     expressions* parseLiteral();
     expressions* parseConstant();
     expressions* parseLogicalVariable();
-    expressions* parseVariable(string &s);
+    expressions* parseVariable(string &s, bool returnName = false);
     expressions* parseParen();
 };
 

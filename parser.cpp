@@ -2,9 +2,8 @@
 
 const char EOS = 0;
 
-parser::parser(string input, bool *error, void (*errorFunction)(string input)) : _input(input), _position(0), error(error), errorFunc(errorFunction){
+parser::parser(string &input, void (*errorFunction)(string input), string (*inputFunction)(), void (*printFunction)(string *input), variables *variableMemory) : _input(input), _position(0), errorFunc(errorFunction), _inputFunc(inputFunction), _printFunc(printFunction), _vM(variableMemory){
     input.push_back(EOS); //umieszcza strażnika na końcu
-    expError = error;
     expErrorFunc = errorFunction;
 }
 
@@ -44,14 +43,17 @@ expressions* parser::parseStatements(){
             c = _input[_position];
         }
         if(c == ' ' || c==0){
-            if(parseRem(statement)==nullptr){
+            bool parsed;
+            if(parseRem(statement, parsed)==true){
                 return new constantS("");
             }
-            e = parseLet(statement);
-
-            if(e==nullptr){
+            parsed = parseLet(statement, parsed);
+            parsed = parseInput(statement, parsed);
+            if(parsed==false){
                 _position = 0;
                 return parseFunction();
+            }else{
+                return new constantS("");
             }
         }else{
             _position = 0;
@@ -78,21 +80,19 @@ expressions* parser::parseStatements(){
     return e;
 }
 
-expressions* parser::parseRem(string statement){
-    expressions *e;
+bool parser::parseRem(string statement, bool parsed){
     if(statement == "REM"){
         while(lookAhead()!=0){
             _position++;
         }
-        e = nullptr;
-        return e;
+        return true;
     }
-    return e;
+    return parsed;
 }
 
-expressions* parser::parseLet(string statement){
-    expressions *e = nullptr;
+bool parser::parseLet(string statement, bool parsed){
     if(statement == "LET"){
+        expressions *e;
         #if debug
         errorFunc("parseLet: "+to_string(_position));
         #endif
@@ -113,15 +113,13 @@ expressions* parser::parseLet(string statement){
         try{
             if(s!=""){
                 e = new letStatement(s, parseLogical());
-                return e;
+                return true;
             }else{
                 throw variableNameAbsence();
-                return e;
             }
                     }catch(wrongType()){
             delete e;
             throw wrongType();
-            return e;
         }catch(notParsed()){
             delete e;
             throw notParsed();
@@ -130,16 +128,66 @@ expressions* parser::parseLet(string statement){
             throw;
         }
     }else{
-        delete e;
-        return e;
+        return parsed;
     }
 
 }
 
-expressions* parser::parseInput(string statement){
-    expressions* e = nullptr;
-    if(statement=="INPUT"){
 
+bool parser::parseInput(string statement, bool parsed){
+    if(statement=="INPUT"){
+        expressions *internalE;
+        #if debug
+        errorFunc("parseInput");
+        #endif
+        char c = lookAhead();
+        if(c=='"'){
+            try{
+                _position++;
+                internalE = parseLiteral();
+            }catch(...){
+                delete internalE;
+                throw notParsed();
+            }
+            variableValue prompt = internalE->eval(_vM);
+            _printFunc(&prompt.valueS);
+        }
+        vector <string> variableList;
+        if(lookAhead()==0){
+            throw notParsed();
+        }
+        do{
+            c = lookAhead();
+            string variableName = string(1,c);
+            _position++;
+            internalE = parseVariable(variableName, true);
+            variableName = internalE->eval(_vM).valueS;
+            variableList.push_back(variableName);
+        }while(c==',');
+
+        string value = _inputFunc();
+        int position = 0;
+        for(uint8_t i = 0; i<variableList.size(); i++){
+            string oneVariableValue;
+            c = value[position];
+            while(c!=',' && c!=0){
+                oneVariableValue.push_back(c);
+                position++;
+                c = value[position];
+            }
+            try{
+                _vM->addVariable(variableList[i],oneVariableValue);
+            }catch(...){
+                delete internalE;
+                _input = value;
+                _position = position;
+                throw;
+            }
+
+        }
+        return true;
+    }else{
+        return parsed;
     }
 }
 
@@ -451,7 +499,6 @@ expressions* parser::parseConstant(){
                 if(isDecimalSeparator == false)
                     isDecimalSeparator = true;
                 else{
-                    *this->error = 1;
                     this->errorFunc("Error: to much pointer: "+_input);
                     throw notParsed();
                 }
@@ -485,6 +532,8 @@ expressions* parser::parseLiteral(){
     char c = lookAhead();
     bool endAnalyze = false;
     while(!endAnalyze){
+        if(c==0)
+            throw notParsed();
         switch(c){
             case('"'):
                 if(_input[_position+1]=='"'){
@@ -536,11 +585,11 @@ expressions* parser::parseLogicalVariable(){
     return parseVariable(s);
 }
 
-expressions* parser::parseVariable(string &s){
+expressions* parser::parseVariable(string &s, bool returnName){
     #if debug
     errorFunc("parseVariable: "+to_string(_position));
     #endif
-    expressions *e;
+    expressions *e = nullptr;
     char c = _input[_position];
     while(isalnum(c) || c == '%' || c == '$'){
         s.push_back(_input[_position]);
@@ -551,9 +600,14 @@ expressions* parser::parseVariable(string &s){
         #if debug
         errorFunc("variable name: "+s);
         #endif
-        e = new variable(s);
+        if(returnName==false){
+            e = new variable(s);
+        }else{
+            e = new constantS(s);
+        }
         return e;
     }catch(variableNotFound){
+
         delete e;
         throw variableNotFound();
     }catch(variableNameAbsence){

@@ -19,7 +19,7 @@ class basic{
     bool error = 0;
     bool (*interruptFunc)();
     bool _interruptExist=0;
-    void (*printFunc)(string text);
+    void (*printFunc)(string *text);
     void (*errorFunc)(string text);
     string (*inputFunc)();
     variables _varMemory;
@@ -29,7 +29,7 @@ class basic{
 
     public:
 
-    basic(void (*printFunction)(string text), void (*errorFunction)(string text), string (*inputFunction)()){
+    basic(void (*printFunction)(string *text), void (*errorFunction)(string text), string (*inputFunction)()){
         printFunc = printFunction;
         errorFunc = errorFunction;
         txt_an.addErrorFuntion(errorFunc);
@@ -86,7 +86,7 @@ class basic{
             return output;
         }
 
-        parser pars(*input, &error, errorFunc);
+        parser pars(*input, errorFunc, inputFunc, printFunc, &_varMemory);
         try{ 
             expressions* e = pars.parseExpressions();
             variableValue vV = e->eval(&_varMemory);
