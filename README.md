@@ -9,7 +9,8 @@ To run compiled program in windows you can do it by double click *main.exe* in l
 ##### `.\main.exe`
 After runing compiler you should see information bellow.
 ```
-Basic interpreter example program
+Basic interpreter example implementation
+Version: A0.03
 >>>
 ```
 You can print commands!
@@ -97,6 +98,9 @@ Print statement allows to print on output e.g.:
 displays literal writing after print and value of `A$` variable. Argument of the statement must by separated by comma. 
 ###### REM
 This statement allow you to add comment in your code. If you write it at the begining of the line it won't be interpreted and executed.
-
+###### GOTO
+GOTO statement allows to go to any line of program storaged in memory. Argument must be integer constant e.g.:
+##### `GOTO 10`
+it jumps program to ten lines.
 
   
