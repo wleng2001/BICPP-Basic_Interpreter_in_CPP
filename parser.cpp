@@ -166,7 +166,8 @@ bool parser::parseLet(string statement, bool parsed){
         }catch(notParsed()){
             delete e;
             throw notParsed();
-        }catch(...){
+        }catch(bad_alloc){
+            delete e;
             throw;
         }
     }else{
@@ -219,6 +220,9 @@ bool parser::parseInput(string statement, bool parsed){
             }
             try{
                 _vM->addVariable(variableList[i],oneVariableValue);
+            }catch(std::bad_alloc){
+                delete internalE;
+                throw;
             }catch(...){
                 delete internalE;
                 _input = value;

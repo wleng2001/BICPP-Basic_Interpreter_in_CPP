@@ -115,6 +115,9 @@ string basic::programLoop(string *input){
         }catch(tooManyArg){
             printError("Error: to many arguments given", pars.parserPosition()-1, &text, &i);
             return "";
+        }catch(std::bad_alloc){
+            printError("Error: overflow", pars.parserPosition(), &text, &i);
+            return "";
         }
         if(pMS.maxLine==0 && i>0){
             return "";

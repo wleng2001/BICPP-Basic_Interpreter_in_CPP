@@ -23,6 +23,9 @@ class letStatement : public expressions{
         }catch(variableNotFound){
             delete e;
             throw;
+        }catch(bad_alloc){
+            delete e;
+            throw;
         }catch(notParsed){
             delete e;
             throw;
@@ -51,6 +54,9 @@ class letStatement : public expressions{
         }catch(wrongType){
             delete e;
             throw wrongType();
+        }catch(bad_alloc){
+            delete e;
+            throw;
         }
         return vV;
     }

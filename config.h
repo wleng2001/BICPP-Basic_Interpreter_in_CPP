@@ -2,7 +2,7 @@
 #define config_h
 
 #define debug false
-#define arduino false
-#define stringAvailable true
+#define arduino false //true not available yet
+#define stringAvailable true //false not available yet
 
 #endif

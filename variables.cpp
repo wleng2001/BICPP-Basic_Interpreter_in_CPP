@@ -97,45 +97,49 @@ void variables::addVariable(string &variableName, string &value){
     uint8_t variableNameLength = variableName.length();
     uint8_t valueLength = value.length();
     char lastChar = variableName[variableNameLength-1];
-    switch(lastChar){
-    case '%':
-        if(isInt(value, valueLength) || isNum(value, valueLength)){
-            _VLI[variableName].isArray = false;
-            _VLI[variableName].value.reserve(1);
-            if(isInt(value, valueLength))
-                _VLI[variableName].value[0] = stoi(convertHexToDecimal(value));
-            else
-                _VLI[variableName].value[0] = stof(value);
+    try{
+        switch(lastChar){
+        case '%':
+            if(isInt(value, valueLength) || isNum(value, valueLength)){
+                _VLI[variableName].isArray = false;
+                _VLI[variableName].value.reserve(1);
+                if(isInt(value, valueLength))
+                    _VLI[variableName].value[0] = stoi(convertHexToDecimal(value));
+                else
+                    _VLI[variableName].value[0] = stof(value);
+                return;
+            }
+            else{
+                errorFunc("Error: value assigment to variable isn't int (var: "+variableName+" value: "+value+")");
+                *error = true;
+                throw wrongType();
+                return;
+            }
+        case '$':
+            _VLS[variableName].isArray = false;
+            _VLS[variableName].value.clear();
+            _VLS[variableName].value.reserve(1);
+            _VLS[variableName].value.push_back(value);
             return;
-        }
-        else{
-            errorFunc("Error: value assigment to variable isn't int (var: "+variableName+" value: "+value+")");
-            *error = true;
-            throw wrongType();
+        case ')':
+            errorFunc("Error: array support not added yet");
             return;
+        default:
+            if(isNum(value, valueLength)){
+                _VLN[variableName].isArray = false;
+                _VLN[variableName].value.reserve(1);
+                _VLN[variableName].value[0] = stof(value);
+                return;
+            }
+            else{
+                errorFunc("Error: value assigment to variable isn't num (var: "+variableName+" value: "+value+")");
+                *error = true;
+                throw wrongType();
+                return;
+            }
         }
-    case '$':
-        _VLS[variableName].isArray = false;
-        _VLS[variableName].value.clear();
-        _VLS[variableName].value.reserve(1);
-        _VLS[variableName].value.push_back(value);
-        return;
-    case ')':
-        errorFunc("Error: array support not added yet");
-        return;
-    default:
-        if(isNum(value, valueLength)){
-            _VLN[variableName].isArray = false;
-            _VLN[variableName].value.reserve(1);
-            _VLN[variableName].value[0] = stof(value);
-            return;
-        }
-        else{
-            errorFunc("Error: value assigment to variable isn't num (var: "+variableName+" value: "+value+")");
-            *error = true;
-            throw wrongType();
-            return;
-        }
+    }catch(std::bad_alloc){
+        throw;
     }
 }
 
