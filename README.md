@@ -77,7 +77,26 @@ Result of relation operations or numbers can be checked by logical operators, wh
 
 #### Statements
 
-At the moment there are the following statements:
-- `LET`
-- `REM`
+Statements allows to edit text, clear memory, take input and other thing. Bellow you can read description about each statements.
+
+###### RUN
+The statement start to interpret program stored in program memory. It does't take any arguments.
+###### CLEAR
+The statement clear program and variable memory. It doesn't take any argument.
+###### LET
+The statement allow to assign value to variable for example:
+##### `LET x% = 1`
+assign *1* to variable *x%*. At the right of the equal sign can be equation, variable constants, logical an relation operation.
+###### INPUT
+It allows you to input text or numbers to program and assign it to variable e.g.:
+##### `INPUT "->" A$`
+displays `->`, which is prompt ask you for print something. After press enter your input will be assign to `A$` variable.
+###### PRINT
+Print statement allows to print on output e.g.:
+##### `PRINT "Variable value: ", A$`
+displays literal writing after print and value of `A$` variable. Argument of the statement must by separated by comma. 
+###### REM
+This statement allow you to add comment in your code. If you write it at the begining of the line it won't be interpreted and executed.
+
+
   
