@@ -523,8 +523,14 @@ expressions* parser::parseSum(){
     expressions* e;
 
     try{
-        e = parseMult();
         char c = lookAhead();
+        if(c=='-'){
+            _position++;
+            e = new binaryOperator('-', new constant(0), parseMult());
+        }else{
+            e = parseMult();
+        }
+        c = lookAhead();
         while(c == '+' || c == '-'){
             _position++;
             e = new binaryOperator(c, e, parseMult());

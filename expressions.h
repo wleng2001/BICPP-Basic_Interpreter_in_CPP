@@ -482,8 +482,12 @@ class binaryOperator : public expressions{
                     vV.valueI = lVV.valueI * rVV.valueI;
                     return vV;
                 case '/':
-                    vV.valueI = lVV.valueI / rVV.valueI;
-                    return vV;
+                    if(rVV.valueI!=0){
+                        vV.valueI = lVV.valueI / rVV.valueI;
+                        return vV;
+                    }else{
+                        throw notParsed();
+                    }
                 case '+':
                     vV.valueI = lVV.valueI + rVV.valueI;
                     return vV;
@@ -514,8 +518,12 @@ class binaryOperator : public expressions{
                     vV.valueN = lVV.valueN * rVV.valueN;
                     return vV;
                 case '/':
-                    vV.valueN = lVV.valueN / rVV.valueN;
-                    return vV;
+                    if(rVV.valueN!=0){
+                        vV.valueN = lVV.valueN / rVV.valueN;
+                        return vV;
+                    }else{
+                        throw notParsed();
+                    }
                 case '+':
                     vV.valueN = lVV.valueN + rVV.valueN;
                     return vV;
