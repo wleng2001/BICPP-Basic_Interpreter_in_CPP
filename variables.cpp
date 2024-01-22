@@ -99,10 +99,13 @@ void variables::addVariable(string &variableName, string &value){
     char lastChar = variableName[variableNameLength-1];
     switch(lastChar){
     case '%':
-        if(isInt(value, valueLength)){
+        if(isInt(value, valueLength) || isNum(value, valueLength)){
             _VLI[variableName].isArray = false;
             _VLI[variableName].value.reserve(1);
-            _VLI[variableName].value[0] = stoi(convertHexToDecimal(value));
+            if(isInt(value, valueLength))
+                _VLI[variableName].value[0] = stoi(convertHexToDecimal(value));
+            else
+                _VLI[variableName].value[0] = stof(value);
             return;
         }
         else{

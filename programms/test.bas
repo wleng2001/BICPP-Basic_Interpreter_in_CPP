@@ -26,3 +26,11 @@ let x$ = "abcdefghijklmnopqrstuvwxyz"
 x$[0:2]
 x$[2:0]
 x$&"1234"
+10 let zm% = 0
+20 print zm%
+30 let zm% = zm%+1
+40 goto 20
+list
+run
+clear
+
