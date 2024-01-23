@@ -66,6 +66,7 @@ string basic::run(string *input){
 string basic::programLoop(string *input){
     parser pars( errorFunc, inputFunc, printFunc, &_varMemory, &pMS);
     for(unsigned int i=0; i<=pMS.maxLine; i++){
+        variableValue vV;
         if(_interruptExist==1){
                 if(interruptFunc()==1){
                     errorFunc("User interrupt");
@@ -82,7 +83,7 @@ string basic::programLoop(string *input){
         }else{
             text = *input;
         }
-        variableValue vV;
+        
         pars.addInput(text);
         pars.addProgramLine(&i);
         try{ 
@@ -138,5 +139,6 @@ string basic::programLoop(string *input){
                     return "";
             }
         }
+        delete &vV;
     }
 }

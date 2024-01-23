@@ -170,7 +170,6 @@ bool parser::parseLet(string statement, bool parsed){
             if(s!=""){
                 e = new letStatement(s, parseLogical());
                 e->eval(_vM);
-                return true;
             }else{
                 throw variableNameAbsence();
             }
@@ -184,6 +183,8 @@ bool parser::parseLet(string statement, bool parsed){
             delete e;
             throw;
         }
+        delete e;
+        return true;
     }else{
         return parsed;
     }
@@ -245,6 +246,7 @@ bool parser::parseInput(string statement, bool parsed){
             }
 
         }
+        delete internalE;
         return true;
     }else{
         return parsed;
@@ -263,6 +265,7 @@ bool parser::parsePrint(string statement, bool parsed){
             expressions *e = parseFunction();
             try{
                 output += returnString(e);
+                delete e;
             }catch(wrongType){
                 delete e;
                 throw;
@@ -313,6 +316,7 @@ bool parser::parseGoto(string statement, bool parsed){
             throw wrongRange();
         }
         setProgramLine(vV.valueI-1);
+        delete e;   
         return true;
     }
     return parsed;

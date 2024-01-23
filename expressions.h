@@ -136,6 +136,7 @@ class logicalOperator : public expressions{
     virtual ~logicalOperator(){
         delete left;
         delete right;
+        delete &symbol;
     }
 
     variableValue eval(variables *vM){
@@ -154,7 +155,6 @@ class logicalOperator : public expressions{
             delete left;
             delete right;
             throw wrongType();
-            return vV;
         }
         #if debug
         expErrorFunc(to_string(leftValue) + " " + symbol + " " + to_string(rightValue));
@@ -224,6 +224,7 @@ class notOperator : public expressions{
 
     virtual ~notOperator(){
         delete right;
+        delete &symbol;
     }
 
     variableValue eval(variables *vM){
@@ -269,6 +270,7 @@ class relationOperator : public expressions{
     virtual ~relationOperator(){
         delete left;
         delete right;
+        delete &symbol;
     }
 
     variableValue eval(variables *vM){
@@ -549,6 +551,10 @@ class variable : public expressions{
     public:
     variable(string n) : name(n){
     };
+
+    virtual ~variable(){
+        delete &name;
+    }
 
     virtual variableValue eval(variables *vM){
         variableValue vV;
