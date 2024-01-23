@@ -23,7 +23,7 @@ class letStatement : public expressions{
         }catch(variableNotFound){
             delete e;
             throw;
-        }catch(bad_alloc){
+        }catch(std::bad_alloc){
             delete e;
             throw;
         }catch(notParsed){
@@ -54,7 +54,7 @@ class letStatement : public expressions{
         }catch(wrongType){
             delete e;
             throw wrongType();
-        }catch(bad_alloc){
+        }catch(std::bad_alloc){
             delete e;
             throw;
         }
