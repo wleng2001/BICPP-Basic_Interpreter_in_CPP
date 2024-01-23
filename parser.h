@@ -29,6 +29,11 @@ class parser{
 
     parser(string &input, void (*errorFunction)(string input), string (*inputFunction)(), void printFunction(string *input), variables *variableMemory, programMemorySupport *pMS, unsigned int *programLine);
 
+    parser( void (*errorFunction)(string input), string (*inputFunction)(), void printFunction(string *input), variables *variableMemory, programMemorySupport *pMS);
+    
+    void addInput(string &input);
+    void addProgramLine(unsigned int *programLine);
+
     uint8_t parserPosition(){
         return uint8_t(_position);
     }
@@ -38,7 +43,6 @@ class parser{
     char lookAhead(); //zwraca następny znak po spacjach
 
     expressions* parseExpressions();
-    expressions* parseCommand();
     expressions* parseStatements();
 
     bool parseRun(string statement, bool parsed);

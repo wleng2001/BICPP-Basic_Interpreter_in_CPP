@@ -64,6 +64,7 @@ string basic::run(string *input){
 }
 
 string basic::programLoop(string *input){
+    parser pars( errorFunc, inputFunc, printFunc, &_varMemory, &pMS);
     for(unsigned int i=0; i<=pMS.maxLine; i++){
         if(_interruptExist==1){
                 if(interruptFunc()==1){
@@ -81,11 +82,13 @@ string basic::programLoop(string *input){
         }else{
             text = *input;
         }
-        parser pars(text, errorFunc, inputFunc, printFunc, &_varMemory, &pMS, &i);
         variableValue vV;
+        pars.addInput(text);
+        pars.addProgramLine(&i);
         try{ 
             expressions* e = pars.parseExpressions();
             vV = e->eval(&_varMemory);
+            delete e;
         }catch(notParsed){
             printError("Error: not parsed", pars.parserPosition(), &text, &i);
             return "";
@@ -122,6 +125,7 @@ string basic::programLoop(string *input){
         if(pMS.maxLine==0 && i>0){
             return "";
         }
+        delete &pars;
         if(i==0){
             switch(vV.type){
                 case 's':

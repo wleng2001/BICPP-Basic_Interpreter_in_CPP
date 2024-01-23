@@ -27,6 +27,20 @@ parser::parser(string &input, void (*errorFunction)(string input), string (*inpu
     expErrorFunc = errorFunction;
 }
 
+parser::parser( void (*errorFunction)(string input), string (*inputFunction)(), void printFunction(string *input), variables *variableMemory, programMemorySupport *pMS) :  _position(0), errorFunc(errorFunction), _inputFunc(inputFunction), _printFunc(printFunction), _vM(variableMemory), _pMS(pMS){
+    expErrorFunc = errorFunction;
+}
+
+void parser::addInput(string &input){
+    input.push_back(EOS);
+    _input = input;
+    _position = 0;
+}
+
+void parser::addProgramLine(unsigned int *programLine){
+    _programLine = programLine;
+}
+
 void parser::skipWhiteSpace(){
     while(isspace(_input[_position])) //jeśli znak to biały znak
         _position++;
@@ -166,7 +180,7 @@ bool parser::parseLet(string statement, bool parsed){
         }catch(notParsed()){
             delete e;
             throw notParsed();
-        }catch(bad_alloc){
+        }catch(std::bad_alloc){
             delete e;
             throw;
         }
