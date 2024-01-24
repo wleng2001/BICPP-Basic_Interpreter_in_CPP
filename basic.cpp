@@ -126,7 +126,6 @@ string basic::programLoop(string *input){
         if(pMS.maxLine==0 && i>0){
             return "";
         }
-        delete &pars;
         if(i==0){
             switch(vV.type){
                 case 's':
@@ -139,6 +138,5 @@ string basic::programLoop(string *input){
                     return "";
             }
         }
-        delete &vV;
     }
 }

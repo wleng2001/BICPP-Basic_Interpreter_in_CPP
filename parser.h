@@ -8,7 +8,6 @@
 #include <math.h>
 #include <map>
 #include "expressions.h"
-#include "expressions.cpp"
 #include "statements.h"
 #include "text_analyzer.h"
 
