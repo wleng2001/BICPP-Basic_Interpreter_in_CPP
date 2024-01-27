@@ -19,8 +19,11 @@ basic::basic(void (*printFunction)(string *text), void (*errorFunction)(string t
     txt_an.error = &error;
     _varMemory.addErrorVariable(&error);
 }
-
+#if arduino
+String basic::run(string *input){
+#else
 string basic::run(string *input){
+#endif
     error = 0;
     if(*input==""){
         return "";
@@ -41,9 +44,20 @@ string basic::run(string *input){
 
     #if debug
     #endif
-    if( input->find("LIST")!=string::npos){
+    if( input->find("LIST")!= 
+    #if arduino
+    String::npos
+    #else
+    string::npos
+    #endif
+    ){
+        #if arduino
+        String output = "";
+        String partOutput = "";
+        #else
         string output = "";
         string partOutput = "";
+        #endif
         for(auto i = 0; i<=pMS.maxLine; i++){
             partOutput = "";
             if(pMS._pM.count(i)){
@@ -62,8 +76,11 @@ string basic::run(string *input){
     }
     return programLoop(input);
 }
-
+#if arduino
+String basic::programLoop(string *input){
+#else
 string basic::programLoop(string *input){
+#endif
     parser pars( errorFunc, inputFunc, printFunc, &_varMemory, &pMS);
     for(unsigned int i=0; i<=pMS.maxLine; i++){
         variableValue vV;
@@ -73,7 +90,11 @@ string basic::programLoop(string *input){
                     return "";
             }
         }
+        #if arduino
+        String text;
+        #else
         string text;
+        #endif
         if(i>0){
             if(!pMS._pM.count(i)){
                 continue;
