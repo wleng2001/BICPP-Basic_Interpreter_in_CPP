@@ -4,11 +4,19 @@
 using namespace std;
 
 class letStatement : public expressions{
+    #if arduino
+    String varName;
+    #else
     string varName;
+    #endif
     expressions *e;
 
     public:
+    #if arduino
+    letStatement(String variableName, expressions *right): varName(variableName), e(right){};
+    #else
     letStatement(string variableName, expressions *right): varName(variableName), e(right){};
+    #endif
     virtual ~letStatement(){
         delete e;
     }
@@ -30,7 +38,11 @@ class letStatement : public expressions{
             delete e;
             throw;
         };
+        #if arduino
+        String value;
+        #else
         string value;
+        #endif
         if(eVV.type == 'i'){
             value = to_string(eVV.valueI);
         }else{
