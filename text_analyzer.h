@@ -5,6 +5,7 @@
 #include "tablesAndOtherConst.h"
 
 #if arduino
+#include <math.h>
 
 #else
 #include <iostream>
@@ -19,10 +20,10 @@
 #include <cstdlib> //biblioteka, aby działały komendy sytemowe np: system("cls");
 #include <time.h>
 #include <fstream> //biblioteka do obsługi plików
-#endif
-
 #include <cmath>
 #include <algorithm>
+#endif
+
 
 using namespace std;
 
@@ -37,7 +38,7 @@ class text_analyzer{
   #endif
 
   #if arduino
-  bool special_char_in_correct_place(String &data, int position);
+  bool special_char_in_correct_place(String &data, unsigned int position);
   #else
   bool special_char_in_correct_place(string &data, int position);
   #endif
@@ -55,10 +56,11 @@ class text_analyzer{
     
     #if arduino
     String rewrite_in_range(uint8_t start, uint8_t end, String data) {
+      String new_data = "";
     #else
     string rewrite_in_range(uint8_t start, uint8_t end, string data) {
-    #endif
       string new_data = "";
+    #endif
       if (end < 0) {
         return "";
       }
@@ -70,12 +72,13 @@ class text_analyzer{
 
     #if arduino
     void delete_spaces(String &data) {
+      String new_data = "";
     #else
     void delete_spaces(string &data) {
+      string new_data = "";
     #endif
       uint8_t i = 0;
       char analize_char = data[0];
-      string new_data = "";
       while (analize_char == ' ') {
         analize_char = data[++i];
       }
@@ -88,14 +91,15 @@ class text_analyzer{
 
     #if arduino
     String rm_comment(String data) {
+      if(data.indexOf("REM")==-1){
     #else
     string rm_comment(string data) {
-    #endif
       if(data.find("REM")==string::npos){
+    #endif
         return data;
       }
       #if arduino
-      String new_data = rewrite_in_range(0, data.find("REM")-1, data);
+      String new_data = rewrite_in_range(0, data.indexOf("REM")-1, data);
       #else
       string new_data = rewrite_in_range(0, data.find("REM")-1, data);
       #endif

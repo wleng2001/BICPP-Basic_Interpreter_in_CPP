@@ -1,5 +1,6 @@
 #ifndef tablesAndOtheConst_h
 #define tablesAndOtherConst_h
+#include "config.h"
 
 char mathematicChar[] = {'+', '-', '*','^', '/', '<', '>', '=','[',']'};
 

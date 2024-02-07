@@ -1,13 +1,19 @@
 #ifndef expressions_h
 #define expressions_h
 
+#include "config.h"
+
+#if arduino
+#include <Arduino.h>
+#else
 #include <iostream>
 #include <stdio.h> //aby działał getchar i exit
 #include <iomanip> //biblioteka do manipulaowania wejściem i wyjściem
 #include <cmath>
 #include <algorithm>
-#include <math.h>
 #include <map>
+#endif
+#include <math.h>
 #include "variables.h"
 #include "variables.cpp"
 #include "text_analyzer.h"
@@ -74,9 +80,11 @@ class constantS : public expressions{
     #endif
 
     public:
-    constantS(string v): value(v){
-
-    }
+    #if arduino
+    constantS(String v): value(v){}
+    #else
+    constantS(string v): value(v){}
+    #endif
 
     virtual variableValue eval(variables *vM){
         variableValue vV;
@@ -120,11 +128,19 @@ string convertToString(variableValue *v){
         return value;
     }else{
         if(v->type == 'i'){
+            #if arduino
+            value = String(v->valueI);
+            #else
             value = to_string(v->valueI);
+            #endif
             return value;
         }else{
             if(v->type == 'n'){
+                #if arduino
+                value = String(int(v->valueN));
+                #else
                 value = to_string(int(v->valueN));
+                #endif
                 return value;
             }else{
                 throw wrongType();
@@ -146,6 +162,7 @@ int convertToInt(variableValue *v){
             throw wrongType();
         }
     }
+    return value;
 }
 
 class logicalOperator : public expressions{
@@ -299,7 +316,7 @@ class notOperator : public expressions{
 };
 
 class relationOperator : public expressions{
-    expressions* left, *right;
+    expressions *left, *right;
     #if arduino
     String symbol="";
     #else
@@ -422,6 +439,7 @@ class relationOperator : public expressions{
             }
         }
         throw wrongOperator();
+        return vV;
     }
 };
 
@@ -493,7 +511,7 @@ class substringOperation : public expressions{
         variableValue sRVV = sR->eval(vM);
         variableValue eRVV = eR->eval(vM);
         if(tSSVV.type == 's' && sRVV.type == 'i' && eRVV.type == 'i'){
-            if(sRVV.valueI>eRVV.valueI || eRVV.valueI>=tSSVV.valueS.length())
+            if(sRVV.valueI>eRVV.valueI || eRVV.valueI>=int(tSSVV.valueS.length()))
                 throw wrongRange();
             else{
                 vV.type = 's';

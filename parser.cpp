@@ -12,9 +12,17 @@ string parser::returnString(expressions *e){
         case('s'):
             return vV.valueS;
         case('i'):
+            #if arduino
+            return String(vV.valueI);
+            #else
             return to_string(vV.valueI);
+            #endif
         case('n'):
+            #if arduino
+            return String(vV.valueN);
+            #else
             return to_string(vV.valueN);
+            #endif
         default:
             throw wrongType();
     }
@@ -28,23 +36,30 @@ void parser::setProgramLine(unsigned int programLine){
 
 #if arduino
 parser::parser(String &input, void (*errorFunction)(String input), String (*inputFunction)(), void printFunction(String *input), variables *variableMemory, programMemorySupport *pMS, unsigned int *programLineIterator) : _input(input), _position(0), errorFunc(errorFunction), _inputFunc(inputFunction), _printFunc(printFunction), _vM(variableMemory), _pMS(pMS), _programLine(programLineIterator){
+    input += EOS; //umieszcza strażnika na końcu
 #else
 parser::parser(string &input, void (*errorFunction)(string input), string (*inputFunction)(), void printFunction(string *input), variables *variableMemory, programMemorySupport *pMS, unsigned int *programLineIterator) : _input(input), _position(0), errorFunc(errorFunction), _inputFunc(inputFunction), _printFunc(printFunction), _vM(variableMemory), _pMS(pMS), _programLine(programLineIterator){
-#endif
     input.push_back(EOS); //umieszcza strażnika na końcu
+#endif
+    
     expErrorFunc = errorFunction;
 }
 
 #if arduino
-parser::parser( void (*errorFunction)(string input), String (*inputFunction)(), void printFunction(String *input), variables *variableMemory, programMemorySupport *pMS) :  _position(0), errorFunc(errorFunction), _inputFunc(inputFunction), _printFunc(printFunction), _vM(variableMemory), _pMS(pMS){
+parser::parser( void (*errorFunction)(String input), String (*inputFunction)(), void printFunction(String *input), variables *variableMemory, programMemorySupport *pMS) :  _position(0), errorFunc(errorFunction), _inputFunc(inputFunction), _printFunc(printFunction), _vM(variableMemory), _pMS(pMS){
 #else
 parser::parser( void (*errorFunction)(string input), string (*inputFunction)(), void printFunction(string *input), variables *variableMemory, programMemorySupport *pMS) :  _position(0), errorFunc(errorFunction), _inputFunc(inputFunction), _printFunc(printFunction), _vM(variableMemory), _pMS(pMS){
 #endif
     expErrorFunc = errorFunction;
 }
 
+#if arduino
+void parser::addInput(String &input){
+    input += EOS;
+#else
 void parser::addInput(string &input){
     input.push_back(EOS);
+#endif
     _input = input;
     _position = 0;
 }
@@ -90,7 +105,11 @@ expressions* parser::parseStatements(){
     #endif
     try{
         while(isalpha(c)){
+            #if arduino
+            statement+=c;
+            #else
             statement.push_back(c);
+            #endif
             _position++;
             c = _input[_position];
         }
@@ -122,10 +141,14 @@ expressions* parser::parseStatements(){
     }catch(wrongVariableName){
         delete e;
         throw;
+    #if arduino
+
+    #else
     }catch(std::out_of_range){
         delete e;
         _position = 0;
         throw notParsed();
+    #endif
     }catch(tooManyArg){
         delete e;
         throw;
@@ -190,7 +213,11 @@ bool parser::parseLet(string statement, bool parsed){
             throw wrongVariableName();
         }
         while(c!='='){
+            #if arduino
+            s += c;
+            #else
             s.push_back(c);
+            #endif
             _position++;
             c = lookAhead();
         }
@@ -211,9 +238,13 @@ bool parser::parseLet(string statement, bool parsed){
         }catch(notParsed()){
             delete e;
             throw notParsed();
+        #if arduino
+
+        #else
         }catch(std::bad_alloc){
             delete e;
             throw;
+        #endif
         }
         delete e;
         return true;
@@ -245,13 +276,22 @@ bool parser::parseInput(string statement, bool parsed){
             variableValue prompt = internalE->eval(_vM);
             _printFunc(&prompt.valueS);
         }
+        #if arduino
+        Vector <String> variableList;
+        #else
         vector <string> variableList;
+        #endif
+
         if(lookAhead()==0){
             throw notParsed();
         }
         do{
             c = lookAhead();
+            #if arduino
+            String variableName = String(c);
+            #else
             string variableName = string(1,c);
+            #endif
             _position++;
             internalE = parseVariable(variableName, true);
             variableName = internalE->eval(_vM).valueS;
@@ -271,15 +311,23 @@ bool parser::parseInput(string statement, bool parsed){
             #endif
             c = value[position];
             while(c!=',' && c!=0){
+                #if arduino
+                oneVariableValue += c;
+                #else
                 oneVariableValue.push_back(c);
+                #endif
                 position++;
                 c = value[position];
             }
             try{
                 _vM->addVariable(variableList[i],oneVariableValue);
+            #if arduino
+
+            #else
             }catch(std::bad_alloc){
                 delete internalE;
                 throw;
+            #endif
             }catch(...){
                 delete internalE;
                 _input = value;
@@ -404,9 +452,17 @@ expressions* parser::parseLogical(){
         e = parseNot();
         c = lookAhead();
         while( c=='O' || c=='A' || c=='X' || c=='I' || c == 'E'){
+            #if arduino
+            s += c;
+            #else
             s.push_back(c);
+            #endif
             _position++;
+            #if arduino
+            s += _input[_position];
+            #else
             s.push_back(_input[_position]);
+            #endif
             if(_input[_position+1]==' '){
                 if(s=="OR"){
                     _position++;
@@ -415,7 +471,11 @@ expressions* parser::parseLogical(){
                 }
             }else{
                 _position++;
+                #if arduino
+                s += _input[_position];
+                #else
                 s.push_back(_input[_position]);
+                #endif
                 _position++;
                 if(_input[_position]==' ' || _input[_position+1]=='(' && (s == "AND" || s == "XOR" || s == "IMP" || s =="EQV")){
                     e = new logicalOperator(s, e, parseNot());
@@ -454,11 +514,20 @@ expressions* parser::parseNot(){
     #endif
     try{
         if(c=='N'){
+            #if arduino
+            s += c;
+            _position++;
+            s += _input[_position];
+            _position++;
+            s += _input[_position];
+            #else
             s.push_back(c);
             _position++;
             s.push_back(_input[_position]);
             _position++;
             s.push_back(_input[_position]);
+            #endif
+
             if(s=="NOT" && _input[_position+1]==' ' || _input[_position+1]=='('){
                 _position++;
                 return new notOperator(s, parseRelation());
@@ -565,7 +634,11 @@ expressions* parser::parseRange(){
     uint8_t position = _position;
     expressions* e;
     char c;
+    #if arduino
+    size_t findPos = _input.indexOf('[');
+    #else
     size_t findPos = _input.find('[');
+    #endif
     try{
         e = parseSum();
         c = lookAhead();
@@ -726,13 +799,22 @@ expressions* parser::parseConstant(){
     float value;
     if(isNumber == true){
         if(isDecimalSeparator==false)
+            #if arduino
+            return new constant(n.toInt());
+            #else
             return new constant(stoi(n));
-        else
+            #endif
+        else{
+            #if arduino
+            value = n.toFloat();
+            #else
             try{
                 value = stof(n);
             }catch(std::invalid_argument){
                 throw notNumber();
             }
+            #endif
+        }   
             return new constantN(value);
     }
 }
@@ -741,9 +823,14 @@ expressions* parser::parseLiteral(){
     #if debug
     errorFunc("parseLiteral");
     #endif
+    #if arduino
+    String literal = "";
+    #else
     string literal = "";
+    #endif
     char c = lookAhead();
     bool endAnalyze = false;
+
     while(!endAnalyze){
         if(c==0)
             throw notParsed();
@@ -759,6 +846,7 @@ expressions* parser::parseLiteral(){
                     break;
                 }
                 break;
+
             case('\\'):
                 switch(_input[_position+1]){
                     case('n'):
@@ -770,6 +858,7 @@ expressions* parser::parseLiteral(){
                 }
                 _position+=2;
                 break;
+                
             default:
                 literal+=c;
                 _position++;
@@ -813,7 +902,11 @@ expressions* parser::parseVariable(string &s, bool returnName){
     expressions *e = nullptr;
     char c = _input[_position];
     while(isalnum(c) || c == '%' || c == '$'){
+        #if arduino
+        s += _input[_position];
+        #else
         s.push_back(_input[_position]);
+        #endif
         _position++;
         c = _input[_position];
     }

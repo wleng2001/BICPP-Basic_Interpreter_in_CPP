@@ -1,15 +1,25 @@
 #ifndef programMemorySupport_h
 #define programMemorySupport_h
+
+#include "config.h"
+
+#if arduino
+#include <StandardCplusplus.h>
+#include <Arduino.h>
+#else
 #include <iostream>
 #include <algorithm>
 #include <map>
-
-//#define debug true
-
-using namespace std;
+#endif
 
 #if arduino
-typedef std::map < int, String > programMemory;
+
+#else
+using namespace std;
+#endif
+
+#if arduino
+std::map < int, String > _pM;
 #else
 typedef std::map < int, string > programMemory;
 #endif
@@ -32,7 +42,11 @@ class programMemorySupport{
 
     public:
 
+    #if arduino
+
+    #else
     programMemory _pM;
+    #endif
     int maxLine = 0;
 
     programMemorySupport(){};

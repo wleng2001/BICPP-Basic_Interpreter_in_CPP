@@ -1,6 +1,11 @@
 #ifndef variables_h
 #define variables_h
 
+#if arduino
+#include <Vector.h>
+#include <StandardCplusplus.h>
+#include <Arduino.h>
+#else
 #include <iostream>
 #include <stdio.h> //aby działał getchar i exit
 #include <iomanip> //biblioteka do manipulaowania wejściem i wyjściem
@@ -15,9 +20,10 @@
 #include <time.h>
 #include <fstream> //biblioteka do obsługi plików
 #include <algorithm>
-#include <math.h>
 #include <map>
 #include <vector>
+#endif
+#include <math.h>
 #include "errorClasses.h"
 #include "config.h"
 
@@ -51,7 +57,11 @@ struct variableValue{
 class variables{
     private:
 
+    #if arduino
+    void (*errorFunc)(String text);
+    #else
     void (*errorFunc)(string text);
+    #endif
     bool *error;
 
     bool isHexLetter(char c);
@@ -60,14 +70,22 @@ class variables{
         bool isArray = false;
         uint8_t rows = 0;
         uint8_t columns = 0;
+        #if arduino
+        Vector <int> value;
+        #else
         vector <int> value;
+        #endif
     };
 
     struct variableParamN{
         bool isArray = false;
         uint8_t rows = 0;
         uint8_t columns = 0;
+        #if arduino
+        Vector <float> value;
+        #else
         vector <float> value;
+        #endif
     };
 
     struct variableParamS{
@@ -75,25 +93,24 @@ class variables{
         uint8_t rows = 0;
         uint8_t columns = 0;
         #if arduino
-        vector <String> value;
+        Vector <String> value;
         #else
         vector <string> value;
         #endif
     };
 
     #if arduino
-    typedef std::map < String, variableParamI > variablesListI;
-    typedef std::map < String, variableParamN > variablesListN;
-    typedef std::map < String, variableParamS > variablesListS;
+    std::map < String, variableParamI > _VLI;
+    std::map < String, variableParamN > _VLN;
+    std::map < String, variableParamS > _VLS;
     #else
     typedef std::map < string, variableParamI > variablesListI;
     typedef std::map < string, variableParamN > variablesListN;
     typedef std::map < string, variableParamS > variablesListS;
-    #endif
-
     variablesListI _VLI;
     variablesListN _VLN;
     variablesListS _VLS;
+    #endif
 
     public:
     #if arduino

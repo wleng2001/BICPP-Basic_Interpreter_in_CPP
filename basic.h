@@ -5,8 +5,13 @@
 #include "parser.cpp"
 #include "programMemorySuppport.h"
 #include "programMemorySuppport.cpp"
+
+#if arduino
+
+#else
 #include <iostream>
 #include <algorithm>
+#endif
 
 #define _basicVersion "A0.03"
 
@@ -24,13 +29,14 @@ class basic{
     void (*printFunc)(String *text);
     void (*errorFunc)(String text);
     String (*inputFunc)();
+    String *text;
     #else
     void (*printFunc)(string *text);
     void (*errorFunc)(string text);
     string (*inputFunc)();
+    string *text;
     #endif
     variables _varMemory;
-    string *text;
     text_analyzer txt_an;
     programMemorySupport pMS;
     #if arduino
@@ -40,7 +46,11 @@ class basic{
     #endif
     public:
 
+    #if arduino
+    basic(void (*printFunction)(String *text), void (*errorFunction)(String text), String (*inputFunction)());
+    #else
     basic(void (*printFunction)(string *text), void (*errorFunction)(string text), string (*inputFunction)());
+    #endif
 
     bool addInterruptFunc(bool (*func)()){
         interruptFunc = func;

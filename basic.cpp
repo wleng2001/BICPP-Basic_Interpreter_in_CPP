@@ -11,13 +11,21 @@ void basic::printError(string errorText, char c, string *input, unsigned int *li
     string text = errorText+" (char: "+to_string(c);
     #endif
     if(*lineNumber>0){
+        #if arduino
+        text+=" line: "+String(*lineNumber);
+        #else
         text+=" line: "+to_string(*lineNumber);
+        #endif
     }
     text+=+"): "+*input;
     errorFunc(text);
 }
 
+#if arduino
+basic::basic(void (*printFunction)(String *text), void (*errorFunction)(String text), String (*inputFunction)()){
+#else
 basic::basic(void (*printFunction)(string *text), void (*errorFunction)(string text), string (*inputFunction)()){
+#endif
     printFunc = printFunction;
     errorFunc = errorFunction;
     txt_an.addErrorFuntion(errorFunc);
@@ -54,7 +62,7 @@ string basic::run(string *input){
     #endif
     if( input->find("LIST")!= 
     #if arduino
-    String::npos
+    -1
     #else
     string::npos
     #endif
@@ -70,7 +78,11 @@ string basic::run(string *input){
             partOutput = "";
             if(pMS._pM.count(i)){
                 partOutput += pMS._pM[i];
+                #if arduino
+                output += String(i) + '\t' + partOutput + '\n';
+                #else
                 output += to_string(i) + '\t' + partOutput + '\n';
+                #endif
                 partOutput = "";
             }
             if(_interruptExist==1){
@@ -148,10 +160,13 @@ string basic::programLoop(string *input){
         }catch(tooManyArg){
             printError("Error: to many arguments given", pars.parserPosition()-1, &text, &i);
             return "";
+        #if arduino
+        #else
         }catch(std::bad_alloc){
             printError("Error: overflow", pars.parserPosition(), &text, &i);
             return "";
         }
+        #endif
         if(pMS.maxLine==0 && i>0){
             return "";
         }
@@ -160,9 +175,17 @@ string basic::programLoop(string *input){
                 case 's':
                     return vV.valueS;
                 case 'i':
+                    #if arduino
+                    return String(vV.valueI);
+                    #else
                     return to_string(vV.valueI);
+                    #endif
                 case 'n':
+                    #if arduino
+                    return String(vV.valueN);
+                    #else
                     return to_string(vV.valueN);
+                    #endif
                 case 'N':
                     return "";
             }

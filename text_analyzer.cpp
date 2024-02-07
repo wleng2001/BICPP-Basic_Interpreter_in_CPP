@@ -9,18 +9,21 @@ void text_analyzer::addErrorFuntion(void (*errorFunction)(string text)){
 }
 
 #if arduino
-bool text_analyzer::special_char_in_correct_place(String &data, int position){
+bool text_analyzer::special_char_in_correct_place(String &data, unsigned int position){
 #else
 bool text_analyzer::special_char_in_correct_place(string &data, int position){
 #endif
-  for(auto i = 0; i < sizeof(specialChar) / sizeof(specialChar[0]); i++){
+  for(uint8_t i = 0; i < sizeof(specialChar) / sizeof(specialChar[0]); i++){
     if(specialChar[i]==data[position]){
       char c = data[position+1];
       if((c==' ' || isMathematicChar(data[position+1]) || c=='[' || position==data.length()-1 || c=='&' || c==',') && (isalnum(data[position-1]))){
         break;
       }else{
-
+        #if arduino
+        _errorFunc("Error: invalid syntax (char: "+String(position)+"): "+data);
+        #else
         _errorFunc("Error: invalid syntax (char: "+to_string(position)+"): "+data);
+        #endif
         *error = true;
         return false;
       }
@@ -72,14 +75,18 @@ void text_analyzer::delete_useless_spaces(string &data) { //uses all option of t
     #endif
     if(!start_comment && !start_quote){
       if(!correctBracketQuantity(&bracketQuantity, c)){
+        #if arduino
+        _errorFunc("ERROR: too little open bracket (char: "+String(i)+"): "+data);
+        #else
         _errorFunc("ERROR: too little open bracket (char: "+to_string(i)+"): "+data);
+        #endif
         *error = true;
         return;
       }
       if(!special_char_in_correct_place(data, i))
         return;
     }
-    if(c == '"' && (!data[i-1] == '"' != !data[i+1] == '"')){
+    if(c == '"' && (!(data[i-1] == '"') != !(data[i+1] == '"'))){
       quotation_in_text = true;
     }else{
       quotation_in_text = false;
@@ -130,19 +137,27 @@ string text_analyzer::one_word_ret(string data){
 #endif
   bool start_quote=false;
   if(data[0]=='"'){
-    start_quote!=start_quote;  
+    start_quote=!start_quote;  
   }
   for(uint8_t i=0; i<data.length();i++){
     if(i>=data.length() or (data[i]==' ' and start_quote==false)){
+      #if arduino
+      comm.toUpperCase();
+      #else
       transform(comm.begin(), comm.end(), comm.begin(), ::toupper);
+      #endif
       return comm;
     }
     if(data[i]=='"'){
-      start_quote!=start_quote;  
+      start_quote=!start_quote;  
     }
     comm+=data[i];
   }
+  #if arduino
+  comm.toUpperCase();
+  #else
   transform(comm.begin(), comm.end(), comm.begin(), ::toupper);
+  #endif
   return comm;
 }
 
@@ -155,14 +170,15 @@ string text_analyzer::reform_input(string &data){
 #endif
   text_analyzer::delete_useless_spaces(data);
   int data_len = data.length();
-  size_t position = 0;
+  int position = 0;
 
   //edit passage with '\' (it's char of new statement)
-
-  position = data.find( '\\', position);
+  /*
   #if arduino
-  while(position != std::String::npos){
+  position = data.indexOf('\\', position);
+  while(position != -1){
   #else
+  position = data.find( '\\', position);
   while(position != std::string::npos){
   #endif
     if(data[position-1]!=' ' && (position-1)>=0){
@@ -174,24 +190,47 @@ string text_analyzer::reform_input(string &data){
       position++;
     }
     data_len = data.length();
+    #if arduino
+    position = data.indexOf('\\', position+1);
+    #else
     position = data.find('\\', position+1);
-  }
+    #endif
+  }*/
 
   //edit passage with mathematic char
 
-  for(int i = 0; i<sizeof(mathematicChar)/sizeof(mathematicChar[0]); i++){
+  for(uint8_t i = 0; i<sizeof(mathematicChar)/sizeof(mathematicChar[0]); i++){
     position = 0;
+    #if arduino
+    position = data.indexOf(mathematicChar[i], position);
+
+    while(position!=-1 && position<data_len){
+    #else
     position = data.find(mathematicChar[i], position);
+
     while(position!=std::string::npos && position<data_len){
+    #endif
       if(data[position-1]==' ' && (position-1)>=0){
-        data.erase(position-1, 1);
+        #if arduino
+        data.remove(position+1, 1);
+        #else
+        data.erase(position+1, 1);
+        #endif
         position--;
       }
       if(data[position+1]==' '){
+        #if arduino
+        data.remove(position+1, 1);
+        #else
         data.erase(position+1, 1);
+        #endif
       }
       data_len = data.length();
+      #if arduino
+      position = data.indexOf(mathematicChar[i], position+=2);
+      #else
       position = data.find(mathematicChar[i], position+=2);
+      #endif
     }
   }
 

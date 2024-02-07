@@ -13,7 +13,7 @@ void variables::addErrorVariable(bool *error){
 }
 
 #if arduino
-String variables::convertHexToDecimal(string data){
+String variables::convertHexToDecimal(String data){
 #else
 string variables::convertHexToDecimal(string data){
 #endif
@@ -50,7 +50,11 @@ string variables::convertHexToDecimal(string data){
                         break;
                 }
             }
+            #if arduino
+            data = String(value);
+            #else
             data = to_string(value);
+            #endif
             errorFunc(data);
             return data;
         }
@@ -124,9 +128,17 @@ void variables::addVariable(string &variableName, string &value){
                 _VLI[variableName].isArray = false;
                 _VLI[variableName].value.reserve(1);
                 if(isInt(value, valueLength))
+                    #if arduino
+                    _VLI[variableName].value[0] = convertHexToDecimal(value).toInt();
+                    #else
                     _VLI[variableName].value[0] = stoi(convertHexToDecimal(value));
+                    #endif
                 else
+                    #if arduino
+                    _VLI[variableName].value[0] = value.toInt();
+                    #else
                     _VLI[variableName].value[0] = stof(value);
+                    #endif
                 return;
             }
             else{
@@ -148,7 +160,11 @@ void variables::addVariable(string &variableName, string &value){
             if(isNum(value, valueLength)){
                 _VLN[variableName].isArray = false;
                 _VLN[variableName].value.reserve(1);
+                #if arduino
+                _VLN[variableName].value[0] = value.toFloat();
+                #else
                 _VLN[variableName].value[0] = stof(value);
+                #endif
                 return;
             }
             else{
@@ -158,8 +174,12 @@ void variables::addVariable(string &variableName, string &value){
                 return;
             }
         }
+    #if arduino
+
+    #else
     }catch(std::bad_alloc){
         throw;
+    #endif
     }
 }
 

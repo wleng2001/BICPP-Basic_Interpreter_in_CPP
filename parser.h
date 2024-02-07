@@ -1,12 +1,16 @@
 #ifndef parser_h
 #define parser_h
 
+#if arduino
+
+#else
 #include <iostream>
 #include <stdio.h>
 #include <cmath>
 #include <algorithm>
-#include <math.h>
 #include <map>
+#endif
+#include <math.h>
 #include "expressions.h"
 #include "statements.h"
 #include "text_analyzer.h"
@@ -14,7 +18,11 @@
 using namespace std;
 
 class parser{
+    #if arduino
+    String _input;
+    #else
     string _input;
+    #endif
     size_t _position;
     #if arduino
     void (*errorFunc)(String input);
