@@ -11,7 +11,11 @@ bool programMemorySupport::checkMathematicSymbol(char input){
     return false;
 }
 
+#if arduino
+int programMemorySupport::takeDigits(String &input){
+#else
 int programMemorySupport::takeDigits(string &input){
+#endif
   string number = "";
   while(isdigit(input[_position])){
     number+=input[_position];
@@ -28,13 +32,21 @@ int programMemorySupport::takeDigits(string &input){
   return stoi(number);
 }
 
+#if arduino
+void programMemorySupport::skipWhiteSpace(String &input){
+#else
 void programMemorySupport::skipWhiteSpace(string &input){
+#endif
     while(isspace(input[_position])){
         _position++;
     }
 }
 
+#if arduino
+unsigned int programMemorySupport::quantityOfSpecificChar(String &input, char c){
+#else
 unsigned int programMemorySupport::quantityOfSpecificChar(string &input, char c){
+#endif
     unsigned int length = input.length();
     unsigned int quantityOfFindElements = 0;
     for(auto i = 0; i < input.length(); i++){
@@ -54,7 +66,11 @@ void programMemorySupport::memoryClear(){
     _pM.clear();
 }
 
+#if arduino
+bool programMemorySupport::isToExecute(String &input){
+#else
 bool programMemorySupport::isToExecute(string &input){
+#endif
     input.push_back(0);
     if(isdigit(input[_position])){
         _position++;
@@ -89,7 +105,11 @@ bool programMemorySupport::isToExecute(string &input){
         return true;
 }
 
+#if arduino
+bool programMemorySupport::checkAndSave(String &input){
+#else
 bool programMemorySupport::checkAndSave(string &input){
+#endif
     unsigned int lineNumber = 0;
     unsigned int lineQuantity = 1;
     if(!isToExecute(input)){
