@@ -1,10 +1,18 @@
 #include "text_analyzer.h"
 
+#if arduino
+void text_analyzer::addErrorFuntion(void (*errorFunction)(String text)){
+#else
 void text_analyzer::addErrorFuntion(void (*errorFunction)(string text)){
+#endif
   text_analyzer::_errorFunc = errorFunction;
 }
 
+#if arduino
+bool text_analyzer::special_char_in_correct_place(String &data, int position){
+#else
 bool text_analyzer::special_char_in_correct_place(string &data, int position){
+#endif
   for(auto i = 0; i < sizeof(specialChar) / sizeof(specialChar[0]); i++){
     if(specialChar[i]==data[position]){
       char c = data[position+1];
@@ -37,7 +45,11 @@ bool text_analyzer::correctBracketQuantity(uint8_t *bracketQuantity, char c){
   return true;
 }
 
+#if arduino
+void text_analyzer::delete_useless_spaces(String &data) { //uses all option of the class
+#else
 void text_analyzer::delete_useless_spaces(string &data) { //uses all option of the class
+#endif
   
   data=text_analyzer::trim(data);
   text_analyzer::delete_spaces(data);
@@ -47,7 +59,11 @@ void text_analyzer::delete_useless_spaces(string &data) { //uses all option of t
   bool start_comment=false;
   uint8_t bracketQuantity = 0;
   uint8_t i = 0;
+  #if arduino
+  String temporary_data = "";
+  #else
   string temporary_data = "";
+  #endif
   bool quotation_in_text = false;
   while (i < data.length()) {
     char c = data[i];
@@ -105,8 +121,13 @@ void text_analyzer::delete_useless_spaces(string &data) { //uses all option of t
   data = temporary_data;
 }
 
+#if arduino
+String text_analyzer::one_word_ret(String data){
+  String comm="";
+#else
 string text_analyzer::one_word_ret(string data){
   string comm="";
+#endif
   bool start_quote=false;
   if(data[0]=='"'){
     start_quote!=start_quote;  
@@ -127,7 +148,11 @@ string text_analyzer::one_word_ret(string data){
 
 //reform input-----------------------------------------------------
 
+#if arduino
+String text_analyzer::reform_input(String &data){
+#else
 string text_analyzer::reform_input(string &data){
+#endif
   text_analyzer::delete_useless_spaces(data);
   int data_len = data.length();
   size_t position = 0;
@@ -135,7 +160,11 @@ string text_analyzer::reform_input(string &data){
   //edit passage with '\' (it's char of new statement)
 
   position = data.find( '\\', position);
+  #if arduino
+  while(position != std::String::npos){
+  #else
   while(position != std::string::npos){
+  #endif
     if(data[position-1]!=' ' && (position-1)>=0){
       data.insert(position, " ");
       position++;
