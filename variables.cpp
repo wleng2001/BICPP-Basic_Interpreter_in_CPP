@@ -1,6 +1,10 @@
 #include "variables.h"
 
+#if arduino
+void variables::addErrorFunction(void (*errorFunction)(String text)){
+#else
 void variables::addErrorFunction(void (*errorFunction)(string text)){
+#endif
     errorFunc = errorFunction;
 }
 
@@ -8,7 +12,11 @@ void variables::addErrorVariable(bool *error){
     this->error = error;
 }
 
+#if arduino
+String variables::convertHexToDecimal(string data){
+#else
 string variables::convertHexToDecimal(string data){
+#endif
     if(isdigit(data[0]) || isalpha(data[0])){
         uint8_t length=data.length();
         int value = 0;
@@ -58,7 +66,11 @@ bool variables::isHexLetter(char c){
         return false;
 }
 
+#if arduino
+bool variables::isInt(String &text, uint8_t length){
+#else
 bool variables::isInt(string &text, uint8_t length){
+#endif
     for(uint8_t i = 0; i<length; i++){
         char c = text[i];
         if(isdigit(c) || isHexLetter(c) || (c=='H' && i==length-1) || (c=='-' && i==0))
@@ -69,7 +81,11 @@ bool variables::isInt(string &text, uint8_t length){
     return true;
 }
 
+#if arduino
+bool variables::isNum(String &text, uint8_t length){
+#else
 bool variables::isNum(string &text, uint8_t length){
+#endif
     bool isPointer = false;
     for(uint8_t i = 0; i <length; i++){
         char c = text[i];
@@ -93,7 +109,11 @@ void variables::clearMemory(){
     _VLS.clear();
 }
 
+#if arduino
+void variables::addVariable(String &variableName, String &value){
+#else
 void variables::addVariable(string &variableName, string &value){
+#endif
     uint8_t variableNameLength = variableName.length();
     uint8_t valueLength = value.length();
     char lastChar = variableName[variableNameLength-1];
@@ -143,7 +163,11 @@ void variables::addVariable(string &variableName, string &value){
     }
 }
 
+#if arduino
+bool variables::readVariable(String *variableName, variableValue *var){
+#else
 bool variables::readVariable(string *variableName, variableValue *var){
+#endif
     #if debug
     errorFunc("readVariable: "+*variableName);
     #endif
