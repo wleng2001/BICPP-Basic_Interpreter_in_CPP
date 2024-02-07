@@ -2,7 +2,11 @@
 
 const char EOS = 0;
 
+#if arduino
+String parser::returnString(expressions *e){
+#else
 string parser::returnString(expressions *e){
+#endif
     variableValue vV = e->eval(_vM);
     switch(vV.type){
         case('s'):
@@ -22,12 +26,20 @@ void parser::setProgramLine(unsigned int programLine){
     }
 }
 
+#if arduino
+parser::parser(String &input, void (*errorFunction)(String input), String (*inputFunction)(), void printFunction(String *input), variables *variableMemory, programMemorySupport *pMS, unsigned int *programLineIterator) : _input(input), _position(0), errorFunc(errorFunction), _inputFunc(inputFunction), _printFunc(printFunction), _vM(variableMemory), _pMS(pMS), _programLine(programLineIterator){
+#else
 parser::parser(string &input, void (*errorFunction)(string input), string (*inputFunction)(), void printFunction(string *input), variables *variableMemory, programMemorySupport *pMS, unsigned int *programLineIterator) : _input(input), _position(0), errorFunc(errorFunction), _inputFunc(inputFunction), _printFunc(printFunction), _vM(variableMemory), _pMS(pMS), _programLine(programLineIterator){
+#endif
     input.push_back(EOS); //umieszcza strażnika na końcu
     expErrorFunc = errorFunction;
 }
 
+#if arduino
+parser::parser( void (*errorFunction)(string input), String (*inputFunction)(), void printFunction(String *input), variables *variableMemory, programMemorySupport *pMS) :  _position(0), errorFunc(errorFunction), _inputFunc(inputFunction), _printFunc(printFunction), _vM(variableMemory), _pMS(pMS){
+#else
 parser::parser( void (*errorFunction)(string input), string (*inputFunction)(), void printFunction(string *input), variables *variableMemory, programMemorySupport *pMS) :  _position(0), errorFunc(errorFunction), _inputFunc(inputFunction), _printFunc(printFunction), _vM(variableMemory), _pMS(pMS){
+#endif
     expErrorFunc = errorFunction;
 }
 
@@ -71,7 +83,11 @@ expressions* parser::parseStatements(){
     #endif
     expressions *e = nullptr;
     char c = lookAhead();
+    #if arduino
+    String statement;
+    #else
     string statement;
+    #endif
     try{
         while(isalpha(c)){
             statement.push_back(c);
@@ -123,7 +139,11 @@ expressions* parser::parseStatements(){
     return e;
 }
 
+#if arduino
+bool parser::parseRun(String statement, bool parsed){
+#else
 bool parser::parseRun(string statement, bool parsed){
+#endif
     if(statement == "RUN"){
         char c = lookAhead();
         if(c!=0){
@@ -136,7 +156,11 @@ bool parser::parseRun(string statement, bool parsed){
     return parsed;
 }
 
+#if arduino
+bool parser::parseRem(String statement, bool parsed){
+#else
 bool parser::parseRem(string statement, bool parsed){
+#endif
     if(statement == "REM"){
         while(lookAhead()!=0){
             _position++;
@@ -146,14 +170,22 @@ bool parser::parseRem(string statement, bool parsed){
     return parsed;
 }
 
+#if arduino
+bool parser::parseLet(String statement, bool parsed){
+#else
 bool parser::parseLet(string statement, bool parsed){
+#endif
     if(statement == "LET"){
         expressions *e;
         #if debug
         errorFunc("parseLet: "+to_string(_position));
         #endif
         char c = lookAhead();
+        #if arduino
+        String s;
+        #else
         string s;
+        #endif
         if(isdigit(c)){
             throw wrongVariableName();
         }
@@ -191,8 +223,11 @@ bool parser::parseLet(string statement, bool parsed){
 
 }
 
-
+#if arduino
+bool parser::parseInput(String statement, bool parsed){
+#else
 bool parser::parseInput(string statement, bool parsed){
+#endif
     if(statement=="INPUT"){
         expressions *internalE;
         #if debug
@@ -222,11 +257,18 @@ bool parser::parseInput(string statement, bool parsed){
             variableName = internalE->eval(_vM).valueS;
             variableList.push_back(variableName);
         }while(c==',');
-
+        #if arduino
+        String value = _inputFunc();
+        #else
         string value = _inputFunc();
+        #endif
         int position = 0;
         for(uint8_t i = 0; i<variableList.size(); i++){
+            #if arduino
+            String oneVariableValue;
+            #else
             string oneVariableValue;
+            #endif
             c = value[position];
             while(c!=',' && c!=0){
                 oneVariableValue.push_back(c);
@@ -253,12 +295,20 @@ bool parser::parseInput(string statement, bool parsed){
     }
 }
 
+#if arduino
+bool parser::parsePrint(String statement, bool parsed){
+#else
 bool parser::parsePrint(string statement, bool parsed){
+#endif
     if(statement == "PRINT"){
         #if debug
         errorFunc("parsePrint");
         #endif
+        #if arduino
+        String output = "";
+        #else
         string output = "";
+        #endif
         char c;
         do{
             _position++;
@@ -279,7 +329,11 @@ bool parser::parsePrint(string statement, bool parsed){
     return parsed;
 }
 
+#if arduino
+bool parser::parseClear(String statement, bool parsed){
+#else
 bool parser::parseClear(string statement, bool parsed){
+#endif
     if(statement == "CLEAR"){
         char c = lookAhead();
         if(c==0){
@@ -293,7 +347,11 @@ bool parser::parseClear(string statement, bool parsed){
     return parsed;
 }
 
+#if arduino
+bool parser::parseGoto(String statement, bool parsed){
+#else
 bool parser::parseGoto(string statement, bool parsed){
+#endif
     if(statement == "GOTO"){
         #if debug
         errorFunc("parseGoto");
@@ -337,7 +395,11 @@ expressions* parser::parseLogical(){
     #endif
     expressions *e = nullptr;
     char c;
+    #if arduino
+    String s = "";
+    #else
     string s = "";
+    #endif
     try{
         e = parseNot();
         c = lookAhead();
@@ -385,7 +447,11 @@ expressions* parser::parseNot(){
     #endif
     expressions* e;
     char c = lookAhead();
+    #if arduino
+    String s;
+    #else
     string s;
+    #endif
     try{
         if(c=='N'){
             s.push_back(c);
@@ -427,7 +493,11 @@ expressions* parser::parseRelation(){
     #endif
     expressions* e;
     char c;
+    #if arduino
+    String s="";
+    #else
     string s="";
+    #endif
     try{
         e = parseConcatenation();
         c = lookAhead();
@@ -624,7 +694,11 @@ expressions* parser::parseTerm(){
 }
 
 expressions* parser::parseConstant(){
-    string n = "";
+    #if arduino
+    String n="";
+    #else
+    string n="";
+    #endif
     bool isDecimalSeparator = false;
     bool isNumber = false;
     #if debug
@@ -706,7 +780,11 @@ expressions* parser::parseLiteral(){
 }
 
 expressions* parser::parseLogicalVariable(){
-    string s = "";
+    #if arduino
+    String s="";
+    #else
+    string s="";
+    #endif
     #if debug
     errorFunc("parserLogicalVariable: "+to_string(_position));
     #endif
@@ -724,7 +802,11 @@ expressions* parser::parseLogicalVariable(){
     return parseVariable(s);
 }
 
+#if arduino
+expressions* parser::parseVariable(String &s, bool returnName){
+#else
 expressions* parser::parseVariable(string &s, bool returnName){
+#endif
     #if debug
     errorFunc("parseVariable: "+to_string(_position));
     #endif
