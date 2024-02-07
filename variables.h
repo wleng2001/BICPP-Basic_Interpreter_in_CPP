@@ -97,6 +97,15 @@ class variables{
 
     public:
     #if arduino
+    void addErrorFunction(void (*errorFunction)(String text));
+    void addErrorVariable(bool *error);
+    String convertScienceToDecimal(String data);
+    bool isInt(String &data, uint8_t length);
+    bool isNum(String &data, uint8_t length);
+    String convertHexToDecimal(String data);
+    void clearMemory();
+    void addVariable(String &variableName, String &value);
+    bool readVariable(String *variableName, variableValue *var);
     #else
     void addErrorFunction(void (*errorFunction)(string text));
     void addErrorVariable(bool *error);
