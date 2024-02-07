@@ -15,7 +15,11 @@
 
 using namespace std;
 
+#if arduino
+void (*expErrorFunc)(String input);
+#else
 void (*expErrorFunc)(string input);
+#endif
 
 class expressions{
 
@@ -63,7 +67,11 @@ class constantN : public expressions{
 };
 
 class constantS : public expressions{
+    #if arduino
+    String value;
+    #else
     string value;
+    #endif
 
     public:
     constantS(string v): value(v){
@@ -79,10 +87,18 @@ class constantS : public expressions{
 };
 
 class logicalSymbol : public expressions{
+    #if arduino
+    String value;
+    #else
     string value;
+    #endif
 
     public:
+    #if arduino
+    logicalSymbol(String v): value(v){}
+    #else
     logicalSymbol(string v): value(v){}
+    #endif
 
     virtual variableValue eval(variables *vM){
         variableValue vV;
@@ -92,8 +108,13 @@ class logicalSymbol : public expressions{
     }
 };
 
+#if arduino
+String convertToString(variableValue *v){
+    String value = "";
+#else
 string convertToString(variableValue *v){
     string value = "";
+#endif
     if(v->type == 's'){
         value = v->valueS;
         return value;
@@ -128,10 +149,18 @@ int convertToInt(variableValue *v){
 }
 
 class logicalOperator : public expressions{
+    #if arduino
+    String symbol;
+    #else
     string symbol;
+    #endif
     expressions* left, *right;
     public:
+    #if arduino
+    logicalOperator(String s , expressions* l, expressions* r) : symbol(s), left(l), right(r){};
+    #else
     logicalOperator(string s , expressions* l, expressions* r) : symbol(s), left(l), right(r){};
+    #endif
 
     virtual ~logicalOperator(){
         delete left;
@@ -215,12 +244,20 @@ class logicalOperator : public expressions{
 };
 
 class notOperator : public expressions{
+    #if arduino
+    String symbol;
+    #else
     string symbol;
+    #endif
     expressions *right;
 
     public:
 
+    #if arduino
+    notOperator(String s, expressions* r) : symbol(s), right(r){};
+    #else
     notOperator(string s, expressions* r) : symbol(s), right(r){};
+    #endif
 
     virtual ~notOperator(){
         delete right;
@@ -263,9 +300,18 @@ class notOperator : public expressions{
 
 class relationOperator : public expressions{
     expressions* left, *right;
+    #if arduino
+    String symbol="";
+    #else
     string symbol="";
+    #endif
+
     public:
+    #if arduino
+    relationOperator(String s, expressions* l, expressions* r) : symbol(s), left(l), right(r){};
+    #else
     relationOperator(string s, expressions* l, expressions* r) : symbol(s), left(l), right(r){};
+    #endif
 
     virtual ~relationOperator(){
         delete left;
@@ -277,8 +323,13 @@ class relationOperator : public expressions{
         variableValue vV;
         variableValue rVV = right->eval(vM);
         variableValue lVV = left->eval(vM);
+        #if arduino
+        String rightValue;
+        String leftValue;
+        #else
         string rightValue;
         string leftValue;
+        #endif
         uint8_t rightLength;
         uint8_t leftLength;
         #if debug
@@ -402,7 +453,13 @@ class concatenationOperator : public expressions{
                     vV.valueS = lVV.valueS + rVV.valueS;
                     return vV;
                 default:
-                    expErrorFunc("Error: can't " + string(1, symbol) + " for strings");
+                    expErrorFunc("Error: can't " + 
+                    #if arduino
+                    String(symbol) 
+                    #else
+                    string(1, symbol)
+                    #endif
+                    + " for strings");
             }
         }else{
             throw wrongType();
@@ -546,11 +603,18 @@ class binaryOperator : public expressions{
 };
 
 class variable : public expressions{
+    #if arduino
+    String name = "";
+    #else
     string name = "";
+    #endif
 
     public:
-    variable(string n) : name(n){
-    };
+    #if arduino
+    variable(String n) : name(n){};
+    #else
+    variable(string n) : name(n){};
+    #endif
 
     virtual ~variable(){
         delete &name;

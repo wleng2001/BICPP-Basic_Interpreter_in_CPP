@@ -20,11 +20,13 @@ class basic{
     int programIterator;
     bool (*interruptFunc)();
     bool _interruptExist=0;
-    void (*printFunc)(string *text);
-    void (*errorFunc)(string text);
     #if arduino
+    void (*printFunc)(String *text);
+    void (*errorFunc)(String text);
     String (*inputFunc)();
     #else
+    void (*printFunc)(string *text);
+    void (*errorFunc)(string text);
     string (*inputFunc)();
     #endif
     variables _varMemory;
