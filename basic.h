@@ -22,13 +22,20 @@ class basic{
     bool _interruptExist=0;
     void (*printFunc)(string *text);
     void (*errorFunc)(string text);
+    #if arduino
+    String (*inputFunc)();
+    #else
     string (*inputFunc)();
+    #endif
     variables _varMemory;
     string *text;
     text_analyzer txt_an;
     programMemorySupport pMS;
+    #if arduino
+    void printError(String errorText, char c, String *input, unsigned int *lineNumber);
+    #else
     void printError(string errorText, char c, string *input, unsigned int *lineNumber);
-
+    #endif
     public:
 
     basic(void (*printFunction)(string *text), void (*errorFunction)(string text), string (*inputFunction)());
@@ -37,7 +44,11 @@ class basic{
         interruptFunc = func;
         _interruptExist = 1;
     }
-
+    #if arduino
+    String run(String *input);
+    String programLoop(String *input);
+    #else
     string run(string *input);
     string programLoop(string *input);
+    #endif
 };

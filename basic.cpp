@@ -1,7 +1,15 @@
 #include "basic.h"
 
+#if arduino
+void basic::printError(String errorText, char c, String *input, unsigned int *lineNumber){
+#else
 void basic::printError(string errorText, char c, string *input, unsigned int *lineNumber){
+#endif
+    #if arduino
+    String text = errorText+" (char: "+String(c);
+    #else
     string text = errorText+" (char: "+to_string(c);
+    #endif
     if(*lineNumber>0){
         text+=" line: "+to_string(*lineNumber);
     }
@@ -20,7 +28,7 @@ basic::basic(void (*printFunction)(string *text), void (*errorFunction)(string t
     _varMemory.addErrorVariable(&error);
 }
 #if arduino
-String basic::run(string *input){
+String basic::run(String *input){
 #else
 string basic::run(string *input){
 #endif
@@ -77,7 +85,7 @@ string basic::run(string *input){
     return programLoop(input);
 }
 #if arduino
-String basic::programLoop(string *input){
+String basic::programLoop(String *input){
 #else
 string basic::programLoop(string *input){
 #endif
