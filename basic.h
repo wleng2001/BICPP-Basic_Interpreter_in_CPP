@@ -52,7 +52,7 @@ class basic{
     basic(void (*printFunction)(string *text), void (*errorFunction)(string text), string (*inputFunction)());
     #endif
 
-    bool addInterruptFunc(bool (*func)()){
+    void addInterruptFunc(bool (*func)()){
         interruptFunc = func;
         _interruptExist = 1;
     }

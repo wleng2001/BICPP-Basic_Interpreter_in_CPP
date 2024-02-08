@@ -29,11 +29,11 @@ basic::basic(void (*printFunction)(string *text), void (*errorFunction)(string t
     printFunc = printFunction;
     errorFunc = errorFunction;
     txt_an.addErrorFuntion(errorFunc);
-    _varMemory.addErrorFunction(errorFunc);
+    //_varMemory.addErrorFunction(errorFunc);
     pMS.addErrorFunction(errorFunc);
     inputFunc = inputFunction;
     txt_an.error = &error;
-    _varMemory.addErrorVariable(&error);
+    //_varMemory.addErrorVariable(&error);
 }
 #if arduino
 String basic::run(String *input){
@@ -60,13 +60,12 @@ string basic::run(string *input){
 
     #if debug
     #endif
-    if( input->find("LIST")!= 
+    
     #if arduino
-    -1
+    if( input->indexOf("LIST")!= -1){
     #else
-    string::npos
+    if( input->find("LIST")!= string::npos){
     #endif
-    ){
         #if arduino
         String output = "";
         String partOutput = "";
@@ -94,8 +93,10 @@ string basic::run(string *input){
         }
         return output;
     }
-    return programLoop(input);
+    //return programLoop(input);
+    return *input;
 }
+/*
 #if arduino
 String basic::programLoop(String *input){
 #else
@@ -165,8 +166,12 @@ string basic::programLoop(string *input){
         }catch(std::bad_alloc){
             printError("Error: overflow", pars.parserPosition(), &text, &i);
             return "";
-        }
         #endif
+        }catch(...){
+            printError("Error: unrecognized exceptrion", pars.parserPosition(), &text, &i);
+            return "";
+        }
+        
         if(pMS.maxLine==0 && i>0){
             return "";
         }
@@ -191,4 +196,4 @@ string basic::programLoop(string *input){
             }
         }
     }
-}
+}*/

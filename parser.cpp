@@ -277,7 +277,7 @@ bool parser::parseInput(string statement, bool parsed){
             _printFunc(&prompt.valueS);
         }
         #if arduino
-        Vector <String> variableList;
+        vector <String> variableList;
         #else
         vector <string> variableList;
         #endif
@@ -879,7 +879,11 @@ expressions* parser::parseLogicalVariable(){
     #endif
     int position = _position;
     while(isalpha(_input[_position])){
+        #if arduino
+        s+=_input[_position];
+        #else
         s.push_back(_input[_position]);
+        #endif
         for(uint8_t i = 0; i<(sizeof(reservedName)/sizeof(reservedName[0])); i++){
             if(s==reservedName[i]){
                 _position = position;

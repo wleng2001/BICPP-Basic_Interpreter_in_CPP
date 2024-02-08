@@ -4,22 +4,6 @@
 #include "config.h"
 
 #if arduino
-#include <StandardCplusplus.h>
-#include <Arduino.h>
-#else
-#include <iostream>
-#include <algorithm>
-#include <map>
-#endif
-
-#if arduino
-
-#else
-using namespace std;
-#endif
-
-#if arduino
-std::map < int, String > _pM;
 #else
 typedef std::map < int, string > programMemory;
 #endif
@@ -43,7 +27,7 @@ class programMemorySupport{
     public:
 
     #if arduino
-
+    std::map< int, String > _pM;
     #else
     programMemory _pM;
     #endif

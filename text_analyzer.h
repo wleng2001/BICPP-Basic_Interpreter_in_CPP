@@ -2,27 +2,6 @@
 #define text_analyzer_h
 
 #include "config.h"
-#include "tablesAndOtherConst.h"
-
-#if arduino
-#include <math.h>
-
-#else
-#include <iostream>
-#include <stdio.h> //aby działał getchar i exit
-#include <iomanip> //biblioteka do manipulaowania wejściem i wyjściem
-#ifdef _WIN32
-#include <windows.h>
-#include <conio.h>
-#else
-#include <unistd.h>
-#endif
-#include <cstdlib> //biblioteka, aby działały komendy sytemowe np: system("cls");
-#include <time.h>
-#include <fstream> //biblioteka do obsługi plików
-#include <cmath>
-#include <algorithm>
-#endif
 
 
 using namespace std;

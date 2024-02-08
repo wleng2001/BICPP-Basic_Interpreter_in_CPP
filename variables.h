@@ -1,30 +1,8 @@
+
+
 #ifndef variables_h
 #define variables_h
 
-#if arduino
-#include <Vector.h>
-#include <StandardCplusplus.h>
-#include <Arduino.h>
-#else
-#include <iostream>
-#include <stdio.h> //aby działał getchar i exit
-#include <iomanip> //biblioteka do manipulaowania wejściem i wyjściem
-#include <cmath>
-#ifdef _WIN32
-#include <windows.h> //unistd.h dla linux
-#include <conio.h> //wprowadzanie danych bez entera
-#else
-#include <unistd.h>
-#endif
-#include <cstdlib> //biblioteka, aby działały komendy sytemowe np: system("cls");
-#include <time.h>
-#include <fstream> //biblioteka do obsługi plików
-#include <algorithm>
-#include <map>
-#include <vector>
-#endif
-#include <math.h>
-#include "errorClasses.h"
 #include "config.h"
 
 #define BOOL 0
@@ -39,81 +17,83 @@
 #define E 14
 #define F 15
 
-
 using namespace std;
 
-struct variableValue{
+struct variableValue
+{
     char type = 'N'; // i - int, n - numeric, s - string, N - NULL
     int valueI;
     float valueN;
-    #if arduino 
+#if arduino
     String valueS;
-    #else
+#else
     string valueS;
-    #endif
-
+#endif
 };
 
-class variables{
-    private:
-
-    #if arduino
+class variables
+{
+private:
+#if arduino
     void (*errorFunc)(String text);
-    #else
+#else
     void (*errorFunc)(string text);
-    #endif
+#endif
     bool *error;
 
     bool isHexLetter(char c);
 
-    struct variableParamI{
+    struct variableParamI
+    {
         bool isArray = false;
         uint8_t rows = 0;
         uint8_t columns = 0;
-        #if arduino
-        Vector <int> value;
-        #else
-        vector <int> value;
-        #endif
+#if arduino
+        vector<int> value;
+#else
+        vector<int> value;
+#endif
     };
 
-    struct variableParamN{
+    struct variableParamN
+    {
         bool isArray = false;
         uint8_t rows = 0;
         uint8_t columns = 0;
-        #if arduino
-        Vector <float> value;
-        #else
-        vector <float> value;
-        #endif
+#if arduino
+        vector<float> value;
+#else
+        vector<float> value;
+#endif
     };
 
-    struct variableParamS{
+    struct variableParamS
+    {
         bool isArray = false;
         uint8_t rows = 0;
         uint8_t columns = 0;
-        #if arduino
-        Vector <String> value;
-        #else
-        vector <string> value;
-        #endif
+#if arduino
+        vector<String> value;
+#else
+        vector<string> value;
+#endif
     };
 
-    #if arduino
-    std::map < String, variableParamI > _VLI;
-    std::map < String, variableParamN > _VLN;
-    std::map < String, variableParamS > _VLS;
-    #else
-    typedef std::map < string, variableParamI > variablesListI;
-    typedef std::map < string, variableParamN > variablesListN;
-    typedef std::map < string, variableParamS > variablesListS;
+#if arduino
+    std::map<String, variableParamI> _VLI;
+    std::map<String, variableParamN> _VLN;
+    std::map<String, variableParamS> _VLS;
+#else
+    typedef std::map<string, variableParamI> variablesListI;
+    typedef std::map<string, variableParamN> variablesListN;
+    typedef std::map<string, variableParamS> variablesListS;
     variablesListI _VLI;
     variablesListN _VLN;
     variablesListS _VLS;
-    #endif
+#endif
 
-    public:
-    #if arduino
+public:
+#if arduino
     void addErrorFunction(void (*errorFunction)(String text));
     void addErrorVariable(bool *error);
     String convertScienceToDecimal(String data);
@@ -123,7 +103,7 @@ class variables{
     void clearMemory();
     void addVariable(String &variableName, String &value);
     bool readVariable(String *variableName, variableValue *var);
-    #else
+#else
     void addErrorFunction(void (*errorFunction)(string text));
     void addErrorVariable(bool *error);
     string convertScienceToDecimal(string data);
@@ -133,7 +113,7 @@ class variables{
     void clearMemory();
     void addVariable(string &variableName, string &value);
     bool readVariable(string *variableName, variableValue *var);
-    #endif
+#endif
 };
 
 #endif

@@ -3,17 +3,6 @@
 
 #include "config.h"
 
-#if arduino
-#include <Arduino.h>
-#else
-#include <iostream>
-#include <stdio.h> //aby działał getchar i exit
-#include <iomanip> //biblioteka do manipulaowania wejściem i wyjściem
-#include <cmath>
-#include <algorithm>
-#include <map>
-#endif
-#include <math.h>
 #include "variables.h"
 #include "variables.cpp"
 #include "text_analyzer.h"

@@ -21,7 +21,11 @@ string variables::convertHexToDecimal(string data){
         uint8_t length=data.length();
         int value = 0;
         if(data[length-1]=='H'){
+            #if arduino
+            data = data.substring(0, length-1);
+            #else
             data = data.substr(0, length-1);
+            #endif
             errorFunc(data);
             length = data.length();
             for(int i = length-1; i>=0 ; i--){
@@ -121,7 +125,10 @@ void variables::addVariable(string &variableName, string &value){
     uint8_t variableNameLength = variableName.length();
     uint8_t valueLength = value.length();
     char lastChar = variableName[variableNameLength-1];
+    #if arduino
+    #else
     try{
+    #endif
         switch(lastChar){
         case '%':
             if(isInt(value, valueLength) || isNum(value, valueLength)){
@@ -179,8 +186,9 @@ void variables::addVariable(string &variableName, string &value){
     #else
     }catch(std::bad_alloc){
         throw;
-    #endif
     }
+    #endif
+    
 }
 
 #if arduino

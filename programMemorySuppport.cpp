@@ -13,10 +13,11 @@ bool programMemorySupport::checkMathematicSymbol(char input){
 
 #if arduino
 int programMemorySupport::takeDigits(String &input){
+    String number = "";
 #else
 int programMemorySupport::takeDigits(string &input){
+    string number = "";
 #endif
-  string number = "";
   while(isdigit(input[_position])){
     number+=input[_position];
     _position++;
@@ -29,7 +30,11 @@ int programMemorySupport::takeDigits(string &input){
   if(number == ""){
     return 0;
   }
+  #if arduino
+  return number.toInt();
+  #else
   return stoi(number);
+  #endif
 }
 
 #if arduino
@@ -68,10 +73,11 @@ void programMemorySupport::memoryClear(){
 
 #if arduino
 bool programMemorySupport::isToExecute(String &input){
+    input+=0;
 #else
 bool programMemorySupport::isToExecute(string &input){
-#endif
     input.push_back(0);
+#endif
     if(isdigit(input[_position])){
         _position++;
         while(isdigit(input[_position])){
@@ -121,7 +127,11 @@ bool programMemorySupport::checkAndSave(string &input){
                 _errorFunc("Error: line number must be bigger than 0: "+input);
                 return 0;
             }
+            #if arduino
+            input.remove(0, _position);
+            #else
             input.erase(0, _position);
+            #endif
 
             #if debug
             cout << "input1: " << input << endl;
@@ -130,7 +140,11 @@ bool programMemorySupport::checkAndSave(string &input){
             _position = 0;
             skipWhiteSpace(input);
             if(_position>0){
+                #if arduino
+                input.remove(0, _position);
+                #else
                 input.erase(0, _position);
+                #endif
                 _position = 0;
             }
 
@@ -141,7 +155,11 @@ bool programMemorySupport::checkAndSave(string &input){
             if(lineQuantity == 1)
                 _pM[lineNumber] = input;
             else
+                #if arduino
+                _pM[lineNumber] = input.substring(0, input.indexOf('\n'));
+                #else
                 _pM[lineNumber] = input.erase(0, input.find('\n'));
+                #endif
 
             #if debug
             cout << "Line value: " << _pM[lineNumber] << endl;
