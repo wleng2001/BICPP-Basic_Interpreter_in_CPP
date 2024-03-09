@@ -8,13 +8,15 @@ char specialChar[] = {
   '%', '$'
 };
 
-const char* reservedName[6] = {
+const char* reservedName[] = {
   "NOT",
   "OR",
   "AND",
   "XOR",
   "IMP",
-  "EQV"
+  "EQV",
+  "THEN",
+  "ELSE"
 };
 
 bool isMathematicChar(char c){

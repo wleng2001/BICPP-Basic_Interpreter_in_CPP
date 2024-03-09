@@ -34,6 +34,32 @@ void parser::setProgramLine(unsigned int programLine){
     }
 }
 
+bool parser::valueBiggerThan0(variableValue *vV){
+    switch(vV->type){
+        case('i'):
+            if(vV->valueI>0)
+                return 1;
+            else
+                return 0;
+            break;
+        case('n'):
+            if(vV->valueN>0)
+                return 1;
+            else
+                return 0;
+            break;
+        case('s'):
+            if(vV->valueS.length()>0)
+                return 1;
+            else
+                return 0;
+            break;
+        default:
+            throw wrongType();
+    }
+    
+}
+
 #if arduino
 parser::parser(String &input, void (*errorFunction)(String input), String (*inputFunction)(), void printFunction(String *input), variables *variableMemory, programMemorySupport *pMS, unsigned int *programLineIterator) : _input(input), _position(0), errorFunc(errorFunction), _inputFunc(inputFunction), _printFunc(printFunction), _vM(variableMemory), _pMS(pMS), _programLine(programLineIterator){
     input += EOS; //umieszcza strażnika na końcu
@@ -124,6 +150,7 @@ expressions* parser::parseStatements(){
             parsed = parsePrint(statement, parsed);
             parsed = parseClear(statement, parsed);
             parsed = parseGoto(statement, parsed);
+            parsed = parseIf(statement, parsed);
             if(parsed==false){
                 _position = 0;
                 return parseFunction();
@@ -426,6 +453,51 @@ bool parser::parseGoto(string statement, bool parsed){
         return true;
     }
     return parsed;
+}
+
+#if arduino
+bool parser::parseIf(String statement, bool parsed){
+#else
+bool parser::parseIf(string statement, bool parsed){
+#endif
+    if(statement == "IF"){
+        #if debug
+        errorFunc("parseIf");
+        #endif
+        expressions *e;
+        variableValue vV;
+        try{
+            lookAhead();
+            e = parseFunction();
+            vV = e->eval(_vM);
+            delete e;
+            if(valueBiggerThan0(&vV)){
+                #if arduino
+                String t;
+                #else
+                string t;
+                #endif
+                while(!isspace(_input[_position])){
+                    t+=_input[_position];
+                    _position++;
+                }
+                if(t=="THEN"){
+                    return parseStatements();
+                }else{
+                    throw wrongSyntax();
+                }
+            }else{
+                _position = _input.length()-1;
+                
+            }
+        }catch(...){
+            throw;
+            
+        }
+        return true;
+    }else{
+        return parsed;
+    }
 }
 
 //parseStatementEnd---------------------------------------------------------

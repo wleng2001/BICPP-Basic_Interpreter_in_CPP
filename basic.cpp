@@ -29,12 +29,13 @@ basic::basic(void (*printFunction)(string *text), void (*errorFunction)(string t
     printFunc = printFunction;
     errorFunc = errorFunction;
     txt_an.addErrorFuntion(errorFunc);
-    //_varMemory.addErrorFunction(errorFunc);
+    _varMemory.addErrorFunction(errorFunc);
     pMS.addErrorFunction(errorFunc);
     inputFunc = inputFunction;
     txt_an.error = &error;
-    //_varMemory.addErrorVariable(&error);
+    _varMemory.addErrorVariable(&error);
 }
+
 #if arduino
 String basic::run(String *input){
 #else
@@ -93,10 +94,9 @@ string basic::run(string *input){
         }
         return output;
     }
-    //return programLoop(input);
-    return *input;
+    return programLoop(input);
 }
-/*
+
 #if arduino
 String basic::programLoop(String *input){
 #else
@@ -196,4 +196,4 @@ string basic::programLoop(string *input){
             }
         }
     }
-}*/
+}

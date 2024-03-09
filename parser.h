@@ -29,7 +29,9 @@ class parser{
     programMemorySupport *_pMS;
     unsigned int *_programLine;
     void setProgramLine(unsigned int programLine);
+    bool valueBiggerThan0(variableValue *vV);
     public:
+
     #if arduino
     parser(String &input, void (*errorFunction)(String input), String (*inputFunction)(), void printFunction(String *input), variables *variableMemory, programMemorySupport *pMS, unsigned int *programLine);
     parser( void (*errorFunction)(String input), String (*inputFunction)(), void printFunction(String *input), variables *variableMemory, programMemorySupport *pMS);
@@ -61,6 +63,7 @@ class parser{
     bool parsePrint(String statement, bool parsed);
     bool parseClear(String statement, bool parsed);
     bool parseGoto(String statement, bool parsed);
+    bool parseIf(String statement, bool parsed);
     #else
     bool parseRun(string statement, bool parsed);
     bool parseRem(string statement, bool parsed);
@@ -69,6 +72,7 @@ class parser{
     bool parsePrint(string statement, bool parsed);
     bool parseClear(string statement, bool parsed);
     bool parseGoto(string statement, bool parsed);
+    bool parseIf(string statement, bool parsed);
     #endif
 
     expressions* parseFunction();

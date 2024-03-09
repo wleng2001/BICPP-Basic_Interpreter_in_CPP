@@ -11,5 +11,6 @@ class wrongOperator{};
 class variableNameAbsence{};
 class wrongVariableName{};
 class tooManyArg{};
+class wrongSyntax{};
 
 #endif
