@@ -60,3 +60,13 @@ clear
 list
 run
 
+clear
+10 input "Give a first number: " x
+20 input "Give a second number: " y
+30 if x>y then goto 50
+40 goto 70
+50 print "First number is bigger than second"
+60 goto 10
+70 print "Second number is bigger than first"
+80 goto 10
+

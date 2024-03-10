@@ -64,7 +64,7 @@ Integer, numeric and string value can be compared by relational operator, which 
 - *<* returns true, when right value is bigger than left;
 - *<=* or *=<* returns true, when right value is bigger or equal left;
 - *=* or *==* returns true, when left value is equal to right;
-- *<>* returns true, when left value is unequal to right;
+- *<>* or *!=* returns true, when left value is unequal to right;
 
 You must remember, that numeric value are converted to int value before compare.
 
@@ -102,5 +102,10 @@ This statement allow you to add comment in your code. If you write it at the beg
 GOTO statement allows to go to any line of program storaged in memory. Argument must be integer constant e.g.:
 ##### `GOTO 10`
 it jumps program to ten lines.
+
+###### IF
+If statement allows to do command if term is equal or bigger than 0. Term can be number, logical, relation operation and string.
+#### `IF X>10 THEN PRINT "X is bigger than 10"`
+Command written behind THEN will be executed if x is bigger than 10.
 
   

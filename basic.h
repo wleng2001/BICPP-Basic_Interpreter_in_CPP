@@ -13,7 +13,7 @@
 #include <algorithm>
 #endif
 
-#define _basicVersion "A0.03"
+#define _basicVersion "A0.04"
 
 using namespace std;
 

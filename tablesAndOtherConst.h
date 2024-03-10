@@ -2,7 +2,7 @@
 #define tablesAndOtherConst_h
 #include "config.h"
 
-char mathematicChar[] = {'+', '-', '*','^', '/', '<', '>', '=','[',']'};
+char mathematicChar[] = {'+', '-', '*','^', '/', '<', '>', '=','[',']', '!'};
 
 char specialChar[] = {
   '%', '$'

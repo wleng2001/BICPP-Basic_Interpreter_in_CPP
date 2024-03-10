@@ -167,6 +167,9 @@ string basic::programLoop(string *input){
             printError("Error: overflow", pars.parserPosition(), &text, &i);
             return "";
         #endif
+        }catch(wrongSyntax){
+            printError("Error: wrong syntax", pars.parserPosition(), &text, &i);
+            return "";
         }catch(...){
             printError("Error: unrecognized exceptrion", pars.parserPosition(), &text, &i);
             return "";

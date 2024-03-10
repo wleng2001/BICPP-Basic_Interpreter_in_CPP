@@ -356,8 +356,8 @@ class relationOperator : public expressions{
                     }
                 }else{
                     if(leftLength<rightLength){
-                        for(uint8_t i =0; i<leftLength-rightLength; i++){
-                            rightValue = '0'+rightValue;
+                        for(uint8_t i =0; i<rightLength-leftLength; i++){
+                            leftValue = '0'+leftValue;
                     }
                     }
 
@@ -418,7 +418,7 @@ class relationOperator : public expressions{
                 return vV;
             }
         }
-        if(symbol == "<>"){
+        if(symbol == "<>" || symbol == "!="){
             if(leftValue!=rightValue){
                 vV.valueI = 1;
                 return vV;

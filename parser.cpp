@@ -470,19 +470,20 @@ bool parser::parseIf(string statement, bool parsed){
             lookAhead();
             e = parseFunction();
             vV = e->eval(_vM);
-            delete e;
-            if(valueBiggerThan0(&vV)){
+            bool b = valueBiggerThan0(&vV);
+            if(b){
                 #if arduino
                 String t;
                 #else
                 string t;
                 #endif
-                while(!isspace(_input[_position])){
+                while(!isspace(_input[_position]) && _position < _input.length()){
                     t+=_input[_position];
                     _position++;
                 }
                 if(t=="THEN"){
-                    return parseStatements();
+                    e = parseStatements();
+                    e->eval(_vM);
                 }else{
                     throw wrongSyntax();
                 }
@@ -494,6 +495,7 @@ bool parser::parseIf(string statement, bool parsed){
             throw;
             
         }
+        delete e;
         return true;
     }else{
         return parsed;
@@ -642,7 +644,7 @@ expressions* parser::parseRelation(){
     try{
         e = parseConcatenation();
         c = lookAhead();
-        while(c=='>' || c=='<' || c=='='){
+        while(c=='>' || c=='<' || c=='=' || c=='!'){
             s+=c;
             _position++;
             c = _input[_position];
