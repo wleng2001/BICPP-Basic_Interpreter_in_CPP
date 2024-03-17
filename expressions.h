@@ -171,7 +171,6 @@ class logicalOperator : public expressions{
     virtual ~logicalOperator(){
         delete left;
         delete right;
-        delete &symbol;
     }
 
     variableValue eval(variables *vM){
@@ -267,7 +266,6 @@ class notOperator : public expressions{
 
     virtual ~notOperator(){
         delete right;
-        delete &symbol;
     }
 
     variableValue eval(variables *vM){
@@ -281,7 +279,6 @@ class notOperator : public expressions{
             rightValue = convertToInt(&rVV);
         }catch(wrongType()){
             delete right;
-            delete &rVV;
             throw wrongType();
             return vV;
         }
@@ -322,7 +319,6 @@ class relationOperator : public expressions{
     virtual ~relationOperator(){
         delete left;
         delete right;
-        delete &symbol;
     }
 
     variableValue eval(variables *vM){
@@ -364,9 +360,6 @@ class relationOperator : public expressions{
                 }
             }
         }catch(...){
-            delete &vV;
-            delete &lVV;
-            delete &rVV;
             throw wrongType();
         }
         vV.type = 'i';
@@ -624,7 +617,6 @@ class variable : public expressions{
     #endif
 
     virtual ~variable(){
-        delete &name;
     }
 
     virtual variableValue eval(variables *vM){
