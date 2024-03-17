@@ -118,7 +118,7 @@ expressions* parser::parseExpressions(){
 
 //parseStatementStart-------------------------------------------------------
 
-expressions* parser::parseStatements(){
+expressions* parser::parseStatements(bool execute){
     #if debug 
     errorFunc("parserStatements: "+to_string(_position));
     #endif
@@ -145,12 +145,12 @@ expressions* parser::parseStatements(){
             if(parseRem(statement, parsed)==true){
                 return new constantS("");
             }
-            parsed = parseLet(statement, parsed);
-            parsed = parseInput(statement, parsed);
-            parsed = parsePrint(statement, parsed);
-            parsed = parseClear(statement, parsed);
-            parsed = parseGoto(statement, parsed);
-            parsed = parseIf(statement, parsed);
+            parsed = parseLet(statement, parsed, execute);
+            parsed = parseInput(statement, parsed, execute);
+            parsed = parsePrint(statement, parsed, execute);
+            parsed = parseClear(statement, parsed, execute);
+            parsed = parseGoto(statement, parsed, execute);
+            parsed = parseIf(statement, parsed, execute);
             if(parsed==false){
                 _position = 0;
                 return parseFunction();
@@ -190,9 +190,9 @@ expressions* parser::parseStatements(){
 }
 
 #if arduino
-bool parser::parseRun(String statement, bool parsed){
+bool parser::parseRun(String statement, bool parsed, bool execute){
 #else
-bool parser::parseRun(string statement, bool parsed){
+bool parser::parseRun(string statement, bool parsed, bool execute){
 #endif
     if(statement == "RUN"){
         char c = lookAhead();
@@ -207,9 +207,9 @@ bool parser::parseRun(string statement, bool parsed){
 }
 
 #if arduino
-bool parser::parseRem(String statement, bool parsed){
+bool parser::parseRem(String statement, bool parsed, bool execute){
 #else
-bool parser::parseRem(string statement, bool parsed){
+bool parser::parseRem(string statement, bool parsed, bool execute){
 #endif
     if(statement == "REM"){
         while(lookAhead()!=0){
@@ -221,9 +221,9 @@ bool parser::parseRem(string statement, bool parsed){
 }
 
 #if arduino
-bool parser::parseLet(String statement, bool parsed){
+bool parser::parseLet(String statement, bool parsed, bool execute){
 #else
-bool parser::parseLet(string statement, bool parsed){
+bool parser::parseLet(string statement, bool parsed, bool execute){
 #endif
     if(statement == "LET"){
         expressions *e;
@@ -282,9 +282,9 @@ bool parser::parseLet(string statement, bool parsed){
 }
 
 #if arduino
-bool parser::parseInput(String statement, bool parsed){
+bool parser::parseInput(String statement, bool parsed, bool execute){
 #else
-bool parser::parseInput(string statement, bool parsed){
+bool parser::parseInput(string statement, bool parsed, bool execute){
 #endif
     if(statement=="INPUT"){
         expressions *internalE;
@@ -371,9 +371,9 @@ bool parser::parseInput(string statement, bool parsed){
 }
 
 #if arduino
-bool parser::parsePrint(String statement, bool parsed){
+bool parser::parsePrint(String statement, bool parsed, bool execute){
 #else
-bool parser::parsePrint(string statement, bool parsed){
+bool parser::parsePrint(string statement, bool parsed, bool execute){
 #endif
     if(statement == "PRINT"){
         #if debug
@@ -398,22 +398,25 @@ bool parser::parsePrint(string statement, bool parsed){
             c = lookAhead();
         }while(c==',');
         output+='\n';
-        _printFunc(&output);
+        if(execute)
+            _printFunc(&output);
         return true;
     }
     return parsed;
 }
 
 #if arduino
-bool parser::parseClear(String statement, bool parsed){
+bool parser::parseClear(String statement, bool parsed, bool execute){
 #else
-bool parser::parseClear(string statement, bool parsed){
+bool parser::parseClear(string statement, bool parsed, bool execute){
 #endif
     if(statement == "CLEAR"){
         char c = lookAhead();
         if(c==0){
-            _vM->clearMemory();
-            _pMS->memoryClear();
+            if(execute){
+                _vM->clearMemory();
+                _pMS->memoryClear();
+            }
             return true;
         }else{
             throw tooManyArg();
@@ -423,9 +426,9 @@ bool parser::parseClear(string statement, bool parsed){
 }
 
 #if arduino
-bool parser::parseGoto(String statement, bool parsed){
+bool parser::parseGoto(String statement, bool parsed, bool execute){
 #else
-bool parser::parseGoto(string statement, bool parsed){
+bool parser::parseGoto(string statement, bool parsed, bool execute){
 #endif
     if(statement == "GOTO"){
         #if debug
@@ -456,9 +459,9 @@ bool parser::parseGoto(string statement, bool parsed){
 }
 
 #if arduino
-bool parser::parseIf(String statement, bool parsed){
+bool parser::parseIf(String statement, bool parsed, bool execute){
 #else
-bool parser::parseIf(string statement, bool parsed){
+bool parser::parseIf(string statement, bool parsed, bool execute){
 #endif
     if(statement == "IF"){
         #if debug
@@ -470,28 +473,45 @@ bool parser::parseIf(string statement, bool parsed){
             lookAhead();
             e = parseFunction();
             vV = e->eval(_vM);
+
+            #if arduino
+            String t;
+            #else
+            string t;
+            #endif
+            while(!isspace(_input[_position]) && _position < _input.length()){
+                t+=_input[_position];
+                _position++;
+            }
+            if(t=="THEN"){
+            }else{
+                throw wrongSyntax();
+            }
+
             bool b = valueBiggerThan0(&vV);
+            #if debug
+            errorFunc("Term value: "+to_string(b));
+            #endif
             if(b){
-                #if arduino
-                String t;
-                #else
-                string t;
-                #endif
+                e = parseStatements();
+                e->eval(_vM);
+                _position = _input.length();
+            }else{
+                /*
+                t= "";
                 while(!isspace(_input[_position]) && _position < _input.length()){
                     t+=_input[_position];
                     _position++;
                 }
-                if(t=="THEN"){
+                if(t=="ELSE"){
                     e = parseStatements();
                     e->eval(_vM);
-                }else{
-                    throw wrongSyntax();
-                }
-            }else{
+                }*/
                 _position = _input.length()-1;
                 
             }
         }catch(...){
+            
             throw;
             
         }

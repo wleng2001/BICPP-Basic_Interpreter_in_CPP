@@ -53,26 +53,26 @@ class parser{
     char lookAhead(); //zwraca następny znak po spacjach
 
     expressions* parseExpressions();
-    expressions* parseStatements();
+    expressions* parseStatements(bool execute = 1);
 
     #if arduino
-    bool parseRun(String statement, bool parsed);
-    bool parseRem(String statement, bool parsed);
-    bool parseLet(String statement, bool parsed);
-    bool parseInput(String statement, bool parsed);
-    bool parsePrint(String statement, bool parsed);
-    bool parseClear(String statement, bool parsed);
-    bool parseGoto(String statement, bool parsed);
-    bool parseIf(String statement, bool parsed);
+    bool parseRun(String statement, bool parsed, bool execute = 1);
+    bool parseRem(String statement, bool parsed, bool execute = 1);
+    bool parseLet(String statement, bool parsed, bool execute = 1);
+    bool parseInput(String statement, bool parsed, bool execute = 1);
+    bool parsePrint(String statement, bool parsed, bool execute = 1);
+    bool parseClear(String statement, bool parsed, bool execute = 1);
+    bool parseGoto(String statement, bool parsed, bool execute = 1);
+    bool parseIf(String statement, bool parsed, bool execute = 1);
     #else
-    bool parseRun(string statement, bool parsed);
-    bool parseRem(string statement, bool parsed);
-    bool parseLet(string statement, bool parsed);
-    bool parseInput(string statement, bool parsed);
-    bool parsePrint(string statement, bool parsed);
-    bool parseClear(string statement, bool parsed);
-    bool parseGoto(string statement, bool parsed);
-    bool parseIf(string statement, bool parsed);
+    bool parseRun(string statement, bool parsed, bool execute = 1);
+    bool parseRem(string statement, bool parsed, bool execute = 1);
+    bool parseLet(string statement, bool parsed, bool execute = 1);
+    bool parseInput(string statement, bool parsed, bool execute = 1);
+    bool parsePrint(string statement, bool parsed, bool execute = 1);
+    bool parseClear(string statement, bool parsed, bool execute = 1);
+    bool parseGoto(string statement, bool parsed, bool execute = 1);
+    bool parseIf(string statement, bool parsed, bool execute = 1);
     #endif
 
     expressions* parseFunction();

@@ -16,7 +16,7 @@ const char* reservedName[] = {
   "IMP",
   "EQV",
   "THEN",
-  "ELSE"
+  //"ELSE"
 };
 
 bool isMathematicChar(char c){
