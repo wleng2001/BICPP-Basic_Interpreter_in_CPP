@@ -52,8 +52,6 @@ String operator are:
     ##### `abcdabcd`
 -   *[n:m]* which returns substring from text for *n* to *m* char, where first char has number *0* e.g.: `"abcd"[1:2]` returns `bc`
 
-
-$${\color{gray}
 #### Arrays aren't available yet.
 
 Array can be int, string and numeric and at end of name, but before bracker, you must give the same marked. For example:
@@ -61,7 +59,7 @@ Array can be int, string and numeric and at end of name, but before bracker, you
 It's array, which store five strings. If you want create 2 dimensional array you can do it at the way:
 ##### `STRARRAY$(4,2)`
 The array consist of 5 rows and 3 columns.
-}$$
+
 
 Integer, numeric and string value can be compared by relational operator, which are:
 - *>* returns true, when left value is bigger than right;
