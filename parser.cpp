@@ -911,6 +911,8 @@ expressions* parser::parseConstant(){
         }   
             return new constantN(value);
     }
+
+    return new constantS("");
 }
 
 expressions* parser::parseLiteral(){

@@ -79,7 +79,7 @@ string basic::run(string *input){
             if(pMS._pM.count(i)){
                 partOutput += pMS._pM[i];
                 #if arduino
-                output += String(i) + '\t' + partOutput + '\n';
+                output += String(i) + String('\t') + partOutput + String('\n');
                 #else
                 output += to_string(i) + '\t' + partOutput + '\n';
                 #endif
@@ -199,4 +199,6 @@ string basic::programLoop(string *input){
             }
         }
     }
+
+    return "";
 }

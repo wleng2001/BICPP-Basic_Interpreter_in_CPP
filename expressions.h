@@ -465,9 +465,7 @@ class concatenationOperator : public expressions{
             throw wrongType();
             return vV;
         }
-
-        
-
+      return vV;  
     }
 };
 
@@ -554,7 +552,7 @@ class binaryOperator : public expressions{
                     vV.valueI = lVV.valueI - rVV.valueI;
                     return vV;
                 case '^':
-                    vV.valueI = pow(lVV.valueI, rVV.valueI);
+                    vV.valueI = pow((float)lVV.valueI, (float)rVV.valueI);
                     return vV;
                 default:
                     throw wrongOperator();

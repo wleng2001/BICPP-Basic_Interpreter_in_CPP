@@ -30,6 +30,7 @@ string variables::convertHexToDecimal(string data){
             length = data.length();
             for(int i = length-1; i>=0 ; i--){
                 char i_value = data[i];
+                /*
                 switch(i_value){
                     case 'A':
                         value+=A*pow(16, length-1-i);
@@ -52,7 +53,7 @@ string variables::convertHexToDecimal(string data){
                     default:
                         value+=(data[i]-48)*pow(16, length-1-i);
                         break;
-                }
+                }*/
             }
             #if arduino
             data = String(value);
@@ -133,7 +134,12 @@ void variables::addVariable(string &variableName, string &value){
         case '%':
             if(isInt(value, valueLength) || isNum(value, valueLength)){
                 _VLI[variableName].isArray = false;
+                #if arduino
+                free(_VLI[variableName].value);
+                _VLI[variableName].value* = malloc(sizeof(int));
+                #else
                 _VLI[variableName].value.reserve(1);
+                #endif
                 if(isInt(value, valueLength))
                     #if arduino
                     _VLI[variableName].value[0] = convertHexToDecimal(value).toInt();
@@ -166,10 +172,12 @@ void variables::addVariable(string &variableName, string &value){
         default:
             if(isNum(value, valueLength)){
                 _VLN[variableName].isArray = false;
-                _VLN[variableName].value.reserve(1);
                 #if arduino
+                free(_VLN[variableName].value);
+                _VLN[variableName].value* = malloc(float);
                 _VLN[variableName].value[0] = value.toFloat();
                 #else
+                _VLN[variableName].value.reserve(1);
                 _VLN[variableName].value[0] = stof(value);
                 #endif
                 return;

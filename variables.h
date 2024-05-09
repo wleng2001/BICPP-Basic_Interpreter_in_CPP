@@ -49,7 +49,7 @@ private:
         uint8_t rows = 0;
         uint8_t columns = 0;
 #if arduino
-        vector<int> value;
+        int* value = malloc(int);
 #else
         vector<int> value;
 #endif
@@ -61,7 +61,7 @@ private:
         uint8_t rows = 0;
         uint8_t columns = 0;
 #if arduino
-        vector<float> value;
+        float* value = malloc(float);
 #else
         vector<float> value;
 #endif
@@ -73,7 +73,7 @@ private:
         uint8_t rows = 0;
         uint8_t columns = 0;
 #if arduino
-        vector<String> value;
+        String value[1];
 #else
         vector<string> value;
 #endif
